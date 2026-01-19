@@ -1,0 +1,21 @@
+from enum import Enum
+
+class ColorProp(Enum):
+    RED = "a1"
+    GREEN = "a2"
+    BLUE = "a3"
+    PLAYER = "a4"
+    BLENDING = "a5"
+    CHANNEL = "a6"
+    OPACITY = "a7"
+    DISABLE_OPACITY = "a8"
+    COPY_ID = "a9"
+    HSV = "a10"
+    TO_RED = "a11"
+    TO_GREEN = "a12"
+    TO_BLUE = "a13"
+    TIME_DELTA = "a14"
+    TO_OPACITY = "a15"
+    DURATION = "a16"
+    COPY_OPACITY = "a17"
+    M_18 = "a18"

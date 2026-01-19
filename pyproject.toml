@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gmdbuilder"
+version = "0.1.0"
+description = "An unopinionated General-Purpose Geometry Dash framework for safe and easy level editing and scripting"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = [
+    "gmdkit>=0.4.0",
+]
+
+# Optional dependencies for development
+[project.optional-dependencies]
+dev = [
+    "basedpyright",
+    "ruff",
+    "pytest>=7.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.basedpyright]
+typeCheckingMode = "standard"
+reportAny = "none" # Allow implicit any types
+reportExplicitAny = "none" # Allow explicit any types
+# Ignore the entire venv directory and external packages
+# ignore = ["**/venv/**", "**/site-packages/**"]
+# Be strict on your own code, but don't complain about untyped external packages
+# reportMissingTypeStubs = "none"
+
+
+[tool.ruff.lint]
+ignore = [
+    "E701",  # Multiple statements on one line (colon)
+    "E702",  # Multiple statements on one line (semicolon)
+    "E731",  # Do not assign a lambda expression, use a def
+    "E741",  # Ambiguous variable name (allows single letter vars like l, o, I)
+    # "F401",  # Imported but unused (useful for __init__.py files)
+    "F403",  # Star imports (from module import *)
+    # "B008",  # Do not perform function call in argument defaults
+    # "B904",  # Use raise from to specify exception cause
+    "N802",  # Function name should be lowercase
+    "N803",  # Argument name should be lowercase
+    "N806",  # Variable in function should be lowercase
+]
+
+[tool.pytest.ini_options]
+addopts = "-qv"

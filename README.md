@@ -5,11 +5,10 @@
 
 # gmdbuilder
 An unopinionated General-Purpose Geometry Dash framework for safe and easy level editing and scripting.
-**Build on a solid foundation, not inside a cage.**
+*Build on a solid foundation, not inside a cage.*
 
-Many tools already tackle this problem, and if you take a step back from it, it becomes clear the main concern is building dictionaries of property-value pairs.
 The goal of this project is to realize that for GD project development:
-- Every project's needs vary an insane amount
+- The needs of every project vary an insane amount
 - Developers should know exactly what theyre placing in the level
 - Developers should be focused on the level, not on syntax
 - GD 2.2 has added so much that any opinionated way of doing things is far too limiting.

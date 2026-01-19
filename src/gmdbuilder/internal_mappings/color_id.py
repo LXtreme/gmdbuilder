@@ -1,0 +1,20 @@
+from enum import Enum
+
+class ColorId(Enum):
+    DEFAULT = "a0"
+    BACKGROUND = "a1000"
+    GROUND = "a1001"
+    LINE = "a1002"
+    LINE_3D = "a1003"
+    OBJECT = "a1004"
+    PLAYER_1 = "a1005"
+    PLAYER_2 = "a1006"
+    LIGHT_BG = "a1007"
+    GROUND_2 = "a1009"
+    BLACK = "a1010"
+    WHITE = "a1011"
+    LIGHTER = "a1012"
+    MIDDLEGROUND = "a1013"
+    MIDDLEGROUND_2 = "a1014"
+    PRESET = {BLACK, WHITE, LIGHTER, LIGHT_BG, PLAYER_1, PLAYER_2}
+    LEVEL = {BACKGROUND, GROUND, LINE, LINE_3D, OBJECT, GROUND_2, MIDDLEGROUND, MIDDLEGROUND_2}
