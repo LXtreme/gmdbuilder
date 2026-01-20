@@ -1,6 +1,5 @@
-from enum import Enum
 
-class ColorId(Enum):
+class ColorId(str):
     DEFAULT = "a0"
     BACKGROUND = "a1000"
     GROUND = "a1001"

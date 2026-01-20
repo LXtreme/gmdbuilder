@@ -1,9 +1,8 @@
-from enum import Enum
 
-class ObjEnum(Enum):
+class ObjEnum(str):
     pass
 
-    class Easing(Enum):
+    class Easing(str):
         NONE = "a0"
         EASE_IN_OUT = "a1"
         EASE_IN = "a2"
@@ -24,31 +23,31 @@ class ObjEnum(Enum):
         BACK_IN = "a17"
         BACK_OUT = "a18"
 
-    class ItemLabel(Enum):
+    class ItemLabel(str):
         pass
 
-        class Alignment(Enum):
+        class Alignment(str):
             CENTER = "a0"
             LEFT = "a1"
             RIGHT = "a2"
 
-        class SpecialId(Enum):
+        class SpecialId(str):
             MAINTIME = "a-1"
             POINTS = "a-2"
             ATTEMPTS = "a-3"
 
-    class Level(Enum):
+    class Level(str):
         pass
 
-        class Color17(Enum):
+        class Color17(str):
             pass
 
-            class PlayerColor(Enum):
+            class PlayerColor(str):
                 NONE = "a0"
                 PLAYER_1 = "a1"
                 PLAYER_2 = "a2"
 
-    class OldColor(Enum):
+    class OldColor(str):
         PLAYER_1 = "a1"
         PLAYER_2 = "a2"
         COLOR_1 = "a3"
@@ -58,66 +57,66 @@ class ObjEnum(Enum):
         COLOR_4 = "a7"
         LINE_3D = "a8"
 
-    class SingleColorType(Enum):
+    class SingleColorType(str):
         DEFAULT = "a0"
         BASE = "a1"
         DETAIL = "a2"
 
-    class Trigger(Enum):
+    class Trigger(str):
         pass
 
-        class AdvFollow(Enum):
+        class AdvFollow(str):
             pass
 
-            class Init(Enum):
+            class Init(str):
                 INIT = "a0"
                 SET = "a1"
                 ADD = "a2"
 
-            class Mode(Enum):
+            class Mode(str):
                 MODE_1 = "a0"
                 MODE_2 = "a1"
                 MODE_3 = "a2"
 
-        class Arrow(Enum):
+        class Arrow(str):
             pass
 
-            class Direction(Enum):
+            class Direction(str):
                 NONE = "a0"
                 UP = "a1"
                 DOWN = "a2"
                 LEFT = "a3"
                 RIGHT = "a4"
 
-        class Bpm(Enum):
+        class Bpm(str):
             pass
 
-            class Speed(Enum):
+            class Speed(str):
                 NORMAL = "a0"
                 SLOW = "a1"
                 FAST = "a2"
                 VERY_FAST = "a3"
                 SUPER_FAST = "a4"
 
-        class CameraEdge(Enum):
+        class CameraEdge(str):
             pass
 
-            class Direction(Enum):
+            class Direction(str):
                 NONE = "a0"
                 LEFT = "a1"
                 RIGHT = "a2"
                 UP = "a3"
                 DOWN = "a4"
 
-        class Effect(Enum):
+        class Effect(str):
             pass
 
-            class EnterOnly(Enum):
+            class EnterOnly(str):
                 NONE = "a0"
                 ENTER = "a1"
                 EXIT = "a2"
 
-            class SpecialCenter(Enum):
+            class SpecialCenter(str):
                 P1 = "a-1"
                 P2 = "a-2"
                 C = "a-3"
@@ -130,24 +129,24 @@ class ObjEnum(Enum):
                 CR = "a-10"
                 TR = "a-11"
 
-        class EnterPreset(Enum):
+        class EnterPreset(str):
             pass
 
-            class EnterOnly(Enum):
+            class EnterOnly(str):
                 NONE = "a0"
                 ENTER = "a1"
                 EXIT = "a2"
 
-        class Gradient(Enum):
+        class Gradient(str):
             pass
 
-            class Blending(Enum):
+            class Blending(str):
                 NORMAL = "a0"
                 ADDITIVE = "a1"
                 MULTIPLY = "a2"
                 INVERT = "a3"
 
-            class Layer(Enum):
+            class Layer(str):
                 BG = "a1"
                 MG = "a2"
                 B5 = "a3"
@@ -164,24 +163,24 @@ class ObjEnum(Enum):
                 UI = "a14"
                 MAX = "a15"
 
-        class InstantCount(Enum):
+        class InstantCount(str):
             pass
 
-            class Mode(Enum):
+            class Mode(str):
                 EQUAL = "a0"
                 LARGER = "a1"
                 SMALLER = "a2"
 
-        class ItemCompare(Enum):
+        class ItemCompare(str):
             pass
 
-            class ItemOp(Enum):
+            class ItemOp(str):
                 ADD = "a1"
                 SUBTRACT = "a2"
                 MULTIPLY = "a3"
                 DIVIDE = "a4"
 
-            class ItemType(Enum):
+            class ItemType(str):
                 DEFAULT = "a0"
                 ITEM = "a1"
                 TIMER = "a2"
@@ -189,27 +188,27 @@ class ObjEnum(Enum):
                 MAINTIME = "a4"
                 ATTEMPTS = "a5"
 
-            class RoundOp(Enum):
+            class RoundOp(str):
                 NONE = "a0"
                 ROUND = "a1"
                 FLOOR = "a2"
                 CEILING = "a3"
 
-            class SignOp(Enum):
+            class SignOp(str):
                 NONE = "a0"
                 ABSOLUTE = "a1"
                 NEGATIVE = "a2"
 
-        class ItemEdit(Enum):
+        class ItemEdit(str):
             pass
 
-            class ItemOp(Enum):
+            class ItemOp(str):
                 ADD = "a1"
                 SUBTRACT = "a2"
                 MULTIPLY = "a3"
                 DIVIDE = "a4"
 
-            class ItemType(Enum):
+            class ItemType(str):
                 DEFAULT = "a0"
                 ITEM = "a1"
                 TIMER = "a2"
@@ -217,86 +216,86 @@ class ObjEnum(Enum):
                 MAINTIME = "a4"
                 ATTEMPTS = "a5"
 
-            class RoundOp(Enum):
+            class RoundOp(str):
                 NONE = "a0"
                 ROUND = "a1"
                 FLOOR = "a2"
                 CEILING = "a3"
 
-            class SignOp(Enum):
+            class SignOp(str):
                 NONE = "a0"
                 ABSOLUTE = "a1"
                 NEGATIVE = "a2"
 
-        class Keyframe(Enum):
+        class Keyframe(str):
             pass
 
-            class SpinDirection(Enum):
+            class SpinDirection(str):
                 NONE = "a0"
                 CW = "a1"
                 CCW = "a2"
 
-            class TimeMode(Enum):
+            class TimeMode(str):
                 TIME = "a0"
                 EVEN = "a1"
                 DIST = "a2"
 
-        class Move(Enum):
+        class Move(str):
             pass
 
-            class TargetAxis(Enum):
+            class TargetAxis(str):
                 NONE = "a0"
                 X = "a1"
                 Y = "a2"
 
-        class OffsetCamera(Enum):
+        class OffsetCamera(str):
             pass
 
-            class Axis(Enum):
+            class Axis(str):
                 NONE = "a0"
                 X = "a1"
                 Y = "a2"
 
-        class OffsetGameplay(Enum):
+        class OffsetGameplay(str):
             pass
 
-            class Axis(Enum):
+            class Axis(str):
                 NONE = "a0"
                 X = "a1"
                 Y = "a2"
 
-        class Options(Enum):
+        class Options(str):
             DISABLE = "a-1"
             IGNORE = "a0"
             ENABLE = "a1"
 
-        class Pickup(Enum):
+        class Pickup(str):
             pass
 
-            class Mode(Enum):
+            class Mode(str):
                 ADD = "a0"
                 MULTIPLY = "a1"
                 DIVIDE = "a2"
 
-        class Pulse(Enum):
+        class Pulse(str):
             pass
 
-            class TargetType(Enum):
+            class TargetType(str):
                 CHANNEL = "a0"
                 GROUP = "a1"
 
-        class Sequence(Enum):
+        class Sequence(str):
             pass
 
-            class Mode(Enum):
+            class Mode(str):
                 STOP = "a0"
                 LOOP = "a1"
                 LAST = "a2"
 
-        class Sfx(Enum):
+        class Sfx(str):
             pass
 
-            class Direction(Enum):
+            class Direction(str):
                 CIRCULAR = "a0"
                 HORIZONTAL = "a1"
                 LEFT = "a2"
@@ -305,7 +304,7 @@ class ObjEnum(Enum):
                 DOWN = "a5"
                 UP = "a6"
 
-            class Reverb(Enum):
+            class Reverb(str):
                 GENERIC = "a0"
                 PADDED_CELL = "a1"
                 ROOM = "a2"
@@ -328,10 +327,10 @@ class ObjEnum(Enum):
                 SEWER_PIPE = "a19"
                 UNDER_WATER = "a20"
 
-        class Shader(Enum):
+        class Shader(str):
             pass
 
-            class Layer(Enum):
+            class Layer(str):
                 BG = "a1"
                 MG = "a2"
                 B5 = "a3"
@@ -348,10 +347,10 @@ class ObjEnum(Enum):
                 UI = "a14"
                 MAX = "a15"
 
-        class Song(Enum):
+        class Song(str):
             pass
 
-            class Direction(Enum):
+            class Direction(str):
                 CIRCULAR = "a0"
                 HORIZONTAL = "a1"
                 LEFT = "a2"
@@ -360,60 +359,60 @@ class ObjEnum(Enum):
                 DOWN = "a5"
                 UP = "a6"
 
-        class StaticCamera(Enum):
+        class StaticCamera(str):
             pass
 
-            class Axis(Enum):
+            class Axis(str):
                 NONE = "a0"
                 X = "a1"
                 Y = "a2"
 
-        class Stop(Enum):
+        class Stop(str):
             pass
 
-            class Mode(Enum):
+            class Mode(str):
                 STOP = "a0"
                 PAUSE = "a1"
                 RESUME = "a2"
 
-        class Teleport(Enum):
+        class Teleport(str):
             pass
 
-            class Gravity(Enum):
+            class Gravity(str):
                 NONE = "a0"
                 NORMAL = "a1"
                 FLIPPED = "a2"
                 TOGGLE = "a3"
 
-        class Touch(Enum):
+        class Touch(str):
             pass
 
-            class Mode(Enum):
+            class Mode(str):
                 FLIP = "a0"
                 ON = "a1"
                 OFF = "a2"
 
-            class OnlyPlayer(Enum):
+            class OnlyPlayer(str):
                 NONE = "a0"
                 P1 = "a1"
                 P2 = "a2"
 
-        class Ui(Enum):
+        class Ui(str):
             pass
 
-            class RefX(Enum):
+            class RefX(str):
                 AUTO = "a1"
                 CENTER = "a2"
                 LEFT = "a3"
                 RIGHT = "a4"
 
-            class RefY(Enum):
+            class RefY(str):
                 AUTO = "a1"
                 CENTER = "a2"
                 BOTTOM = "a3"
                 TOP = "a4"
 
-    class ZLayer(Enum):
+    class ZLayer(str):
         B5 = "a-5"
         B4 = "a-3"
         B3 = "a-1"

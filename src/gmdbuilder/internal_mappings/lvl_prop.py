@@ -1,9 +1,8 @@
-from enum import Enum
 
-class LvlProp(Enum):
+class LvlProp(str):
     pass
 
-    class Level(Enum):
+    class Level(str):
         ENCODER_KEY = 'kCEK'
         ID = 'k1'
         NAME = 'k2'
@@ -87,7 +86,7 @@ class LvlProp(Enum):
         PLATFORMER_SEED = 'k111'
         SHAKE_DISABLED = 'k112'
 
-        class Editor(Enum):
+        class Editor(str):
             CAMERA_X = 'kI1'
             CAMERA_Y = 'kI2'
             CAMERA_ZOOM = 'kI3'
@@ -96,11 +95,11 @@ class LvlProp(Enum):
             BUILD_TAB_PAGES = 'kI6'
             LAYER = 'kI7'
 
-        class Official(Enum):
+        class Official(str):
             REQUIRED_COINS = 'k37'
             IS_UNLOCKED = 'k38'
 
-    class List(Enum):
+    class List(str):
         ENCODER_KEY = 'kCEK'
         ID = 'k1'
         NAME = 'k2'

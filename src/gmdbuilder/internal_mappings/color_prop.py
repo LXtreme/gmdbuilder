@@ -1,6 +1,6 @@
-from enum import Enum
 
-class ColorProp(Enum):
+
+class ColorProp(str):
     RED = "a1"
     GREEN = "a2"
     BLUE = "a3"

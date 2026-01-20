@@ -1,9 +1,8 @@
-from enum import Enum
 
-class SmartTemplate(Enum):
+class SmartTemplate(str):
     pass
 
-    class Prop(Enum):
+    class Prop(str):
         ENCODER_KEY = 'kCEK'
         ID = "a1"
         NAME = "a2"
@@ -13,7 +12,7 @@ class SmartTemplate(Enum):
         M_6 = "a6"
         M_7 = "a7"
 
-    class VarProp(Enum):
+    class VarProp(str):
         ENCODED_KEY = "kCEK"
         OBJECT_STRING = "a1"
         WEIGHT = "a2"

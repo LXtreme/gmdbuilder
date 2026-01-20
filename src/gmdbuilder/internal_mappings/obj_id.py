@@ -1,32 +1,31 @@
-from enum import Enum
 
-class ObjId(Enum):
+class ObjId(str):
     LEVEL_START = "a0"
     TEXT = "a914"
     ITEM_LABEL = "a1615"
     PARTICLE_OBJECT = "a2065"
 
-    class Collectible(Enum):
+    class Collectible(str):
         SECRET_COIN = "a142"
         KEY = "a1275"
         USER_COIN = "a1329"
         SMALL_COIN = "a1614"
 
-    class Deprecated(Enum):
+    class Deprecated(str):
         OLD_COLOR_LINE = "a104"
         OLD_COLOR_1 = "a221"
         OLD_COLOR_2 = "a717"
         OLD_COLOR_3 = "a718"
         OLD_COLOR_4 = "a734"
 
-    class Modifier(Enum):
+    class Modifier(str):
         WAVE_COLLISION = "a1755"
         STOP_JUMP = "a1813"
         STOP_DASH = "a1829"
         HEAD_COLLISION = "a1859"
         GRAVITY_FLIP = "a2866"
 
-    class Orb(Enum):
+    class Orb(str):
         YELLOW = "a36"
         BLUE = "a84"
         PINK = "a141"
@@ -39,14 +38,14 @@ class ObjId(Enum):
         SPIDER = "a3004"
         TELEPORT = "a3027"
 
-    class Pad(Enum):
+    class Pad(str):
         YELLOW = "a35"
         BLUE = "a67"
         PINK = "a140"
         RED = "a1332"
         SPIDER = "a3005"
 
-    class Portal(Enum):
+    class Portal(str):
         GRAVITY_NORMAL = "a10"
         GRAVITY_INVERTED = "a11"
         CUBE = "a12"
@@ -65,19 +64,19 @@ class ObjId(Enum):
         SWING = "a1933"
         GRAVITY_TOGGLE = "a2926"
 
-        class Teleport(Enum):
+        class Teleport(str):
             LINKED = "a747"
             EXIT = "a2064"
             ENTER = "a2902"
 
-    class Speed(Enum):
+    class Speed(str):
         SLOW = "a200"
         NORMAL = "a201"
         FAST = "a202"
         VERY_FAST = "a203"
         SUPER_FAST = "a1334"
 
-    class Trigger(Enum):
+    class Trigger(str):
         START_POSITION = "a31"
         TRAIL_ENABLE = "a32"
         TRAIL_DISABLE = "a33"
@@ -161,7 +160,7 @@ class ObjId(Enum):
         RETARGET_ADV_FOLLOW = "a3661"
         LINK_VISIBLE = "a3662"
 
-        class Area(Enum):
+        class Area(str):
             MOVE = "a3006"
             ROTATE = "a3007"
             SCALE = "a3008"
@@ -174,7 +173,7 @@ class ObjId(Enum):
             EDIT_TINT = "a3015"
             STOP = "a3024"
 
-        class Enter(Enum):
+        class Enter(str):
             MOVE = "a3017"
             ROTATE = "a3018"
             SCALE = "a3019"
@@ -182,7 +181,7 @@ class ObjId(Enum):
             TINT = "a3021"
             STOP = "a3023"
 
-        class EnterPreset(Enum):
+        class EnterPreset(str):
             FADE_ONLY = "a22"
             FADE_BOTTOM = "a23"
             FADE_TOP = "a24"
@@ -197,14 +196,14 @@ class ObjId(Enum):
             HALF_INVERT = "a59"
             NO_FADE = "a1915"
 
-        class OldColor(Enum):
+        class OldColor(str):
             GROUND = "a29"
             BACKGROUND = "a30"
             OUTLINE = "a105"
             GROUND_2 = "a900"
             LINE = "a915"
 
-        class Shader(Enum):
+        class Shader(str):
             OPTIONS = "a2904"
             SHOCKWAVE = "a2905"
             SHOCKLINE = "a2907"

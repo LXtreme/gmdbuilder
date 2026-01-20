@@ -1,6 +1,5 @@
 
-Enum = str
-class ObjProp(Enum):
+class ObjProp(str):
     ID = "a1"
     X = "a2"
     Y = "a3"
@@ -55,7 +54,7 @@ class ObjProp(Enum):
     DONT_BOOST_X = "a509"
     EXTENDED_COLLISION = "a511"
 
-    class Animated(Enum):
+    class Animated(str):
         RANDOMIZE_START = "a106"
         ANIMATION_SPEED = "a107"
         USE_SPEED = "a122"
@@ -65,10 +64,10 @@ class ObjProp(Enum):
         SINGLE_FRAME = "a462"
         OFFSET_ANIM = "a592"
 
-        class Explosion(Enum):
+        class Explosion(str):
             DISABLE_SHINE = "a127"
 
-    class ItemLabel(Enum):
+    class ItemLabel(str):
         ITEM_ID = "a80"
         SECONDS_ONLY = "a389"
         SPECIAL_ID = "a390"
@@ -76,7 +75,7 @@ class ObjProp(Enum):
         TIME_COUNTER = "a466"
         KERNING = "a488"
 
-    class Level(Enum):
+    class Level(str):
         AUDIO_TRACK = 'kA1'
         GAMEMODE = 'kA2'
         MINI_MODE = 'kA3'
@@ -120,40 +119,40 @@ class ObjProp(Enum):
         COLORS = 'kS38'
         COLOR_PAGE = 'kS39'
 
-        class Color17(Enum):
+        class Color17(str):
             pass
 
-            class Background(Enum):
+            class Background(str):
                 RED = 'kS1'
                 GREEN = 'kS2'
                 BLUE = 'kS3'
                 PLAYER_COLOR = 'kS16'
 
-            class Ground(Enum):
+            class Ground(str):
                 RED = 'kS4'
                 GREEN = 'kS5'
                 BLUE = 'kS6'
                 PLAYER_COLOR = 'kS17'
 
-            class Line(Enum):
+            class Line(str):
                 RED = 'kS7'
                 GREEN = 'kS8'
                 BLUE = 'kS9'
                 PLAYER_COLOR = 'kS18'
 
-            class Object(Enum):
+            class Object(str):
                 RED = 'kS10'
                 GREEN = 'kS11'
                 BLUE = 'kS12'
                 PLAYER_COLOR = 'kS19'
 
-            class Object2(Enum):
+            class Object2(str):
                 RED = 'kS13'
                 GREEN = 'kS14'
                 BLUE = 'kS15'
                 PLAYER_COLOR = 'kS20'
 
-        class Color19(Enum):
+        class Color19(str):
             BACKGROUND = 'kS29'
             GROUND = 'kS30'
             LINE = 'kS31'
@@ -164,17 +163,17 @@ class ObjProp(Enum):
             COLOR_4 = 'kS36'
             LINE_3D = 'kS37'
 
-    class Particle(Enum):
+    class Particle(str):
         DATA = "a145"
         USE_OBJ_COLOR = "a146"
         UNIFORM_OBJ_COLOR = "a147"
         QUICK_START = "a211"
 
-    class Saw(Enum):
+    class Saw(str):
         ROTATION_SPEED = "a97"
         DISABLE_ROTATION = "a98"
 
-    class StartPos(Enum):
+    class StartPos(str):
         TARGET_ORDER = 'kA19'
         REVERSE_MODE = 'kA20'
         DISABLE = 'kA21'
@@ -203,17 +202,17 @@ class ObjProp(Enum):
         DECREASE_BOOST_SLIDE = 'kA45'
         SONG_DONT_RESET = 'kA46'
 
-    class Template(Enum):
+    class Template(str):
         REFERENCE_ONLY = "a157"
 
-    class Text(Enum):
+    class Text(str):
         DATA = "a31"
         KERNING = "a488"
 
-    class Timewarp(Enum):
+    class Timewarp(str):
         MOD = "a120"
 
-    class Trigger(Enum):
+    class Trigger(str):
         TOUCH_TRIGGER = "a11"
         EDITOR_PREVIEW = "a13"
         INTERACTIBLE = "a36"
@@ -230,7 +229,7 @@ class ObjProp(Enum):
         DISABLE_MULTI_ACTIVATE = "a444"
         CONTROL_ID = "a534"
 
-        class AdvFollow(Enum):
+        class AdvFollow(str):
             TARGET_ID = "a51"
             FOLLOW_ID = "a71"
             PLAYER_1 = "a138"
@@ -300,20 +299,20 @@ class ObjProp(Enum):
             EXCLUSIVE = "a571"
             INIT = "a572"
 
-        class AdvRandom(Enum):
+        class AdvRandom(str):
             m_56 = "a56"
             TARGETS = "a152"
 
-        class Alpha(Enum):
+        class Alpha(str):
             DURATION = "a10"
             OPACITY = "a35"
             GROUP_ID = "a51"
 
-        class Animate(Enum):
+        class Animate(str):
             TARGET_ID = "a51"
             ANIMATION_ID = "a76"
 
-        class AnimateKeyframe(Enum):
+        class AnimateKeyframe(str):
             TARGET_ID = "a51"
             PARENT_ID = "a71"
             ANIMATION_ID = "a76"
@@ -324,7 +323,7 @@ class ObjProp(Enum):
             POS_Y_MOD = "a545"
             SCALE_Y_MOD = "a546"
 
-        class Arrow(Enum):
+        class Arrow(str):
             DIR_Y_NEG = "a166"
             DIR_X_POS = "a167"
             EDIT_VELOCITY = "a169"
@@ -337,49 +336,49 @@ class ObjProp(Enum):
             OVERRIDE_VELOCITY = "a584"
             DONT_SLIDE = "a585"
 
-        class BgSpeed(Enum):
+        class BgSpeed(str):
             X_MOD = "a143"
             Y_MOD = "a144"
 
-        class Bpm(Enum):
+        class Bpm(str):
             DURATION = "a10"
             BPM = "a498"
             SPEED = "a499"
             DISABLE = "a500"
             BPB = "a501"
 
-        class CameraEdge(Enum):
+        class CameraEdge(str):
             TARGET_ID = "a51"
             DIRECTION = "a164"
 
-        class CameraGuide(Enum):
+        class CameraGuide(str):
             OFFSET_X = "a28"
             OFFSET_Y = "a29"
             ZOOM = "a371"
             PREVIEW_OPACITY = "a506"
 
-        class CameraMode(Enum):
+        class CameraMode(str):
             FREE_MODE = "a111"
             EDIT_SETTINGS = "a112"
             EASING = "a113"
             PADDING = "a114"
 
-        class ChangeBg(Enum):
+        class ChangeBg(str):
             BG_ID = "a533"
 
-        class ChangeGr(Enum):
+        class ChangeGr(str):
             GR_ID = "a533"
 
-        class ChangeMg(Enum):
+        class ChangeMg(str):
             MG_ID = "a533"
 
-        class Checkpoint(Enum):
+        class Checkpoint(str):
             SPAWN_ID = "a51"
             TARGET_POS = "a71"
             PLAYER_POS = "a138"
             RESPAWN_ID = "a448"
 
-        class Collectible(Enum):
+        class Collectible(str):
             GROUP_ID = "a51"
             SUB_COUNT = "a78"
             ITEM_ID = "a80"
@@ -389,10 +388,10 @@ class ObjProp(Enum):
             PARTICLE = "a440"
             NO_ANIM = "a463"
 
-            class Coin(Enum):
+            class Coin(str):
                 COIN_ID = "a12"
 
-        class Collision(Enum):
+        class Collision(str):
             m_10 = "a10"
             TARGET_ID = "a51"
             ACTIVATE_GROUP = "a56"
@@ -403,11 +402,11 @@ class ObjProp(Enum):
             PLAYER_2 = "a200"
             BETWEEN_PLAYERS = "a201"
 
-        class CollisionBlock(Enum):
+        class CollisionBlock(str):
             BLOCK_ID = "a80"
             DYNAMIC = "a94"
 
-        class Color(Enum):
+        class Color(str):
             RED = "a7"
             GREEN = "a8"
             BLUE = "a9"
@@ -423,21 +422,21 @@ class ObjProp(Enum):
             COPY_OPACITY = "a60"
             DISABLE_LEGACY_HSV = "a210"
 
-        class Count(Enum):
+        class Count(str):
             TARGET_ID = "a51"
             ACTIVATE_GROUP = "a56"
             COUNT = "a77"
             ITEM_ID = "a80"
             MULTI_ACTIVATE = "a104"
 
-        class Dash(Enum):
+        class Dash(str):
             SPEED = "a586"
             COLLIDE = "a587"
             END_BOOST = "a588"
             STOP_SLIDE = "a589"
             MAX_DURATION = "a590"
 
-        class EditAdvFollow(Enum):
+        class EditAdvFollow(str):
             TARGET_ID = "a51"
             FOLLOW_ID = "a71"
             PLAYER_1 = "a138"
@@ -513,7 +512,7 @@ class ObjProp(Enum):
             M_571 = "a571"
             M_572 = "a572"
 
-        class Effect(Enum):
+        class Effect(str):
             DURATION = "a10"
             HSV = "a49"
             TARGET_ID = "a51"
@@ -572,37 +571,37 @@ class ObjProp(Enum):
             SPECIAL_CENTER = "a538"
             DEAP = "a539"
 
-        class End(Enum):
+        class End(str):
             SPAWN_ID = "a51"
             TARGET_POS = "a71"
             NO_EFFECTS = "a460"
             NO_SFX = "a461"
             INSTANT = "a487"
 
-        class EndWall(Enum):
+        class EndWall(str):
             GROUP_ID = "a51"
             LOCK_Y = "a59"
             REVERSE = "a118"
 
-        class EnterPreset(Enum):
+        class EnterPreset(str):
             ENTER_ONLY = "a217"
             ENTER_CHANNEL = "a344"
 
-        class Event(Enum):
+        class Event(str):
             SPAWN_ID = "a51"
             EVENTS = "a430"
             M_431 = "a431"
             EXTRA_ID_1 = "a447"
             EXTRA_ID_2 = "a525"
 
-        class Follow(Enum):
+        class Follow(str):
             DURATION = "a10"
             TARGET_ID = "a51"
             FOLLOW_TARGET = "a71"
             MOD_X = "a72"
             MOD_Y = "a73"
 
-        class FollowPlayerY(Enum):
+        class FollowPlayerY(str):
             DURATION = "a10"
             TARGET_ID = "a51"
             SPEED = "a90"
@@ -610,7 +609,7 @@ class ObjProp(Enum):
             OFFSET = "a92"
             MAX_SPEED = "a105"
 
-        class ForceBlock(Enum):
+        class ForceBlock(str):
             VALUE = "a149"
             VALUE_MIN = "a526"
             VALUE_MAX = "a527"
@@ -618,19 +617,19 @@ class ObjProp(Enum):
             RANGE = "a529"
             FORCE_ID = "a530"
 
-        class GamemodePortal(Enum):
+        class GamemodePortal(str):
             FREE_MODE = "a111"
             EDIT_SETTINGS = "a112"
             EASING = "a113"
             PADDING = "a114"
 
-        class GameplayOffset(Enum):
+        class GameplayOffset(str):
             OFFSET_X = "a28"
             OFFSET_Y = "a29"
             DONT_ZOOM_X = "a58"
             DONT_ZOOM_Y = "a59"
 
-        class Gradient(Enum):
+        class Gradient(str):
             BLENDING = "a174"
             LAYER = "a202"
             U = "a203"
@@ -647,13 +646,13 @@ class ObjProp(Enum):
             PREVIEW_OPACITY = "a456"
             DISABLE_ALL = "a508"
 
-        class Gravity(Enum):
+        class Gravity(str):
             PLAYER_1 = "a138"
             VALUE = "a148"
             PLAYER_2 = "a200"
             PLAYER_TOUCH = "a201"
 
-        class InstantCollision(Enum):
+        class InstantCollision(str):
             TRUE_ID = "a51"
             FALSE_ID = "a71"
             BLOCK_A = "a80"
@@ -662,14 +661,14 @@ class ObjProp(Enum):
             PLAYER_2 = "a200"
             BETWEEN_PLAYERS = "a201"
 
-        class InstantCount(Enum):
+        class InstantCount(str):
             TARGET_ID = "a51"
             ACTIVATE_GROUP = "a56"
             COUNT = "a77"
             ITEM_ID = "a80"
             MODE = "a88"
 
-        class ItemCompare(Enum):
+        class ItemCompare(str):
             TRUE_ID = "a51"
             FALSE_ID = "a71"
             ITEM_ID_1 = "a80"
@@ -687,7 +686,7 @@ class ObjProp(Enum):
             SIGN_OP_1 = "a578"
             SIGN_OP_2 = "a579"
 
-        class ItemEdit(Enum):
+        class ItemEdit(str):
             TARGET_ITEM_ID = "a51"
             ITEM_ID_1 = "a80"
             ITEM_ID_2 = "a95"
@@ -703,14 +702,14 @@ class ObjProp(Enum):
             SIGN_OP_1 = "a578"
             SIGN_OP_2 = "a579"
 
-        class ItemPersist(Enum):
+        class ItemPersist(str):
             ITEM_ID = "a80"
             SET_PERSISTENT = "a491"
             TARGET_ALL = "a492"
             RESET = "a493"
             TIMER = "a494"
 
-        class Keyframe(Enum):
+        class Keyframe(str):
             DURATION = "a10"
             EASING = "a30"
             GROUP_ID = "a51"
@@ -730,20 +729,20 @@ class ObjProp(Enum):
             FULL_ROTATIONS = "a537"
             SPAWN_DELAY = "a557"
 
-        class LinkVisible(Enum):
+        class LinkVisible(str):
             GROUP_ID = "a51"
 
-        class MgEdit(Enum):
+        class MgEdit(str):
             DURATION = "a10"
             OFFSET_Y = "a29"
             EASING = "a30"
             EASE_RATE = "a85"
 
-        class MgSpeed(Enum):
+        class MgSpeed(str):
             X_MOD = "a143"
             Y_MOD = "a144"
 
-        class Move(Enum):
+        class Move(str):
             DURATION = "a10"
             MOVE_X = "a28"
             MOVE_Y = "a29"
@@ -772,24 +771,24 @@ class ObjProp(Enum):
             M_519 = "a519"
             SILENT = "a544"
 
-        class ObjectControl(Enum):
+        class ObjectControl(str):
             TARGET_ID = "a51"
 
-        class OffsetCamera(Enum):
+        class OffsetCamera(str):
             OFFSET_X = "a28"
             OFFSET_Y = "a29"
             EASING = "a30"
             EASE_RATE = "a85"
             AXIS = "a101"
 
-        class OffsetGameplay(Enum):
+        class OffsetGameplay(str):
             AXIS = "a101"
 
-        class OnDeath(Enum):
+        class OnDeath(str):
             GROUP_ID = "a51"
             ACTIVATE_GROUP = "a56"
 
-        class Options(Enum):
+        class Options(str):
             STREAK_ADDITIVE = "a159"
             UNLINK_DUAL_GRAVITY = "a160"
             HIDE_GROUND = "a161"
@@ -805,18 +804,18 @@ class ObjProp(Enum):
             DISABLE_DEATH_SFX = "a576"
             BOOST_SLIDE = "a593"
 
-        class OrbSaw(Enum):
+        class OrbSaw(str):
             ROTATION_SPEED = "a97"
             DISABLE_ROTATION = "a98"
 
-        class Pickup(Enum):
+        class Pickup(str):
             COUNT = "a77"
             ITEM_ID = "a80"
             MODE = "a88"
             OVERRIDE = "a139"
             MOD = "a449"
 
-        class PlayerControl(Enum):
+        class PlayerControl(str):
             m_58 = "a58"
             m_59 = "a59"
             PLAYER_1 = "a138"
@@ -827,7 +826,7 @@ class ObjProp(Enum):
             STOP_ROTATION = "a542"
             STOP_SLIDE = "a543"
 
-        class Pulse(Enum):
+        class Pulse(str):
             RED = "a7"
             GREEN = "a8"
             BLUE = "a9"
@@ -844,15 +843,15 @@ class ObjProp(Enum):
             EXCLUSIVE = "a86"
             DISABLE_STATIC_HSV = "a210"
 
-        class Random(Enum):
+        class Random(str):
             CHANCE = "a10"
             TRUE_ID = "a51"
             FALSE_ID = "a71"
 
-        class Reset(Enum):
+        class Reset(str):
             GROUP_ID = "a51"
 
-        class Rotate(Enum):
+        class Rotate(str):
             DURATION = "a10"
             EASING = "a30"
             TARGET_ID = "a51"
@@ -874,7 +873,7 @@ class ObjProp(Enum):
             MAX_X_ID = "a518"
             MAX_Y_ID = "a519"
 
-        class RotateCamera(Enum):
+        class RotateCamera(str):
             DURATION = "a10"
             EASING = "a30"
             DEGREES = "a68"
@@ -882,7 +881,7 @@ class ObjProp(Enum):
             EASE_RATE = "a85"
             SNAP_360 = "a394"
 
-        class Scale(Enum):
+        class Scale(str):
             DURATION = "a10"
             EASING = "a30"
             TARGET_ID = "a51"
@@ -896,7 +895,7 @@ class ObjProp(Enum):
             RELATIVE_ROTATION = "a452"
             RELATIVE_SCALE = "a577"
 
-        class Sequence(Enum):
+        class Sequence(str):
             SEQUENCE = "a435"
             MODE = "a436"
             MIN_INTERVAL = "a437"
@@ -904,7 +903,7 @@ class ObjProp(Enum):
             RESET_TYPE = "a439"
             UNIQUE_REMAP = "a505"
 
-        class Sfx(Enum):
+        class Sfx(str):
             DURATION = "a10"
             GROUP_ID_1 = "a51"
             GROUP_ID_2 = "a71"
@@ -949,7 +948,7 @@ class ObjProp(Enum):
             VOLUME_RAND = "a598"
             PITCH_STEPS = "a599"
 
-        class Shader(Enum):
+        class Shader(str):
             FADE_TIME = "a10"
             EASING = "a30"
             SHOCKWAVE_CENTER_ID = "a51"
@@ -1107,12 +1106,12 @@ class ObjProp(Enum):
             MOTION_BLUR_EMPTY_ONLY = "a515"
             DISABLE_PREVIEW = "a531"
 
-        class Shake(Enum):
+        class Shake(str):
             DURATION = "a10"
             STRENGTH = "a75"
             INTERVAL = "a84"
 
-        class Song(Enum):
+        class Song(str):
             DURATION = "a10"
             GROUP_ID_1 = "a51"
             GROUP_ID_2 = "a71"
@@ -1160,7 +1159,7 @@ class ObjProp(Enum):
             M_598 = "a598"
             M_599 = "a599"
 
-        class Spawn(Enum):
+        class Spawn(str):
             GROUP_ID = "a51"
             DELAY = "a63"
             DISABLE_PREVIEW = "a102"
@@ -1169,7 +1168,7 @@ class ObjProp(Enum):
             DELAY_RAND = "a556"
             RESET_REMAP = "a581"
 
-        class SpawnParticle(Enum):
+        class SpawnParticle(str):
             PARTICLE_GROUP = "a51"
             POSITION_GROUP = "a71"
             OFFSET_X = "a547"
@@ -1182,11 +1181,11 @@ class ObjProp(Enum):
             SCALE = "a554"
             SCALE_RAND = "a555"
 
-        class StateBlock(Enum):
+        class StateBlock(str):
             STATE_ON = "a51"
             STATE_OFF = "a71"
 
-        class StaticCamera(Enum):
+        class StaticCamera(str):
             DURATION = "a10"
             EASING = "a30"
             TARGET_ID = "a71"
@@ -1199,12 +1198,12 @@ class ObjProp(Enum):
             VELOCITY_MOD = "a454"
             EXIT_INSTANT = "a465"
 
-        class Stop(Enum):
+        class Stop(str):
             TARGET_ID = "a51"
             USE_CONTROL_ID = "a535"
             MODE = "a580"
 
-        class Teleport(Enum):
+        class Teleport(str):
             TARGET_ID = "a51"
             SMOOTH_EASE = "a55"
             USE_FORCE = "a345"
@@ -1222,13 +1221,13 @@ class ObjProp(Enum):
             SNAP_GROUND = "a510"
             REDIRECT_DASH = "a591"
 
-            class ExitPortal(Enum):
+            class ExitPortal(str):
                 M_350 = "a350"
 
-            class Portal(Enum):
+            class Portal(str):
                 DISTANCE = "a54"
 
-        class Time(Enum):
+        class Time(str):
             TARGET_ID = "a51"
             ITEM_ID = "a80"
             START_TIME = "a467"
@@ -1238,34 +1237,34 @@ class ObjProp(Enum):
             START_PAUSED = "a471"
             STOP = "a474"
 
-        class TimeControl(Enum):
+        class TimeControl(str):
             ITEM_ID = "a80"
             STOP = "a472"
 
-        class TimeEvent(Enum):
+        class TimeEvent(str):
             TARGET_ID = "a51"
             ITEM_ID = "a80"
             TARGET_TIME = "a473"
             MULTI_ACTIVATE = "a475"
 
-        class Toggle(Enum):
+        class Toggle(str):
             GROUP_ID = "a51"
             ACTIVATE_GROUP = "a56"
 
-        class ToggleBlock(Enum):
+        class ToggleBlock(str):
             GROUP_ID = "a51"
             ACTIVATE_GROUP = "a56"
             CLAIM_TOUCH = "a445"
             SPAWN_ONLY = "a504"
 
-        class Touch(Enum):
+        class Touch(str):
             GROUP_ID = "a51"
             HOLD_MODE = "a81"
             TOGGLE_MODE = "a82"
             DUAL_MODE = "a89"
             ONLY_PLAYER = "a198"
 
-        class Ui(Enum):
+        class Ui(str):
             GROUP_ID = "a51"
             UI_TARGET = "a71"
             REF_X = "a385"
@@ -1273,7 +1272,7 @@ class ObjProp(Enum):
             RELATIVE_X = "a387"
             RELATIVE_Y = "a388"
 
-        class ZoomCamera(Enum):
+        class ZoomCamera(str):
             DURATION = "a10"
             EASING = "a30"
             EASE_RATE = "a85"
