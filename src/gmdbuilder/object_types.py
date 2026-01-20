@@ -34,7 +34,7 @@ GROUP_FIELDS = {
 # ======================================================================
 # Start
 
-class Object(TypedDict, total=False):
+class ObjectTypeType(TypedDict, total=False):
     a1: Required[int]  # ID
     a2: float  # X
     a3: float  # Y
@@ -89,7 +89,7 @@ class Object(TypedDict, total=False):
     a509: bool  # DONT_BOOST_X
     a511: bool  # EXTENDED_COLLISION
 
-class Animated(Object, total=False):
+class AnimatedType(ObjectTypeType, total=False):
     a106: bool  # RANDOMIZE_START
     a107: float  # ANIMATION_SPEED
     a122: bool  # USE_SPEED
@@ -99,10 +99,10 @@ class Animated(Object, total=False):
     a462: int  # SINGLE_FRAME
     a592: bool  # OFFSET_ANIM
 
-class Explosion(Animated, total=False):
+class ExplosionType(AnimatedType, total=False):
     a127: Required[bool]  # DISABLE_SHINE
 
-class ItemLabel(Object, total=False):
+class ItemLabelType(ObjectTypeType, total=False):
     a80: int  # ITEM_ID
     a389: bool  # SECONDS_ONLY
     a390: Any  # SPECIAL_ID
@@ -110,51 +110,51 @@ class ItemLabel(Object, total=False):
     a466: bool  # TIME_COUNTER
     a488: int  # KERNING
 
-class Level(Object, total=False):
+class LevelType(ObjectTypeType, total=False):
     pass
 
-class Color17(Level, total=False):
+class Color17Type(LevelType, total=False):
     pass
 
-class Background(Color17, total=False):
+class BackgroundType(Color17Type, total=False):
     pass
 
-class Ground(Color17, total=False):
+class GroundType(Color17Type, total=False):
     pass
 
-class Line(Color17, total=False):
+class LineType(Color17Type, total=False):
     pass
 
-class Object2(Color17, total=False):
+class Object2Type(Color17Type, total=False):
     pass
 
-class Color19(Level, total=False):
+class Color19Type(LevelType, total=False):
     pass
 
-class Particle(Object, total=False):
+class ParticleType(ObjectTypeType, total=False):
     a145: Any  # DATA
     a146: bool  # USE_OBJ_COLOR
     a147: bool  # UNIFORM_OBJ_COLOR
     a211: bool  # QUICK_START
 
-class Saw(Object, total=False):
+class SawType(ObjectTypeType, total=False):
     a97: int  # ROTATION_SPEED
     a98: bool  # DISABLE_ROTATION
 
-class StartPos(Object, total=False):
+class StartPosType(ObjectTypeType, total=False):
     pass
 
-class Template(Object, total=False):
+class TemplateType(ObjectTypeType, total=False):
     a157: bool  # REFERENCE_ONLY
 
-class Text(Object, total=False):
+class TextType(ObjectTypeType, total=False):
     a31: Any  # DATA
     a488: int  # KERNING
 
-class Timewarp(Object, total=False):
+class TimewarpType(ObjectTypeType, total=False):
     a120: float  # MOD
 
-class Trigger(Object, total=False):
+class TriggerType(ObjectTypeType, total=False):
     a11: bool  # TOUCH_TRIGGER
     a13: bool  # EDITOR_PREVIEW
     a36: bool  # INTERACTIBLE
@@ -171,7 +171,7 @@ class Trigger(Object, total=False):
     a444: bool  # DISABLE_MULTI_ACTIVATE
     a534: Any  # CONTROL_ID
 
-class AdvFollow(Trigger, total=False):
+class AdvFollowType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a71: Required[int]  # FOLLOW_ID
     a138: bool  # PLAYER_1
@@ -241,20 +241,20 @@ class AdvFollow(Trigger, total=False):
     a571: bool  # EXCLUSIVE
     a572: Any  # INIT
 
-class AdvRandom(Trigger, total=False):
+class AdvRandomType(TriggerType, total=False):
     a56: bool  # m_56
     a152: Any  # TARGETS
 
-class Alpha(Trigger, total=False):
+class AlphaType(TriggerType, total=False):
     a10: float  # DURATION
     a35: Required[float]  # OPACITY
     a51: Required[int]  # GROUP_ID
 
-class Animate(Trigger, total=False):
+class AnimateType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a76: Required[int]  # ANIMATION_ID
 
-class AnimateKeyframe(Trigger, total=False):
+class AnimateKeyframeType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a71: int  # PARENT_ID
     a76: int  # ANIMATION_ID
@@ -265,7 +265,7 @@ class AnimateKeyframe(Trigger, total=False):
     a545: float  # POS_Y_MOD
     a546: float  # SCALE_Y_MOD
 
-class Arrow(Trigger, total=False):
+class ArrowType(TriggerType, total=False):
     a166: Any  # DIR_Y_NEG
     a167: Any  # DIR_X_POS
     a169: bool  # EDIT_VELOCITY
@@ -278,49 +278,49 @@ class Arrow(Trigger, total=False):
     a584: bool  # OVERRIDE_VELOCITY
     a585: bool  # DONT_SLIDE
 
-class BgSpeed(Trigger, total=False):
+class BgSpeedType(TriggerType, total=False):
     a143: float  # X_MOD
     a144: float  # Y_MOD
 
-class Bpm(Trigger, total=False):
+class BpmType(TriggerType, total=False):
     a10: float  # DURATION
     a498: int  # BPM
     a499: Any  # SPEED
     a500: bool  # DISABLE
     a501: int  # BPB
 
-class CameraEdge(Trigger, total=False):
+class CameraEdgeType(TriggerType, total=False):
     a51: int  # TARGET_ID
     a164: Any  # DIRECTION
 
-class CameraGuide(Trigger, total=False):
+class CameraGuideType(TriggerType, total=False):
     a28: int  # OFFSET_X
     a29: int  # OFFSET_Y
     a371: float  # ZOOM
     a506: float  # PREVIEW_OPACITY
 
-class CameraMode(Trigger, total=False):
+class CameraModeType(TriggerType, total=False):
     a111: bool  # FREE_MODE
     a112: bool  # EDIT_SETTINGS
     a113: int  # EASING
     a114: float  # PADDING
 
-class ChangeBg(Trigger, total=False):
+class ChangeBgType(TriggerType, total=False):
     a533: Any  # BG_ID
 
-class ChangeGr(Trigger, total=False):
+class ChangeGrType(TriggerType, total=False):
     a533: Any  # GR_ID
 
-class ChangeMg(Trigger, total=False):
+class ChangeMgType(TriggerType, total=False):
     a533: Any  # MG_ID
 
-class Checkpoint(Trigger, total=False):
+class CheckpointType(TriggerType, total=False):
     a51: int  # SPAWN_ID
     a71: int  # TARGET_POS
     a138: bool  # PLAYER_POS
     a448: Any  # RESPAWN_ID
 
-class Collectible(Trigger, total=False):
+class CollectibleType(TriggerType, total=False):
     a51: int  # GROUP_ID
     a78: bool  # SUB_COUNT
     a80: int  # ITEM_ID
@@ -330,10 +330,10 @@ class Collectible(Trigger, total=False):
     a440: int  # PARTICLE
     a463: bool  # NO_ANIM
 
-class Coin(Collectible, total=False):
+class CoinType(CollectibleType, total=False):
     a12: int  # COIN_ID
 
-class Collision(Trigger, total=False):
+class CollisionType(TriggerType, total=False):
     a10: float  # m_10
     a51: Required[int]  # TARGET_ID
     a56: bool  # ACTIVATE_GROUP
@@ -344,11 +344,11 @@ class Collision(Trigger, total=False):
     a200: bool  # PLAYER_2
     a201: bool  # BETWEEN_PLAYERS
 
-class CollisionBlock(Trigger, total=False):
+class CollisionBlockType(TriggerType, total=False):
     a80: int  # BLOCK_ID
     a94: bool  # DYNAMIC
 
-class Color(Trigger, total=False):
+class ColorType(TriggerType, total=False):
     a7: int  # RED
     a8: int  # GREEN
     a9: int  # BLUE
@@ -364,21 +364,21 @@ class Color(Trigger, total=False):
     a60: bool  # COPY_OPACITY
     a210: bool  # DISABLE_LEGACY_HSV
 
-class Count(Trigger, total=False):
+class CountType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a56: bool  # ACTIVATE_GROUP
     a77: int  # COUNT
     a80: int  # ITEM_ID
     a104: bool  # MULTI_ACTIVATE
 
-class Dash(Trigger, total=False):
+class DashType(TriggerType, total=False):
     a586: float  # SPEED
     a587: bool  # COLLIDE
     a588: float  # END_BOOST
     a589: bool  # STOP_SLIDE
     a590: float  # MAX_DURATION
 
-class EditAdvFollow(Trigger, total=False):
+class EditAdvFollowType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a71: int  # FOLLOW_ID
     a138: bool  # PLAYER_1
@@ -454,7 +454,7 @@ class EditAdvFollow(Trigger, total=False):
     a571: bool  # M_571
     a572: Any  # M_572
 
-class Effect(Trigger, total=False):
+class EffectType(TriggerType, total=False):
     a10: float  # DURATION
     a49: Any  # HSV
     a51: Required[int]  # TARGET_ID
@@ -513,37 +513,37 @@ class Effect(Trigger, total=False):
     a538: Any  # SPECIAL_CENTER
     a539: bool  # DEAP
 
-class End(Trigger, total=False):
+class EndType(TriggerType, total=False):
     a51: int  # SPAWN_ID
     a71: int  # TARGET_POS
     a460: bool  # NO_EFFECTS
     a461: bool  # NO_SFX
     a487: bool  # INSTANT
 
-class EndWall(Trigger, total=False):
+class EndWallType(TriggerType, total=False):
     a51: int  # GROUP_ID
     a59: bool  # LOCK_Y
     a118: bool  # REVERSE
 
-class EnterPreset(Trigger, total=False):
+class EnterPresetType(TriggerType, total=False):
     a217: Any  # ENTER_ONLY
     a344: int  # ENTER_CHANNEL
 
-class Event(Trigger, total=False):
+class EventType(TriggerType, total=False):
     a51: int  # SPAWN_ID
     a430: Any  # EVENTS
     a431: Any  # M_431
     a447: int  # EXTRA_ID_1
     a525: int  # EXTRA_ID_2
 
-class Follow(Trigger, total=False):
+class FollowType(TriggerType, total=False):
     a10: float  # DURATION
     a51: Required[int]  # TARGET_ID
     a71: int  # FOLLOW_TARGET
     a72: float  # MOD_X
     a73: float  # MOD_Y
 
-class FollowPlayerY(Trigger, total=False):
+class FollowPlayerYType(TriggerType, total=False):
     a10: float  # DURATION
     a51: Required[int]  # TARGET_ID
     a90: float  # SPEED
@@ -551,7 +551,7 @@ class FollowPlayerY(Trigger, total=False):
     a92: int  # OFFSET
     a105: float  # MAX_SPEED
 
-class ForceBlock(Trigger, total=False):
+class ForceBlockType(TriggerType, total=False):
     a149: float  # VALUE
     a526: float  # VALUE_MIN
     a527: float  # VALUE_MAX
@@ -559,19 +559,19 @@ class ForceBlock(Trigger, total=False):
     a529: bool  # RANGE
     a530: Any  # FORCE_ID
 
-class GamemodePortal(Trigger, total=False):
+class GamemodePortalType(TriggerType, total=False):
     a111: bool  # FREE_MODE
     a112: bool  # EDIT_SETTINGS
     a113: int  # EASING
     a114: float  # PADDING
 
-class GameplayOffset(Trigger, total=False):
+class GameplayOffsetType(TriggerType, total=False):
     a28: int  # OFFSET_X
     a29: int  # OFFSET_Y
     a58: bool  # DONT_ZOOM_X
     a59: bool  # DONT_ZOOM_Y
 
-class Gradient(Trigger, total=False):
+class GradientType(TriggerType, total=False):
     a174: Any  # BLENDING
     a202: Any  # LAYER
     a203: int  # U (ALIASES: BL)
@@ -584,13 +584,13 @@ class Gradient(Trigger, total=False):
     a456: float  # PREVIEW_OPACITY
     a508: bool  # DISABLE_ALL
 
-class Gravity(Trigger, total=False):
+class GravityType(TriggerType, total=False):
     a138: bool  # PLAYER_1
     a148: float  # VALUE
     a200: bool  # PLAYER_2
     a201: bool  # PLAYER_TOUCH
 
-class InstantCollision(Trigger, total=False):
+class InstantCollisionType(TriggerType, total=False):
     a51: int  # TRUE_ID
     a71: int  # FALSE_ID
     a80: int  # BLOCK_A
@@ -599,14 +599,14 @@ class InstantCollision(Trigger, total=False):
     a200: bool  # PLAYER_2
     a201: bool  # BETWEEN_PLAYERS
 
-class InstantCount(Trigger, total=False):
+class InstantCountType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a56: bool  # ACTIVATE_GROUP
     a77: int  # COUNT
     a80: int  # ITEM_ID
     a88: Any  # MODE
 
-class ItemCompare(Trigger, total=False):
+class ItemCompareType(TriggerType, total=False):
     a51: int  # TRUE_ID
     a71: int  # FALSE_ID
     a80: int  # ITEM_ID_1
@@ -624,7 +624,7 @@ class ItemCompare(Trigger, total=False):
     a578: Any  # SIGN_OP_1
     a579: Any  # SIGN_OP_2
 
-class ItemEdit(Trigger, total=False):
+class ItemEditType(TriggerType, total=False):
     a51: int  # TARGET_ITEM_ID
     a80: int  # ITEM_ID_1
     a95: Any  # ITEM_ID_2
@@ -640,14 +640,14 @@ class ItemEdit(Trigger, total=False):
     a578: Any  # SIGN_OP_1
     a579: Any  # SIGN_OP_2
 
-class ItemPersist(Trigger, total=False):
+class ItemPersistType(TriggerType, total=False):
     a80: int  # ITEM_ID
     a491: bool  # SET_PERSISTENT
     a492: bool  # TARGET_ALL
     a493: bool  # RESET
     a494: bool  # TIMER
 
-class Keyframe(Trigger, total=False):
+class KeyframeType(TriggerType, total=False):
     a10: float  # DURATION
     a30: Any  # EASING
     a51: int  # GROUP_ID
@@ -667,20 +667,20 @@ class Keyframe(Trigger, total=False):
     a537: int  # FULL_ROTATIONS
     a557: float  # SPAWN_DELAY
 
-class LinkVisible(Trigger, total=False):
+class LinkVisibleType(TriggerType, total=False):
     a51: int  # GROUP_ID
 
-class MgEdit(Trigger, total=False):
+class MgEditType(TriggerType, total=False):
     a10: float  # DURATION
     a29: int  # OFFSET_Y
     a30: Any  # EASING
     a85: float  # EASE_RATE
 
-class MgSpeed(Trigger, total=False):
+class MgSpeedType(TriggerType, total=False):
     a143: float  # X_MOD
     a144: float  # Y_MOD
 
-class Move(Trigger, total=False):
+class MoveType(TriggerType, total=False):
     a10: float  # DURATION
     a28: int  # MOVE_X
     a29: int  # MOVE_Y
@@ -709,24 +709,24 @@ class Move(Trigger, total=False):
     a519: Any  # M_519
     a544: bool  # SILENT
 
-class ObjectControl(Trigger, total=False):
+class ObjectControlType(TriggerType, total=False):
     a51: int  # TARGET_ID
 
-class OffsetCamera(Trigger, total=False):
+class OffsetCameraType(TriggerType, total=False):
     a28: int  # OFFSET_X
     a29: int  # OFFSET_Y
     a30: Any  # EASING
     a85: float  # EASE_RATE
     a101: Any  # AXIS
 
-class OffsetGameplay(Trigger, total=False):
+class OffsetGameplayType(TriggerType, total=False):
     a101: Any  # AXIS
 
-class OnDeath(Trigger, total=False):
+class OnDeathType(TriggerType, total=False):
     a51: int  # GROUP_ID
     a56: bool  # ACTIVATE_GROUP
 
-class Options(Trigger, total=False):
+class OptionsType(TriggerType, total=False):
     a159: Any  # STREAK_ADDITIVE
     a160: Any  # UNLINK_DUAL_GRAVITY
     a161: Any  # HIDE_GROUND
@@ -742,18 +742,18 @@ class Options(Trigger, total=False):
     a576: Any  # DISABLE_DEATH_SFX
     a593: Any  # BOOST_SLIDE
 
-class OrbSaw(Trigger, total=False):
+class OrbSawType(TriggerType, total=False):
     a97: int  # ROTATION_SPEED
     a98: bool  # DISABLE_ROTATION
 
-class Pickup(Trigger, total=False):
+class PickupType(TriggerType, total=False):
     a77: int  # COUNT
     a80: int  # ITEM_ID
     a88: Any  # MODE
     a139: bool  # OVERRIDE
     a449: float  # MOD
 
-class PlayerControl(Trigger, total=False):
+class PlayerControlType(TriggerType, total=False):
     a58: bool  # m_58
     a59: bool  # m_59
     a138: bool  # PLAYER_1
@@ -764,7 +764,7 @@ class PlayerControl(Trigger, total=False):
     a542: bool  # STOP_ROTATION
     a543: bool  # STOP_SLIDE
 
-class Pulse(Trigger, total=False):
+class PulseType(TriggerType, total=False):
     a7: int  # RED
     a8: int  # GREEN
     a9: int  # BLUE
@@ -781,15 +781,15 @@ class Pulse(Trigger, total=False):
     a86: bool  # EXCLUSIVE
     a210: bool  # DISABLE_STATIC_HSV
 
-class Random(Trigger, total=False):
+class RandomType(TriggerType, total=False):
     a10: float  # CHANCE
     a51: int  # TRUE_ID
     a71: int  # FALSE_ID
 
-class Reset(Trigger, total=False):
+class ResetType(TriggerType, total=False):
     a51: int  # GROUP_ID
 
-class Rotate(Trigger, total=False):
+class RotateType(TriggerType, total=False):
     a10: float  # DURATION
     a30: Any  # EASING
     a51: Required[int]  # TARGET_ID
@@ -811,7 +811,7 @@ class Rotate(Trigger, total=False):
     a518: Any  # MAX_X_ID
     a519: Any  # MAX_Y_ID
 
-class RotateCamera(Trigger, total=False):
+class RotateCameraType(TriggerType, total=False):
     a10: float  # DURATION
     a30: Any  # EASING
     a68: float  # DEGREES
@@ -819,7 +819,7 @@ class RotateCamera(Trigger, total=False):
     a85: float  # EASE_RATE
     a394: bool  # SNAP_360
 
-class Scale(Trigger, total=False):
+class ScaleType(TriggerType, total=False):
     a10: float  # DURATION
     a30: Any  # EASING
     a51: Required[int]  # TARGET_ID
@@ -833,7 +833,7 @@ class Scale(Trigger, total=False):
     a452: bool  # RELATIVE_ROTATION
     a577: bool  # RELATIVE_SCALE
 
-class Sequence(Trigger, total=False):
+class SequenceType(TriggerType, total=False):
     a435: Any  # SEQUENCE
     a436: Any  # MODE
     a437: float  # MIN_INTERVAL
@@ -841,7 +841,7 @@ class Sequence(Trigger, total=False):
     a439: bool  # RESET_TYPE
     a505: bool  # UNIQUE_REMAP
 
-class Sfx(Trigger, total=False):
+class SfxType(TriggerType, total=False):
     a10: float  # DURATION
     a51: int  # GROUP_ID_1
     a71: int  # GROUP_ID_2
@@ -886,7 +886,7 @@ class Sfx(Trigger, total=False):
     a598: int  # VOLUME_RAND
     a599: bool  # PITCH_STEPS
 
-class Shader(Trigger, total=False):
+class ShaderType(TriggerType, total=False):
     a10: float  # FADE_TIME
     a30: Any  # EASING
     a51: int  # SHOCKWAVE_CENTER_ID (ALIASES: SHOCKLINE_CENTER_ID, LENS_CIRCLE_CENTER_ID, RADIAL_BLUR_CENTER_ID, MOTION_BLUR_CENTER_ID, BULGE_CENTER_ID, PINCH_CENTER_ID, GRAY_SCALE_TINT_CHANNEL)
@@ -923,12 +923,12 @@ class Shader(Trigger, total=False):
     a515: bool  # PIXELATE_HARD_EDGES (ALIASES: RADIAL_BLUR_EMPTY_ONLY, MOTION_BLUR_EMPTY_ONLY)
     a531: bool  # DISABLE_PREVIEW
 
-class Shake(Trigger, total=False):
+class ShakeType(TriggerType, total=False):
     a10: float  # DURATION
     a75: float  # STRENGTH
     a84: float  # INTERVAL
 
-class Song(Trigger, total=False):
+class SongType(TriggerType, total=False):
     a10: float  # DURATION
     a51: int  # GROUP_ID_1
     a71: int  # GROUP_ID_2
@@ -976,7 +976,7 @@ class Song(Trigger, total=False):
     a598: int  # M_598
     a599: bool  # M_599
 
-class Spawn(Trigger, total=False):
+class SpawnType(TriggerType, total=False):
     a51: int  # GROUP_ID
     a63: float  # DELAY
     a102: bool  # DISABLE_PREVIEW
@@ -985,7 +985,7 @@ class Spawn(Trigger, total=False):
     a556: float  # DELAY_RAND
     a581: bool  # RESET_REMAP
 
-class SpawnParticle(Trigger, total=False):
+class SpawnParticleType(TriggerType, total=False):
     a51: int  # PARTICLE_GROUP
     a71: int  # POSITION_GROUP
     a547: int  # OFFSET_X
@@ -998,11 +998,11 @@ class SpawnParticle(Trigger, total=False):
     a554: float  # SCALE
     a555: float  # SCALE_RAND
 
-class StateBlock(Trigger, total=False):
+class StateBlockType(TriggerType, total=False):
     a51: int  # STATE_ON
     a71: int  # STATE_OFF
 
-class StaticCamera(Trigger, total=False):
+class StaticCameraType(TriggerType, total=False):
     a10: float  # DURATION
     a30: Any  # EASING
     a71: Required[int]  # TARGET_ID
@@ -1015,12 +1015,12 @@ class StaticCamera(Trigger, total=False):
     a454: float  # VELOCITY_MOD
     a465: bool  # EXIT_INSTANT
 
-class Stop(Trigger, total=False):
+class StopType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a535: bool  # USE_CONTROL_ID
     a580: Any  # MODE
 
-class Teleport(Trigger, total=False):
+class TeleportType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a55: bool  # SMOOTH_EASE
     a345: bool  # USE_FORCE
@@ -1038,13 +1038,13 @@ class Teleport(Trigger, total=False):
     a510: bool  # SNAP_GROUND
     a591: bool  # REDIRECT_DASH
 
-class ExitPortal(Teleport, total=False):
+class ExitPortalType(TeleportType, total=False):
     a350: float  # M_350
 
-class Portal(Teleport, total=False):
+class PortalType(TeleportType, total=False):
     a54: float  # DISTANCE
 
-class Time(Trigger, total=False):
+class TimeType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a80: int  # ITEM_ID
     a467: float  # START_TIME
@@ -1054,34 +1054,34 @@ class Time(Trigger, total=False):
     a471: bool  # START_PAUSED
     a474: bool  # STOP
 
-class TimeControl(Trigger, total=False):
+class TimeControlType(TriggerType, total=False):
     a80: int  # ITEM_ID
     a472: bool  # STOP
 
-class TimeEvent(Trigger, total=False):
+class TimeEventType(TriggerType, total=False):
     a51: Required[int]  # TARGET_ID
     a80: int  # ITEM_ID
     a473: float  # TARGET_TIME
     a475: bool  # MULTI_ACTIVATE
 
-class Toggle(Trigger, total=False):
+class ToggleType(TriggerType, total=False):
     a51: int  # GROUP_ID
     a56: bool  # ACTIVATE_GROUP
 
-class ToggleBlock(Trigger, total=False):
+class ToggleBlockType(TriggerType, total=False):
     a51: int  # GROUP_ID
     a56: bool  # ACTIVATE_GROUP
     a445: bool  # CLAIM_TOUCH
     a504: bool  # SPAWN_ONLY
 
-class Touch(Trigger, total=False):
+class TouchType(TriggerType, total=False):
     a51: int  # GROUP_ID
     a81: bool  # HOLD_MODE
     a82: Any  # TOGGLE_MODE
     a89: bool  # DUAL_MODE
     a198: Any  # ONLY_PLAYER
 
-class Ui(Trigger, total=False):
+class UiType(TriggerType, total=False):
     a51: int  # GROUP_ID
     a71: int  # UI_TARGET
     a385: Any  # REF_X
@@ -1089,7 +1089,7 @@ class Ui(Trigger, total=False):
     a387: bool  # RELATIVE_X
     a388: bool  # RELATIVE_Y
 
-class ZoomCamera(Trigger, total=False):
+class ZoomCameraType(TriggerType, total=False):
     a10: float  # DURATION
     a30: Any  # EASING
     a85: float  # EASE_RATE
