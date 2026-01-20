@@ -2,7 +2,7 @@
 import traceback
 from dataclasses import dataclass
 from typing import Any, Callable
-from src.gmdbuilder.internal_mappings.obj_prop import ObjProp
+from gmdbuilder.internal_mappings.obj_prop import ObjProp
 
 class Settings:
     validate_solid_targets: bool = True
