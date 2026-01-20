@@ -6,11 +6,11 @@ from gmdkit.models.level import Level as KitLevel
 ppt_od = obj_prop.trigger.on_death.ACTIVATE_GROUP
 obj_prop.particle.DATA
 class Level:
-    output_file_path: str | None
+    output_file_path: str | None = None
     output_live_editor: bool = False
     output_save_file: bool = False
     queued_objects: list[Object] = []
-    gmdkit_level: KitLevel
+    gmdkit_level: KitLevel | None = None
     
     @classmethod
     def export_to(cls, *, 
@@ -36,9 +36,9 @@ class Level:
     
     @classmethod
     def export_level(cls):
-        methods = { cls.output_file_path, cls.output_live_editor, cls.output_save_file }
-        
-        if sum(methods) != 1:
+        methods = (cls.output_file_path, cls.output_live_editor, cls.output_save_file)
+        given_option_count = sum(m is not None for m in methods)
+        if given_option_count != 1:
             raise RuntimeError("Choose only one output method, by calling 'Level.export_to' before export")
         
         cls.queued_objects.clear() # reset queue

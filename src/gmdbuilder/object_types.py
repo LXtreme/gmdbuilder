@@ -8,10 +8,10 @@
 from typing import Required, TypedDict, Any
 
 from gmdbuilder.internal_mappings.obj_id import ObjId
+from src.gmdbuilder.internal_mappings.obj_prop import ObjProp
 
-ObjId.Trigger.
 
-spawning_trigger_ids = {
+SPAWNING_TRIGGER_IDS = {
     ObjId.Trigger.SPAWN,
     ObjId.Trigger.TOGGLE,
     ObjId.Trigger.STOP,
@@ -20,7 +20,12 @@ spawning_trigger_ids = {
     ObjId.Trigger.INSTANT_COUNT
 }
 
-
+GROUP_FIELDS = {
+    ObjProp.GROUPS,
+    ObjProp.Trigger.Spawn.GROUP_ID,
+    ObjProp.Trigger.Spawn.REMAPS,
+    ObjProp.Trigger.Move.TARGET_POS
+}
 
 
 # DO NOT EDIT. INSTEAD EDIT TYPEMAP.TSV AND REGENERATE

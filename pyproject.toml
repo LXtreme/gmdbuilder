@@ -26,13 +26,10 @@ where = ["src"]
 
 [tool.basedpyright]
 typeCheckingMode = "standard"
-reportAny = "none" # Allow implicit any types
-reportExplicitAny = "none" # Allow explicit any types
-# Ignore the entire venv directory and external packages
+reportAny = "none"
+reportExplicitAny = "none"
 # ignore = ["**/venv/**", "**/site-packages/**"]
-# Be strict on your own code, but don't complain about untyped external packages
-# reportMissingTypeStubs = "none"
-
+reportMissingTypeStubs = "none"
 
 [tool.ruff.lint]
 ignore = [
