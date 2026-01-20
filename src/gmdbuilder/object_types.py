@@ -34,7 +34,7 @@ GROUP_FIELDS = {
 # ======================================================================
 # Start
 
-class ObjectTypeType(TypedDict, total=False):
+class ObjectType(TypedDict, total=False):
     a1: Required[int]  # ID
     a2: float  # X
     a3: float  # Y
@@ -89,7 +89,7 @@ class ObjectTypeType(TypedDict, total=False):
     a509: bool  # DONT_BOOST_X
     a511: bool  # EXTENDED_COLLISION
 
-class AnimatedType(ObjectTypeType, total=False):
+class AnimatedType(ObjectType, total=False):
     a106: bool  # RANDOMIZE_START
     a107: float  # ANIMATION_SPEED
     a122: bool  # USE_SPEED
@@ -102,7 +102,7 @@ class AnimatedType(ObjectTypeType, total=False):
 class ExplosionType(AnimatedType, total=False):
     a127: Required[bool]  # DISABLE_SHINE
 
-class ItemLabelType(ObjectTypeType, total=False):
+class ItemLabelType(ObjectType, total=False):
     a80: int  # ITEM_ID
     a389: bool  # SECONDS_ONLY
     a390: Any  # SPECIAL_ID
@@ -110,7 +110,7 @@ class ItemLabelType(ObjectTypeType, total=False):
     a466: bool  # TIME_COUNTER
     a488: int  # KERNING
 
-class LevelType(ObjectTypeType, total=False):
+class LevelType(ObjectType, total=False):
     pass
 
 class Color17Type(LevelType, total=False):
@@ -131,30 +131,30 @@ class Object2Type(Color17Type, total=False):
 class Color19Type(LevelType, total=False):
     pass
 
-class ParticleType(ObjectTypeType, total=False):
+class ParticleType(ObjectType, total=False):
     a145: Any  # DATA
     a146: bool  # USE_OBJ_COLOR
     a147: bool  # UNIFORM_OBJ_COLOR
     a211: bool  # QUICK_START
 
-class SawType(ObjectTypeType, total=False):
+class SawType(ObjectType, total=False):
     a97: int  # ROTATION_SPEED
     a98: bool  # DISABLE_ROTATION
 
-class StartPosType(ObjectTypeType, total=False):
+class StartPosType(ObjectType, total=False):
     pass
 
-class TemplateType(ObjectTypeType, total=False):
+class TemplateType(ObjectType, total=False):
     a157: bool  # REFERENCE_ONLY
 
-class TextType(ObjectTypeType, total=False):
+class TextType(ObjectType, total=False):
     a31: Any  # DATA
     a488: int  # KERNING
 
-class TimewarpType(ObjectTypeType, total=False):
+class TimewarpType(ObjectType, total=False):
     a120: float  # MOD
 
-class TriggerType(ObjectTypeType, total=False):
+class TriggerType(ObjectType, total=False):
     a11: bool  # TOUCH_TRIGGER
     a13: bool  # EDITOR_PREVIEW
     a36: bool  # INTERACTIBLE
