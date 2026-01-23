@@ -9,7 +9,7 @@ A type-safe general-purpose Python framework for pragmatic Geometry Dash level e
 gmdbuilder lets you:
 - Read & write Geometry Dash levels
 - Work directly with triggers, groups, and objects - and choose your own type-safe abstractions
-- Choose templates to accelerate development
+- Use templates to accelerate development
 - Choose your own level of type safety
 
 See practical **Examples**!
