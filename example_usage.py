@@ -4,7 +4,7 @@ Simple example showing how to use GMDBuilder's type-safe API.
 This demonstrates the clean user-facing API without any gmdkit knowledge.
 """
 
-from gmdbuilder.object_types import MoveType, ObjectType, TriggerType
+from gmdbuilder.object_types import MoveType
 from gmdbuilder.internal_mappings.obj_prop import ObjProp
 from gmdbuilder.internal_mappings.obj_id import ObjId
 
@@ -15,10 +15,11 @@ from gmdbuilder.core import to_raw_object, from_object_string, new_object, from_
 
 # 2 methods to load the level:
 level.from_file("example.gmd")
-level.from_live_editor()
-level.objects.tag_group = 9999 # default is 9999 anyway
-# new objects get the group at export. to disable that feature, set tag_group to None.
-level.objects.delete_tagged() # delets all with group 9999. 
+
+# level.from_live_editor()
+# level.objects.tag_group = 9999 # default is 9999 anyway
+# # new objects get the group at export. to disable that feature, set tag_group to None.
+# level.objects.delete_tagged() # delets all with group 9999. 
 # same as level.objects.delete_where({ObjProp.GROUPS: 9999})
 
 # globally sets all validations to True. users will prob barely touch these ever so its a project global
@@ -28,11 +29,6 @@ validation.property_range_check = True # no change, already true by default
 
 
 all_objects = level.objects # can be mutated any way, but changes are intercepted and validated first
-patch = {ObjProp.X: 0} # {1: 0} also allowed but not recommended.
-
-for obj in all_objects:
-    if obj.get(ObjProp.ID) == 1:
-        level.objects.update(obj, patch)   # validates patch + applies + marks for deferred checks
 
 for obj in all_objects:
     if obj[ObjProp.ID] == ObjId.Trigger.MOVE:
@@ -50,31 +46,31 @@ obj[ObjProp.X] = 0
 obj[ObjProp.Y] = 0
 
 # Add a block
-block: MoveType = new_object(1) # 'a<int>' dicts, returns ObjectType. new_object returns default props of obj_id 1
-block[ObjProp.X] = 100
-block[ObjProp.Trigger.Move.DURATION] = 5
-level.objects.extend([block, obj]) # validates on two stages; immediate and at export.
+movetrig: MoveType = new_object(901) # 'a<int>' dicts, returns ObjectType. new_object returns default props of obj_id 1
+movetrig[ObjProp.X] = 100
+movetrig[ObjProp.Trigger.Move.DURATION] = 5
+level.objects.extend([movetrig, obj]) # validates on two stages; immediate and at export.
 
-from gmdbuilder.template import TriggerTemplate
+# from gmdbuilder.template import TriggerTemplate
 
-def my_custom_move(time, target, distance):
-    level.objects.append(TriggerTemplate.move(x=0, y=0, 
-        target=target, time=time, distance=distance, easing=0, easing_rates=0))
-# or
-def my_custom_move2(time, target, distance):
-    return TriggerTemplate.move(x=0, y=0, 
-        target=target, time=time, distance=distance, easing=0, easing_rates=0)
-# or
-def my_custom_move3(time, target, distance):
-    with template.autoadd_mode():
-        TriggerTemplate.move(x=0, y=0, 
-            target=target, time=time, distance=distance, easing=0, easing_rates=0)
+# def my_custom_move(time, target, distance):
+#     level.objects.append(TriggerTemplate.move(x=0, y=0, 
+#         target=target, time=time, distance=distance, easing=0, easing_rates=0))
+# # or
+# def my_custom_move2(time, target, distance):
+#     return TriggerTemplate.move(x=0, y=0, 
+#         target=target, time=time, distance=distance, easing=0, easing_rates=0)
+# # or
+# def my_custom_move3(time, target, distance):
+#     with template.autoadd_mode():
+#         TriggerTemplate.move(x=0, y=0, 
+#             target=target, time=time, distance=distance, easing=0, easing_rates=0)
 
-my_custom_move(1.0, 12, 50)
+# my_custom_move(1.0, 12, 50)
 
-level.objects.append(my_custom_move2(1,4,30))
+# level.objects.append(my_custom_move2(1,4,30))
 
 # Choose 
 level.export("example_updated.gmd") # adds all objects from level.objects. If not given and in file mode, ask to overwrite the file taken from the 'from_file' call
-level.export() # for live_editor, adds all object in queue and clears queue.
+# level.export() # for live_editor, adds all object in queue and clears queue.
 

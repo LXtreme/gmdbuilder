@@ -1,40 +1,4 @@
 
-
-
-# =================
-# with live editor:
-# =================
-
-from gmdkit.extra.live_editor import LiveEditor
-from gmdkit.models.object import Object, ObjectList
-
-editor = LiveEditor()
-editor.connect()
-
-# READ - Get all objects as int-dict Objects
-obj_string = editor.get_level_string()
-objects = obj_string.objects  # ObjectList of Object (dict[int, Any])
-
-# Work with int-dict form
-for obj in objects:
-    print(obj)  # {1: 1, 2: 50, 3: 45, ...}
-    print(obj[2])  # Access X position
-    
-# CREATE - Add new objects
-new_obj = Object.default(1)
-new_obj[2] = 100  # X
-new_obj[3] = 200  # Y
-editor.add_objects(ObjectList([new_obj]))
-
-# DELETE - Only by group ID (limitation!)
-editor.remove_object_group(9999)
-
-# UPDATE - NOT SUPPORTED (you'd need to delete + re-add)
-# DELETE specific - NOT SUPPORTED
-
-editor.close()
-
-
 # =================
 # with .gmd file:
 # =================

@@ -11,7 +11,54 @@ Validator = Callable[[list["ObjectType"], list["ObjectType"]], None]
 
 class ObjectList(list["ObjectType"]):
     """A list of ObjectType dictionaries w/ validated dunders for all setters"""
-    pass
+    
+    def delete(self, obj: "ObjectType") -> None:
+        """
+        Delete exact matching object from list.
+        
+        Raises error if at least 1 exact match is not found.
+        """
+        try:
+            self.remove(obj)
+        except ValueError:
+            raise RuntimeError(f"Object not found in ObjectList: {obj}")
+    
+    def delete_where(
+        self,
+        condition: "ObjectType" | dict[str, Any] | Callable[["ObjectType"], bool],
+        limit: int | None = None
+    ) -> int:
+        """
+        Delete objects matching a condition.
+        
+        limit: Optional maximum number of objects to delete
+        
+        Returns: number of deleted items
+        """
+        deleted_count = 0
+        indices_to_delete = []
+        # Determine matching function
+        if isinstance(condition, dict):
+            def matches(obj: "ObjectType") -> bool:
+                return all(obj.get(k) == v for k, v in condition.items())
+        else:
+            matches = condition
+        
+        # Find indices to delete
+        for i, obj in enumerate(self):
+            if matches(obj):
+                indices_to_delete.append(i)
+                deleted_count += 1
+                
+                # Stop if we hit the limit
+                if limit is not None and deleted_count >= limit:
+                    break
+        
+        # Delete in reverse order to maintain indices
+        for i in reversed(indices_to_delete):
+            del self[i]
+        
+        return deleted_count
 
 
 # DO NOT EDIT. INSTEAD EDIT TYPEMAP.TSV AND REGENERATE
@@ -21,7 +68,15 @@ class ObjectList(list["ObjectType"]):
 # Start
 
 class ObjectType(TypedDict, total=False):
-    a1: int  # ID
+    """
+    TypedDict Object type with per-key type checking.
+    
+    Contains 'object common' properties, while subclasses like 'TriggerType' inherit and add more
+    """
+    
+    a1: Required[int]  # ID
+    """ID"""
+    
     a2: float  # X
     a3: float  # Y
     a4: bool  # FLIP_X
