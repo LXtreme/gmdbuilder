@@ -1,5 +1,6 @@
 
 from typing import Any
+from gmdbuilder.internal_mappings.obj_prop import ObjProp
 from gmdbuilder.object_types import ObjectType
 
 property_range_check: bool = True
@@ -31,12 +32,20 @@ class ValidationError(Exception):
             return f"{msg}\n{context_str}"
         return msg
 
+def validate_obj(obj: ObjectType):
+    for k, v in obj.items(): validate(k, v)
 
 def validate(key: str, value: Any):
     """immediate validation. to be called by 'level.objects' mutations"""
     if not property_type_check:
         return
-    pass
+    
+    match key:
+        case ObjProp.ID:
+            if value not in [range(0,9999)]:
+                raise ValidationError()
+        case _:
+            print('placeholder warning: key is not validated')
 
 
 def export_validation(final_object_list: list[ObjectType]):
