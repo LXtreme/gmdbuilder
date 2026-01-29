@@ -1,4 +1,5 @@
 
+from typing import Any
 from gmdbuilder.object_types import ObjectType
 
 property_range_check: bool = True
