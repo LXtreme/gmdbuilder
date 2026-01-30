@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from typing import Any, Callable, Iterator
+from gmdbuilder.internal_mappings.obj_prop import ObjProp
 from questionary import confirm
 from gmdkit.models.level import Level as KitLevel
 
@@ -26,7 +27,11 @@ def from_file(file_path: str | Path) -> None:
     _source_file = path
     
     for kit_obj in _kit_level.objects: # type: ignore
-        obj = from_raw_object(kit_obj)
+        obj = from_raw_object(kit_obj, bypass_check=True)
+        
+        if g := obj.get(ObjProp.GROUPS):
+            obj[ObjProp.GROUPS] = set(g)
+        
         objects.append(obj)
 
 

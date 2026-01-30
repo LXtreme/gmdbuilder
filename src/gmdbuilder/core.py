@@ -1,6 +1,7 @@
 """Core utilities for working with ObjectType dicts."""
 
 from typing import Any, Literal, cast, overload
+from gmdbuilder.internal_mappings.obj_prop import ObjProp
 from gmdbuilder.validation import ValidatedObject, setting
 from gmdbuilder.internal_mappings.obj_id import ObjId
 from gmdkit.models.object import Object as KitObject
@@ -26,14 +27,14 @@ def to_raw_object(obj: ObjectType) -> dict[int, Any]:
     return raw
 
 
-def from_raw_object(raw_obj: dict[int, Any]) -> ObjectType:
+def from_raw_object(raw_obj: dict[int, Any], bypass_check: bool = False) -> ObjectType:
     """
     Convert raw int-keyed dict from gmdkit to ObjectType.
     
     Example:
         {1: 900, 2: 50} → {'a1': 900, 'a2': 50}
     """
-    converted: ObjectType = { 'a1': -1 }
+    converted: ObjectType = { ObjProp.ID: -1 }
     
     for key, value in raw_obj.items():
         if not isinstance(key, int):
@@ -41,11 +42,11 @@ def from_raw_object(raw_obj: dict[int, Any]) -> ObjectType:
         
         converted[f'a{key}'] = value
     
-    if int(converted['a1']) == -1:
-        raise TypeError("Missing required Object ID key 1 in raw object")
+    if int(converted[ObjProp.ID]) == -1:
+        raise TypeError(f"Missing required Object ID key 1 in raw object: \n{raw_obj}")
     
-    if setting.export_solid_target_check:
-        wrapped = ValidatedObject(converted['a1'])
+    if setting.export_solid_target_check and not bypass_check:
+        wrapped = ValidatedObject(converted[ObjProp.ID])
         wrapped.update(converted)
         return cast(ObjectType, wrapped)
     return cast(ObjectType, converted)

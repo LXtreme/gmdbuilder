@@ -15,6 +15,7 @@ class setting:
     export_spawn_limit_check = True
     """Checks for any spawn-limit occurrance within trigger execution chains"""
 
+
 class ValidatedObject(dict):
     """
     The actual dict implementation hidden behind the ObjectType TypedDict
@@ -41,7 +42,6 @@ class ValidatedObject(dict):
         super().update(items)
 
 
-
 class ValidationError(Exception):
     def __init__(self, msg: str, deferred: bool = False):
         self.deferred = deferred
@@ -58,7 +58,6 @@ class ValidationError(Exception):
             context_str = "\n".join(f"  {k}: {v}" for k, v in self.context.items())
             return f"{msg}\n{context_str}"
         return msg
-
 
 
 ID_TO_TYPEDDICT = {
@@ -88,7 +87,7 @@ def validate(obj_id: int, key: str, v: Any):
             if v not in range(0,9999):
                 raise ValidationError(f"Object ID {v} not in range")
         case _:
-            print('placeholder warning: key is not validated')
+            print(f'placeholder warning: {key} : {v} is not validated.')
 
 
 def export_validation(final_object_list: list[ObjectType]):
