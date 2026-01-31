@@ -7,7 +7,7 @@ from questionary import confirm
 from gmdkit.models.level import Level as KitLevel
 
 from gmdbuilder.object_types import ObjectType
-from gmdbuilder.core import from_raw_object, to_raw_object
+from gmdbuilder.core import from_raw_object, kit_to_raw_obj, to_raw_object
 from gmdbuilder.validation import ValidatedObject, validate_obj
 
 
@@ -44,9 +44,12 @@ class ObjectList(list[ObjectType]):
             validated = self._wrap_object(value)
             super().__setitem__(index, validated)
     
-    def append(self, obj: ObjectType):
+    def append(self, obj: ObjectType, *, bypass_validation: bool = False):
         """Validate and append an object."""
-        super().append(self._wrap_object(obj))
+        if bypass_validation:
+            super().append(obj)
+        else:
+            super().append(self._wrap_object(obj))
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
@@ -77,7 +80,7 @@ def from_file(file_path: str | Path) -> None:
     
     path = Path(file_path)
     if not path.exists():
-        raise FileNotFoundError(f"Level file not found: {file_path}")
+        raise FileNotFoundError(f"Level file not found: {file_path=}")
     
     _kit_level = KitLevel.from_file(str(path)) # type: ignore
     _source_file = path
@@ -85,12 +88,8 @@ def from_file(file_path: str | Path) -> None:
     objects.clear()
     
     for kit_obj in _kit_level.objects: # type: ignore
-        obj = from_raw_object(kit_obj, bypass_check=True) # type: ignore
-        
-        if g := obj.get(ObjProp.GROUPS):
-            obj[ObjProp.GROUPS] = set(g)
-        
-        objects.append(obj)
+        obj = from_raw_object(kit_to_raw_obj(kit_obj), bypass_validation=True) # type: ignore
+        objects.append(obj, bypass_validation=True)
 
 
 class new():
@@ -145,27 +144,27 @@ class new():
     
     @classmethod
     def group_multi(cls, count: int) -> tuple[int,...]:
-        """Get next free group ID (1-9999)."""
+        """Get next free group IDs (1-9999)."""
         return tuple(cls._get_next(cls._group_iter, "group") for _ in range(count))
     
     @classmethod
     def item_multi(cls, count: int) -> tuple[int,...]:
-        """Get next free item ID (1-9999)."""
+        """Get next free item IDs (1-9999)."""
         return tuple(cls._get_next(cls._item_iter, "item") for _ in range(count))
     
     @classmethod
     def color_multi(cls, count: int) -> tuple[int,...]:
-        """Get next free color ID (1-9999)."""
+        """Get next free color IDs (1-9999)."""
         return tuple(cls._get_next(cls._color_iter, "color") for _ in range(count))
     
     @classmethod
     def collision_multi(cls, count: int) -> tuple[int,...]:
-        """Get next free collision block ID (1-9999)."""
+        """Get next free collision block IDs (1-9999)."""
         return tuple(cls._get_next(cls._collision_iter, "collision") for _ in range(count))
     
     @classmethod
-    def control_multi(cls, count: int = 1) -> tuple[int,...]:
-        """Get next free control ID (1-9999)."""
+    def control_multi(cls, count: int) -> tuple[int,...]:
+        """Get next free control IDs (1-9999)."""
         return tuple(cls._get_next(cls._control_iter, "control") for _ in range(count))
     
     @classmethod

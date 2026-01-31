@@ -6,14 +6,21 @@ from gmdbuilder.object_types import AdvFollowType, MoveType, ObjectType, RotateT
 class setting:
     immediate_property_allowed_check = True
     """Checks that all property keys are allowed on the given object ID."""
+    
     immediate_property_type_check = True
     """Checks that all property value types and ranges are correct"""
+    
     export_target_exists_check = True
     """Checks that all targets referenced by triggers actually exist"""
+    
     export_solid_target_check = True
     """Checks that visual-related triggers target non-trigger & visible groups/objects"""
+    
     export_spawn_limit_check = True
     """Checks for any spawn-limit occurrance within trigger execution chains"""
+    
+    export_group_parent_check = True
+    """Checks that every group parent is unique (no two parents for 1 ID)"""
 
 
 class ValidatedObject(dict[str, Any]):
@@ -99,6 +106,8 @@ def validate(obj_id: int, key: str, v: Any):
         case ObjProp.ID:
             if v not in range(0,9999):
                 raise ValidationError(f"Object ID {v} not in range")
+        case ObjProp.X: ...
+        case ObjProp.Y: ...
         case _:
             print(f'placeholder warning: {key} : {v} is not validated.')
 

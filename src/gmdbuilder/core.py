@@ -31,6 +31,9 @@ def to_raw_object(obj: ObjectType) -> dict[int|str, Any]:
     """
     raw: dict[int|str, Any] = {}
     for key, value in obj.items():
+        
+        # add value conversions for special types like remap, group, group parent, etc. back to strings
+        
         try:
             raw[_to_raw_key_cached(key)] = value
         except ValueError as e:
@@ -46,7 +49,7 @@ def _from_raw_key_cached(key: object) -> str:
         return key
     raise ValueError()
 
-def from_raw_object(raw_obj: dict[int|str, Any], bypass_check: bool = False) -> ObjectType:
+def from_raw_object(raw_obj: dict[int|str, Any], bypass_validation: bool = False) -> ObjectType:
     """
     Convert raw int-keyed dict from gmdkit to ObjectType.
     
@@ -64,7 +67,7 @@ def from_raw_object(raw_obj: dict[int|str, Any], bypass_check: bool = False) -> 
     if int(converted[ObjProp.ID]) == -1:
         raise TypeError(f"Missing required Object ID key 1 in raw object: \n{raw_obj=}")
     
-    if setting.export_solid_target_check and not bypass_check:
+    if setting.export_solid_target_check and not bypass_validation:
         wrapped = ValidatedObject(converted[ObjProp.ID])
         wrapped.update(converted)
         return cast(ObjectType, wrapped)
@@ -75,13 +78,20 @@ def from_object_string(obj_string: str) -> ObjectType:
     """
     Convert GD level object string to ObjectType.
     
-    Args:
-        obj_string: GD format string like "1,1,2,50,3,45;"
-    
     Example:
         "1,1,2,50,3,45;" → {'a1': 1, 'a2': 50, 'a3': 45}
     """
-    return from_raw_object(KitObject.from_string(obj_string)) # type: ignore
+    raw_obj = kit_to_raw_obj(KitObject.from_string(obj_string)) # type: ignore
+    return from_raw_object(raw_obj)
+
+
+def kit_to_raw_obj(obj: dict[int|str, Any]) -> dict[int|str, Any]:
+    """Mutates KitObject for specific props like 'group' to normal representation"""
+    
+    if groups := obj.get(ObjProp.GROUPS):
+        obj[ObjProp.GROUPS] = set(groups)
+    
+    return obj
 
 
 @overload
