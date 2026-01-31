@@ -31,13 +31,13 @@ class ValidatedObject(dict[str, Any]):
         self._obj_id = int(obj_id)
         super().__setitem__("a1", self._obj_id)
 
-    def __setitem__(self, k: str, v: Any) -> None:
+    def __setitem__(self, k: str, v: Any):
         validate(self._obj_id, k, v)
         if k == ObjProp.ID:
             self._obj_id = int(v)
         super().__setitem__(k, v)
 
-    def update(self, *args: Any, **kwargs: Any) -> None:  # type: ignore[override]
+    def update(self, *args: Any, **kwargs: Any):  # type: ignore[override]
         # Construct items dict from args and kwargs
         items: dict[str, Any]
         if args:
@@ -62,7 +62,7 @@ class ValidationError(Exception):
         self.context: dict[str, Any] = {}
         super().__init__(msg)
     
-    def add_context(self, **kwargs: Any) -> "ValidationError":
+    def add_context(self, **kwargs: Any):
         self.context.update(kwargs)
         return self
     

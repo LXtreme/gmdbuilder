@@ -1,17 +1,73 @@
 """Level loading and exporting for Geometry Dash."""
 
 from pathlib import Path
-from typing import Any, Callable, Iterator
+from typing import Iterator, SupportsIndex, cast
 from gmdbuilder.internal_mappings.obj_prop import ObjProp
 from questionary import confirm
 from gmdkit.models.level import Level as KitLevel
 
 from gmdbuilder.object_types import ObjectType
 from gmdbuilder.core import from_raw_object, to_raw_object
+from gmdbuilder.validation import ValidatedObject, validate_obj
 
 
-MatchCondition = ObjectType | dict[str, Any] | Callable[[ObjectType], bool]
-objects: list[ObjectType] = []
+class ObjectList(list[ObjectType]):
+    """
+    A list that validates ObjectType mutations .
+    
+    - append/insert/extend: wraps objects in ValidatedObject for runtime validation
+    - Direct indexing (objects[i]): read-only access to avoid validation overhead
+    - Property edits (objects[i]['a2'] = x): validated by ValidatedObject.__setitem__
+    - Addition operators (+, +=): disabled - use extend() instead
+    """
+    
+    @staticmethod
+    def _wrap_object(obj: ObjectType) -> ObjectType:
+        """Wrap an object in ValidatedObject for runtime validation."""
+        if isinstance(obj, ValidatedObject):
+            return cast(ObjectType, obj)
+        validate_obj(obj)
+        wrapped = ValidatedObject(obj[ObjProp.ID])
+        wrapped.update(obj)
+        return cast(ObjectType, wrapped)
+    
+    def __setitem__(self, index: SupportsIndex | slice, value: ObjectType | list[ObjectType]) -> None:  # type: ignore[override]
+        """Validate when setting an item by index."""
+        if isinstance(index, slice):
+            if not isinstance(value, list):
+                raise TypeError(f"can only assign a list (not {type(value).__name__}) to a slice")
+            validated = [self._wrap_object(obj) for obj in value]
+            super().__setitem__(index, validated)
+        else:
+            if not isinstance(value, dict):
+                raise TypeError(f"can only assign ObjectType dict (not {type(value).__name__})")
+            validated = self._wrap_object(value)
+            super().__setitem__(index, validated)
+    
+    def append(self, obj: ObjectType):
+        """Validate and append an object."""
+        super().append(self._wrap_object(obj))
+    
+    def insert(self, index: SupportsIndex, obj: ObjectType):
+        """Validate and insert an object at index."""
+        super().insert(index, self._wrap_object(obj))
+    
+    def extend(self, iterable: list[ObjectType]):  # type: ignore[override]
+        """Validate and extend with multiple objects."""
+        validated = [self._wrap_object(obj) for obj in iterable]
+        super().extend(validated)
+    
+    def __add__(self, other: object) -> "ObjectList":  # type: ignore[override]
+        """Disabled: use extend() instead for efficiency."""
+        raise NotImplementedError("Use .extend() instead of + operator")
+    
+    def __iadd__(self, other: object) -> "ObjectList":  # type: ignore[override]
+        """Disabled: use extend() instead for efficiency."""
+        raise NotImplementedError("Use .extend() instead of += operator")
+
+
+objects = ObjectList()
+"""List of level's objects."""
 _kit_level: KitLevel | None = None
 _source_file: Path | None = None
 
@@ -25,6 +81,8 @@ def from_file(file_path: str | Path) -> None:
     
     _kit_level = KitLevel.from_file(str(path)) # type: ignore
     _source_file = path
+    
+    objects.clear()
     
     for kit_obj in _kit_level.objects: # type: ignore
         obj = from_raw_object(kit_obj, bypass_check=True) # type: ignore
@@ -156,3 +214,4 @@ def export(file_path: str | Path | None = None) -> None:
     
     _kit_level.objects = kit_objects #type: ignore
     _kit_level.to_file(str(export_path)) # type: ignore
+    objects.clear()
