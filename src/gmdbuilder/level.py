@@ -8,7 +8,7 @@ from gmdkit.models.level import Level as KitLevel
 
 from gmdbuilder.object_types import ObjectType
 from gmdbuilder.core import from_raw_object, kit_to_raw_obj, to_raw_object
-from gmdbuilder.validation import ValidatedObject, validate_obj
+from gmdbuilder.validation import Object, validate_obj
 
 
 class ObjectList(list[ObjectType]):
@@ -24,10 +24,10 @@ class ObjectList(list[ObjectType]):
     @staticmethod
     def _wrap_object(obj: ObjectType) -> ObjectType:
         """Wrap an object in ValidatedObject for runtime validation."""
-        if isinstance(obj, ValidatedObject):
+        if isinstance(obj, Object):
             return cast(ObjectType, obj)
         validate_obj(obj)
-        wrapped = ValidatedObject(obj[ObjProp.ID])
+        wrapped = Object(obj[ObjProp.ID])
         wrapped.update(obj)
         return cast(ObjectType, wrapped)
     

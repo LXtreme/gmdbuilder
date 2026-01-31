@@ -23,7 +23,7 @@ class setting:
     """Checks that every group parent is unique (no two parents for 1 ID)"""
 
 
-class ValidatedObject(dict[str, Any]):
+class Object(dict[str, Any]):
     """
     WARNING! DONT USE DIRECTLY. THIS IS FOR LIBRARY IMPLEMENTATION
     

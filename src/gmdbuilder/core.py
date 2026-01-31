@@ -3,7 +3,7 @@
 from functools import lru_cache
 from typing import Any, Literal, cast, overload
 from gmdbuilder.mappings.obj_prop import ObjProp
-from gmdbuilder.validation import ValidatedObject, setting
+from gmdbuilder.validation import Object, setting
 from gmdkit.models.object import Object as KitObject
 from gmdbuilder.object_types import AdvFollowType, MoveType, ObjectType, RotateType
 
@@ -68,7 +68,7 @@ def from_raw_object(raw_obj: dict[int|str, Any], bypass_validation: bool = False
         raise TypeError(f"Missing required Object ID key 1 in raw object: \n{raw_obj=}")
     
     if setting.export_solid_target_check and not bypass_validation:
-        wrapped = ValidatedObject(converted[ObjProp.ID])
+        wrapped = Object(converted[ObjProp.ID])
         wrapped.update(converted)
         return cast(ObjectType, wrapped)
     return converted
