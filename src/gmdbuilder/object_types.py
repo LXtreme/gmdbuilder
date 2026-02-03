@@ -11,6 +11,13 @@ from gmdbuilder.mappings.obj_prop import ObjProp
 from gmdbuilder.validation import validate, validate_obj
 
 
+
+ID_TO_TYPEDDICT: dict[int, type] = {
+    901: "MoveType",
+    1346: "RotateType",
+    3016: "AdvFollowType",
+}
+
 class Object(dict[str, Any]):
     """
     Note: Not for users to call directly

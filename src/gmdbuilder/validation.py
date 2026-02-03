@@ -1,7 +1,9 @@
 
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from gmdbuilder.mappings.obj_prop import ObjProp
-from gmdbuilder.object_types import AdvFollowType, MoveType, ObjectType, RotateType
+
+if TYPE_CHECKING:
+    from gmdbuilder.object_types import ObjectType
 
 class setting:
     immediate_property_allowed_check = True
@@ -41,12 +43,6 @@ class ValidationError(Exception):
         return msg
 
 
-ID_TO_TYPEDDICT = {
-    901: MoveType,
-    1346: RotateType,
-    3016: AdvFollowType,
-}
-
 # def typeddict_keys(td) -> set[str]:
 #     return set(getattr(td, "__required_keys__", set())) | set(getattr(td, "__optional_keys__", set()))
 
@@ -54,7 +50,7 @@ ID_TO_TYPEDDICT = {
 # ALLOWED_BY_ID = {k: typeddict_keys(v) for k, v in ID_TO_TYPEDDICT.items()}
 
 
-def validate_obj(obj: ObjectType):
+def validate_obj(obj: "ObjectType"):
     for k, v in obj.items(): validate(obj['a1'], k, v)
 
 def validate(obj_id: int, key: str, v: Any):
@@ -72,6 +68,6 @@ def validate(obj_id: int, key: str, v: Any):
             print(f'placeholder warning: {key} : {v} is not validated.')
 
 
-def export_validation(final_object_list: list[ObjectType]):
+def export_validation(final_object_list: "list[ObjectType]"):
     """to be called in level.export"""
     pass
