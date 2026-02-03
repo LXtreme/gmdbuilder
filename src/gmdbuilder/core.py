@@ -6,7 +6,8 @@ from gmdkit.models.object import Object as KitObject
 from gmdbuilder.mappings.obj_prop import ObjProp
 from gmdbuilder.validation import setting
 from gmdbuilder.futils import translate_group_string, translate_remap_string
-from gmdbuilder.object_types import AdvFollowType, MoveType, ObjectType, RotateType, Object
+from gmdbuilder.object_typeddict import AdvFollowType, MoveType, ObjectType, RotateType
+from gmdbuilder.object_types import Object
 
 @lru_cache(maxsize=1024)
 def _to_raw_key_cached(key: object) -> int | str:

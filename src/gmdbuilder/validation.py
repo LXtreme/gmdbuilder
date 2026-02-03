@@ -3,7 +3,7 @@ from typing import Any, TYPE_CHECKING
 from gmdbuilder.mappings.obj_prop import ObjProp
 
 if TYPE_CHECKING:
-    from gmdbuilder.object_types import ObjectType
+    from gmdbuilder.object_typeddict import ObjectType
 
 class setting:
     immediate_property_allowed_check = True
