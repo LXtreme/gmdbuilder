@@ -68,6 +68,10 @@ class ObjectList(list[ObjectType]):
     - Addition operators (+, +=): disabled - use extend() instead
     """
     
+    def __init__(self):
+        super().__init__()
+        self.added_objects: list[ObjectType] = []
+    
     @staticmethod
     def _wrap_object(obj: ObjectType) -> ObjectType:
         """Wrap an object in ValidatedObject for runtime validation."""
@@ -97,17 +101,23 @@ class ObjectList(list[ObjectType]):
         """Validate and append an object."""
         if bypass_validation:
             super().append(obj)
+            self.added_objects.append(obj)
         else:
-            super().append(self._wrap_object(obj))
+            wrapped = self._wrap_object(obj)
+            super().append(wrapped)
+            self.added_objects.append(wrapped)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
-        super().insert(index, self._wrap_object(obj))
+        wrapped = self._wrap_object(obj)
+        super().insert(index, wrapped)
+        self.added_objects.append(wrapped)
     
     def extend(self, iterable: list[ObjectType]):  # type: ignore[override]
         """Validate and extend with multiple objects."""
         validated = [self._wrap_object(obj) for obj in iterable]
         super().extend(validated)
+        self.added_objects.extend(validated)
     
     def __add__(self, other: object) -> "ObjectList":  # type: ignore[override]
         """Disabled: use extend() instead for efficiency."""
