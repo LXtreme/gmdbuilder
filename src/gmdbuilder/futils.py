@@ -1,8 +1,8 @@
 """Framework utilities. Not for users."""
-import functools
+from functools import lru_cache
 
 
-@functools.lru_cache(maxsize=4096)
+@lru_cache(maxsize=4096)
 def translate_group_string(group_string: str) -> set[int]:
     """Returns new group set from dot-seperated int list"""
     parts = group_string.split(".")
@@ -16,7 +16,7 @@ def translate_group_string(group_string: str) -> set[int]:
     return s
 
 
-@functools.lru_cache(maxsize=4096)
+@lru_cache(maxsize=4096)
 def translate_remap_string(remap_string: str) -> dict[int, int]:
     """Returns 'dict[source] = target' from dot-seperated int-string"""
     if not remap_string:
