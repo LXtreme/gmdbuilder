@@ -8,18 +8,21 @@ from gmdkit.models.object import ObjectList as KitObjectList, Object as KitObjec
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 
 from gmdbuilder.object_types import ObjectList
+from gmdbuilder.mappings.obj_prop import ObjProp
 from gmdbuilder.core import from_raw_object, kit_to_raw_obj, to_raw_object
 
 
 objects = ObjectList(live_editor=False)
 """List of level's objects."""
+tag_group = 9999
+"""Deletes all objects with this group and adds this group to new added objects"""
 _kit_level: KitLevel | None = None
 _source_file: Path | None = None
 _live_editor_connected = False
 
 def from_file(file_path: str | Path) -> None:
     """Load level from .gmd file into the module-level objects list."""
-    global objects, _kit_level, _source_file, _live_editor_connected
+    global objects, tag_group, _kit_level, _source_file, _live_editor_connected
     
     if _source_file is not None or _live_editor_connected:
         raise RuntimeError("FORBIDDEN: Level file is loaded! Loading multiple levels at once overrides global state")
@@ -34,7 +37,8 @@ def from_file(file_path: str | Path) -> None:
     
     for kit_obj in _kit_level.objects: # type: ignore
         obj = from_raw_object(kit_to_raw_obj(kit_obj), bypass_validation=True) # type: ignore
-        objects.append(obj, bypass_validation=True)
+        if tag_group not in obj.get(ObjProp.GROUPS, set()):
+            objects.append(obj, bypass_validation=True)
 
 
 def from_live_editor(url: str = WEBSOCKET_URL) -> None:
@@ -50,7 +54,8 @@ def from_live_editor(url: str = WEBSOCKET_URL) -> None:
     
     for kit_obj in kit_objects: # type: ignore
         obj = from_raw_object(kit_to_raw_obj(kit_obj), bypass_validation=True) # type: ignore
-        objects.append(obj, bypass_validation=True)
+        if tag_group not in obj.get(ObjProp.GROUPS, set()):
+            objects.append(obj, bypass_validation=True)
     
     _live_editor_connected = True
 
@@ -147,7 +152,6 @@ def _validate_and_prepare_objects(validated_objects: ObjectList) -> None:
     
     # TODO: Assign tag_group to new objects here
     # _assign_tag_groups(validated_objects)
-    validated_objects.sort(key=lambda obj: int(obj.get("a1", 0)))
     pass
 
 
