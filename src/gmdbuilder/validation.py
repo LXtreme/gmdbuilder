@@ -60,10 +60,16 @@ def validate(obj_id: int, key: str, v: Any):
     
     match key:
         case ObjProp.ID:
-            if v not in range(0,9999):
-                raise ValidationError(f"Object ID {v} not in range")
+            if not (1 <= v <= 9999):
+                raise ValidationError(f"ID {v} is not a vaid object ID")
         case ObjProp.X: ...
         case ObjProp.Y: ...
+        case ObjProp.GROUPS:
+            for group_id in v:
+                if not isinstance(group_id, int):
+                    raise ValidationError(f"Group ID {group_id} in Groups must be an int, got {type(group_id)}")
+                if not (1 <= group_id <= 9999):
+                    raise ValidationError(f"Group ID {group_id} in Groups must be in range 1-9999")
         case _:
             print(f'placeholder warning: {key} : {v} is not validated.')
 
