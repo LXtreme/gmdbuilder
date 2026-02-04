@@ -5,7 +5,7 @@ from typing import Any, Literal, cast, overload
 from gmdkit.models.object import Object as KitObject
 from gmdbuilder.mappings.obj_prop import ObjProp
 from gmdbuilder.validation import setting
-from gmdbuilder.futils import translate_group_string, translate_remap_string
+from gmdbuilder.futils import translate_list_string, translate_map_string
 from gmdbuilder.object_typeddict import AdvFollowType, MoveType, ObjectType, RotateType
 from gmdbuilder.object_types import Object
 
@@ -62,9 +62,9 @@ def from_raw_object(raw_obj: dict[int|str, Any], bypass_validation: bool = False
     """
     
     if (key := ObjProp.GROUPS) in raw_obj:
-        raw_obj[key] = translate_group_string(raw_obj[key])
+        raw_obj[key] = translate_list_string(raw_obj[key])
     if (key := ObjProp.Trigger.Spawn.REMAPS) in raw_obj:
-        raw_obj[key] = translate_remap_string(raw_obj[key])
+        raw_obj[key] = translate_map_string(raw_obj[key])
     
     converted: ObjectType = { ObjProp.ID: -1 }
     

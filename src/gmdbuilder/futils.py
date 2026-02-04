@@ -3,8 +3,8 @@ from functools import lru_cache
 
 
 @lru_cache(maxsize=4096)
-def translate_group_string(group_string: str) -> set[int]:
-    """Returns new group set from dot-seperated int list"""
+def translate_list_string(group_string: str) -> set[int]:
+    """Returns new set from dot-seperated int list"""
     parts = group_string.split(".")
     s: set[int] = set()
     for group in parts:
@@ -17,16 +17,16 @@ def translate_group_string(group_string: str) -> set[int]:
 
 
 @lru_cache(maxsize=4096)
-def translate_remap_string(remap_string: str) -> dict[int, int]:
-    """Returns 'dict[source] = target' from dot-seperated int-string"""
+def translate_map_string(remap_string: str) -> dict[int, int]:
+    """Returns 'dict[source] = target' from dot-seperated num-string"""
     if not remap_string:
-        raise ValueError("Remap string is empty")
+        raise ValueError("String is empty")
     
     parts = remap_string.split(".")
 
     if len(parts) % 2 != 0:
         raise ValueError(
-            f"Remap string must contain an even number of parts:\n{remap_string}")
+            f"String must contain an even number of parts:\n{remap_string!r}")
 
     pairs: dict[int, int] = {}
     it = iter(parts)
@@ -35,9 +35,9 @@ def translate_remap_string(remap_string: str) -> dict[int, int]:
         target = int(target_str)
 
         if source in pairs:
-            raise ValueError(f"Duplicate source '{source}' in remap string:\n{remap_string}")
+            raise ValueError(f"Duplicate source '{source}' in string:\n{remap_string!r}")
         if source == target:
-            raise ValueError(f"Redundant mapping found in remap string:\n{remap_string=}")
+            raise ValueError(f"Redundant mapping '{source} -> {target}' found in string:\n{remap_string!r}")
         
         pairs[source] = target
         
