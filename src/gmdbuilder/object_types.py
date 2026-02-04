@@ -180,15 +180,12 @@ class ObjectList(list[ObjectType]):
             validated = self._wrap_object(value)
             super().__setitem__(index, validated)
     
-    def append(self, obj: ObjectType, *, bypass_validation: bool = False):
+    def append(self, obj: ObjectType, *, bypass_validation: bool = False, import_mode: bool = False):
         """Validate and append an object."""
-        if bypass_validation:
-            super().append(obj)
+        obj = obj if bypass_validation else self._wrap_object(obj)
+        super().append(obj)
+        if not import_mode:
             self.added_objects.append(obj)
-        else:
-            wrapped = self._wrap_object(obj)
-            super().append(wrapped)
-            self.added_objects.append(wrapped)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
