@@ -1,13 +1,16 @@
 """Core utilities for working with ObjectType dicts."""
 
 from functools import lru_cache
-from typing import Any, Literal, cast, overload
+from typing import Any, Literal, TypeVar, cast, overload
 from gmdkit.models.object import Object as KitObject
 from gmdbuilder.mappings.obj_prop import ObjProp
 from gmdbuilder.validation import setting
 from gmdbuilder.futils import translate_list_string, translate_map_string
 from gmdbuilder.object_typeddict import AdvFollowType, MoveType, ObjectType, RotateType
 from gmdbuilder.object_types import Object
+
+T = TypeVar('T', bound=ObjectType)
+
 
 @lru_cache(maxsize=1024)
 def _to_raw_key_cached(key: object) -> int | str:
@@ -53,6 +56,13 @@ def _from_raw_key_cached(key: object) -> str:
         return key
     raise ValueError()
 
+
+
+
+@overload
+def from_raw_object(raw_obj: dict[int|str, Any]) -> ObjectType: ...
+@overload
+def from_raw_object(raw_obj: dict[int|str, Any], *, obj_type: type[T]) -> T: ...
 def from_raw_object(raw_obj: dict[int|str, Any], bypass_validation: bool = False) -> ObjectType:
     """
     Convert raw int-keyed dict from gmdkit to a new ObjectType.
@@ -84,7 +94,11 @@ def from_raw_object(raw_obj: dict[int|str, Any], bypass_validation: bool = False
     return converted
 
 
-def from_object_string(obj_string: str) -> ObjectType:
+@overload
+def from_object_string(obj_string: str) -> ObjectType: ...
+@overload
+def from_object_string(obj_string: str, *, obj_type: type[T]) -> T: ...
+def from_object_string(obj_string: str, *, obj_type: type[ObjectType] | None = None) -> ObjectType:
     """
     Convert GD level object string to ObjectType.
     
@@ -101,7 +115,7 @@ def kit_to_raw_obj(obj: dict[int|str, Any]) -> dict[int|str, Any]:
     if (k := ObjProp.GROUPS) in obj:
         obj[k] = '.'.join(map(str, sorted(obj[k])))
     if (k := ObjProp.Trigger.Spawn.REMAPS) in obj:
-        raise ValueError(f"found kit remaps: \n\n{obj[k]=}\n\n")
+        ...
     
     return obj
 
