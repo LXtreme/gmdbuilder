@@ -8,7 +8,7 @@ from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList, Object as KitObject
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 from gmdkit.serialization import type_cast as tc
-from gmdkit.casting.object_props import PROPERTY_DECODERS, PROPERTY_ENCODERS
+from gmdkit.casting.object_props import PROPERTY_DECODERS, PROPERTY_ENCODERS # type: ignore
 
 from gmdbuilder.object_types import ObjectList
 from gmdbuilder.mappings.obj_prop import ObjProp
@@ -24,7 +24,7 @@ for key, decoder in PROPERTY_DECODERS.items():
         RAW_DECODERS[key] = str
 
 RAW_ENCODERS = {}
-for key, encoder in PROPERTY_ENCODERS.items():
+for key, encoder in PROPERTY_ENCODERS.items(): # type: ignore
     if encoder in (tc.from_bool, tc.from_float):
         RAW_ENCODERS[key] = encoder
     else:
@@ -32,12 +32,12 @@ for key, encoder in PROPERTY_ENCODERS.items():
 
 
 class RawObject(KitObject):
-    DECODER = staticmethod(tc.dict_cast(RAW_DECODERS, numkey=True))
-    ENCODER = staticmethod(tc.dict_cast(RAW_ENCODERS, default=tc.serialize))
+    DECODER = staticmethod(tc.dict_cast(RAW_DECODERS, numkey=True)) # type: ignore
+    ENCODER = staticmethod(tc.dict_cast(RAW_ENCODERS, default=tc.serialize)) # type: ignore
 
 class RawObjectList(KitObjectList):
-    DECODER = RawObject.from_string
-    ENCODER = staticmethod(lambda obj: obj.to_string())
+    DECODER = RawObject.from_string # type: ignore
+    ENCODER = staticmethod(lambda obj: obj.to_string()) # type: ignore
 
 
 
@@ -66,12 +66,12 @@ def from_file(file_path: str | Path) -> None:
     
     for raw_obj in _kit_level.objects: # type: ignore
         obj = from_raw_object(raw_obj, bypass_validation=True) # type: ignore
-        if tag_group not in obj.get(ObjProp.GROUPS, set()):
-            objects.append(obj, bypass_validation=True, import_mode=True)
+        if tag_group not in obj.get(ObjProp.GROUPS, set()): # type: ignore
+            objects.append(obj, bypass_validation=True, import_mode=True) # type: ignore
 
 
 def from_live_editor(url: str = WEBSOCKET_URL) -> None:
-    global objects, _kit_level, _source_file, _live_editor_connected
+    global objects, tag_group, _kit_level, _source_file, _live_editor_connected
     
     if _source_file is not None or _live_editor_connected:
         raise RuntimeError("FORBIDDEN: Level file is loaded! Loading multiple levels at once overrides global state")
@@ -79,12 +79,11 @@ def from_live_editor(url: str = WEBSOCKET_URL) -> None:
     objects = ObjectList(live_editor=True)
     _kit_level = LiveEditor(url) # type: ignore
     _kit_level.connect() # type: ignore
+    _kit_level.remove_object_group(tag_group) # type: ignore
     _, kit_objects = _kit_level.get_level_string() # type: ignore
     
-    for kit_obj in kit_objects: # type: ignore
-        obj = from_raw_object(kit_obj, bypass_validation=True) # type: ignore
-        if tag_group not in obj.get(ObjProp.GROUPS, set()):
-            objects.append(obj, bypass_validation=True, import_mode=True)
+    for raw_obj in kit_objects: # type: ignore
+        objects.append(from_raw_object(raw_obj), bypass_validation=True) # type: ignore
     
     _live_editor_connected = True
 
