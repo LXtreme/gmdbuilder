@@ -1,4 +1,5 @@
 
+from functools import lru_cache
 from typing import Any, TYPE_CHECKING
 from gmdbuilder.mappings.obj_prop import ObjProp
 
@@ -52,29 +53,52 @@ class ValidationError(Exception):
 # ALLOWED_BY_ID = {k: typeddict_keys(v) for k, v in ID_TO_TYPEDDICT.items()}
 
 
-def validate_obj(obj: "ObjectType"):
-    for k, v in obj.items(): validate(obj[ObjProp.ID], k, v)
+def validate_obj(obj: ObjectType):
+    obj_id = obj[ObjProp.ID]
+    for k, v in obj.items(): validate(obj_id, k, v)
 
-def validate(obj_id: int, key: str, v: Any):
-    """immediate validation. to be called by 'level.objects' mutations"""
-    if not setting.immediate.property_type_check: return
-    
-    match key:
+
+@lru_cache(maxsize=1024)
+def _validate_key_value(k: str, v: Any):
+    match k:
         case ObjProp.ID:
             if not (1 <= v <= 9999):
                 raise ValidationError(f"ID {v} is not a vaid object ID")
         case ObjProp.X: ...
         case ObjProp.Y: ...
-        case ObjProp.GROUPS:
-            for group_id in v:
-                if not isinstance(group_id, int):
-                    raise ValidationError(f"Group ID {group_id} in Groups must be an int, got {type(group_id)}")
-                if not (1 <= group_id <= 9999):
-                    raise ValidationError(f"Group ID {group_id} in Groups must be in range 1-9999")
+        case ObjProp.GROUPS: ...
         case _:
-            print(f'placeholder warning: {key} : {v} is not validated.')
+            print(f'placeholder warning: {k} : {v} is not validated.')
 
 
-def export_validation(final_object_list: "list[ObjectType]"):
+@lru_cache(maxsize=1024)
+def _validate_key_allowed(obj_id: int, k: str):
+    pass
+
+
+def validate(obj_id: int, key: str, v: Any):
+    """immediate validation. to be called by 'level.objects' mutations"""
+    if not setting.immediate.property_type_check: return
+    
+    if key == ObjProp.GROUPS:
+        for group_id in v:
+            if not isinstance(group_id, int):
+                raise ValidationError(f"Group ID {group_id} in Groups must be an int, got {type(group_id)}")
+            if not (1 <= group_id <= 9999):
+                raise ValidationError(f"Group ID {group_id} in Groups must be in range 1-9999")
+        return
+    elif key == ObjProp.Trigger.Spawn.REMAPS:
+        return
+    
+    _validate_key_allowed(obj_id, key)
+    try:
+        _validate_key_value(key, v)
+    except TypeError as e:
+        print(f"Type error validating key {key} with value {v} on object ID {obj_id}")
+        raise e
+    
+
+
+def export_validation(final_object_list: list[ObjectType]):
     """to be called in level.export"""
     pass
