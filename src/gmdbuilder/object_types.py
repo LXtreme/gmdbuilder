@@ -155,11 +155,12 @@ class ObjectList(list[ObjectType]):
             raise RuntimeError("Direct object deleting is not allowed in live editor mode")
         if limit < -1 or limit == 0:
             raise ValueError("delete_where limit must be -1 (no limit) or positive")
+        
         predicate: Callable[[ObjectType], bool]
-        if isinstance(condition, dict):
-            predicate = lambda obj: all(obj.get(k, self._MISSING) == v for k, v in condition.items())
-        else:
+        if callable(condition):
             predicate = condition
+        else:
+            predicate = lambda obj: all(obj.get(k, self._MISSING) == v for k, v in condition.items())
         
         deleted = 0
         
@@ -199,12 +200,13 @@ class ObjectList(list[ObjectType]):
             validated = self._wrap_object(value)
             super().__setitem__(index, validated)
     
-    def append(self, obj: ObjectType, *, bypass_validation: bool = False, import_mode: bool = False):
+    def append(self, obj: ObjectType, *, import_mode_backend_only: bool = False):
         """Validate and append an object."""
-        obj = obj if bypass_validation else self._wrap_object(obj)
-        super().append(obj)
-        if not import_mode:
+        if import_mode_backend_only:
             self.added_objects.append(obj)
+        else:
+            obj = self._wrap_object(obj)
+        super().append(obj)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
@@ -220,10 +222,10 @@ class ObjectList(list[ObjectType]):
         super().extend(validated)
         self.added_objects.extend(validated)
     
-    def __add__(self, other: object) -> "ObjectList":  # type: ignore[override]
-        """Disabled: use extend() instead for efficiency."""
+    def __add__(self, other: object) -> "ObjectList":
+        """Disabled: use extend() instead."""
         raise NotImplementedError("Use .extend() instead of + operator")
     
-    def __iadd__(self, other: object) -> "ObjectList":  # type: ignore[override]
-        """Disabled: use extend() instead for efficiency."""
+    def __iadd__(self, other: object) -> "ObjectList": 
+        """Disabled: use extend() instead."""
         raise NotImplementedError("Use .extend() instead of += operator")
