@@ -1,6 +1,4 @@
 
-import gmdkit.functions.object as obj_func
-from typing import Any
 from gmdkit.mappings import obj_prop
 from gmdkit.models.level import Level
 from gmdkit.models.object import Object
@@ -20,9 +18,11 @@ start = level.start
 
 obj_list = level.objects
 
+print(f"obj_list has {len(obj_list)} objects.")
+
 # filter by condition
 after_origin = obj_list.where(lambda obj: obj.get(obj_prop.X, 0) > 0)
-
+print(f" {len(after_origin)} objects have X > 0.")
 # apply functions, kwargs are filtered for each called function
 # ex: obj_func.fix_lighter has 'replacement' as a key argument
 # after_origin.apply(obj_func.clean_duplicate_groups, obj_func.fix_lighter, replacement=0)
@@ -45,8 +45,8 @@ new_obj.update(
 # lvl_prop.level.OBJECT_STRING also maps to 'k4'
 obj_list.append(new_obj)
 
-print(f"obj_list has {len(obj_list)} objects after adding new_obj.")
+print(f"obj_list has {len(level.objects)} objects after adding new_obj.")
 print(new_obj)
 
 # export level
-# level.to_file("example.gmd")
+level.to_file("example_updated.gmd")
