@@ -123,8 +123,10 @@ class ObjectList(list[ObjectType]):
 
 objects = ObjectList(live_editor=False)
 """List of level's objects."""
+
 tag_group = 9999
 """Deletes all objects with this group and adds this group to new added objects"""
+
 _kit_level: KitLevel | LiveEditor | None = None
 _source_file: Path | None = None
 _live_editor_connected = False
@@ -307,10 +309,13 @@ def export_to_file(file_path: str | Path | None = None) -> None:
     else:
         export_path = Path(file_path)
     
-    _validate_and_prepare_objects(objects)
+    new_objects = _validate_and_prepare_objects(objects)
     
-    _kit_level.objects = objects #type: ignore
-    _kit_level.to_file(str(export_path)) #type: ignore
+    kit_objects = _kit_level.objects # type: ignore
+    kit_objects.clear()
+    kit_objects.extend(new_objects) # type: ignore
+    
+    _kit_level.to_file(str(export_path)) # type: ignore
     new.reset_all()
     objects.clear()
 

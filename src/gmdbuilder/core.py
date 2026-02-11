@@ -110,6 +110,7 @@ ID_TO_TYPEDDICT = {
 }
 """Unfinished mapping of Object IDs to non-common Object TypedDicts"""
 
+
 class Object(dict[str, Any]):
     """
     Note: Not for users to call directly
@@ -148,6 +149,7 @@ class Object(dict[str, Any]):
         if ObjProp.ID in items:
             self._obj_id = int(items[ObjProp.ID])
         super().update(items)
+
 
 
 @lru_cache(maxsize=1024)
@@ -221,7 +223,7 @@ def from_raw_object(
         try:
             converted[_from_raw_key_cached(key)] = value
         except ValueError as e:
-            raise ValueError(f"Object has bad/unsupported key {key!r}: {raw_obj=}") from e
+            raise ValueError(f"Object has bad/unsupported key {key!r}: \n{raw_obj=}") from e
     
     if int(converted[ObjProp.ID]) == -1:
         raise TypeError(f"Missing required Object ID key 1 in raw object: \n{raw_obj=}")
@@ -242,7 +244,7 @@ def from_object_string(obj_string: str, *, obj_type: type[ObjectType] | None = N
     Example:
         "1,1,2,50,3,45;" → {'a1': 1, 'a2': 50, 'a3': 45}
     """
-    return from_raw_object(RawObject.from_string(obj_string)) # type: ignore
+    return from_raw_object(RawObject.from_string(obj_string))
 
 
 @overload
@@ -261,4 +263,4 @@ def new_object(object_id: int) -> ObjectType:
         ObjectType dict with default properties (using 'a<num>' keys)
     """
     # Convert from gmdkit's {1: val, 2: val} to our {'a1': val, 'a2': val}
-    return from_raw_object(RawObject.default(object_id)) # type: ignore
+    return from_raw_object(RawObject.default(object_id))
