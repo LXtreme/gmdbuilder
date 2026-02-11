@@ -24,7 +24,6 @@ Python fits surprisingly well as a language for GD scripting:
 - Reliable type system with good debugger/type-checker tooling
 - Huge package ecosystem
 
-
 ## Installation
 Install the latest release from PyPI (i didnt set this up yet):
 
@@ -38,7 +37,7 @@ Install the latest development version from GitHub:
 pip install git+https://github.com/UHDanke/gmdkit.git
 ```
 
-## Example
+## Getting Started
 
 ```python
 from gmdbuilder import level
@@ -54,6 +53,9 @@ level.from_live_editor()
 
 obj_list = level.objects # mutations are validated
 
+# Object properties are in the form { "a<key number>": value }
+repr(obj[1])
+
 # Object ID and Property enums (all values are Literal) 
 from gmdbuilder.mappings.obj_prop import ObjProp
 from gmdbuilder.mappings.obj_id import ObjId
@@ -64,10 +66,19 @@ for obj in obj_list:
     elif obj[ObjProp.ID] == ObjID.Trigger.COUNT:
         obj_list.remove(obj)
 
+# Translates to { a1: 1 }
 block = from_raw_object({1: 1})
 
 obj_list.delete_where(block)
-obj_lits.delete_where(lambda obj: obj.get())
+obj_list.delete_where(lambda obj: obj[ObjProp.ID] == 1)
 
+# Translates to { a1: 1611, a2: 50, a3: 45 }
+object = from_object_string("1,1611,2,50,3,45;", obj_type=CountType)
+object[ObjProp.Trigger.Count.ACTIVATE_GROUP] = True
 
+# Export level
+level.export_to_file(file_path="example_updated.gmd")
+
+# Export added objects to WSLiveEditor
+level.export_to_live_editor()
 ```
