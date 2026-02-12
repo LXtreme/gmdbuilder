@@ -1,5 +1,4 @@
-
-class ColorId(int):
+class ColorId:
     DEFAULT = 0
     BACKGROUND = 1000
     GROUND = 1001

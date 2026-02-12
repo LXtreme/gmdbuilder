@@ -1,5 +1,4 @@
-
-class ColorProp(int):
+class ColorProp:
     RED = 1
     GREEN = 2
     BLUE = 3

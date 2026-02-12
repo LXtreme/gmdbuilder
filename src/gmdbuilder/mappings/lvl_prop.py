@@ -1,8 +1,7 @@
-
-class LvlProp(str):
+class LvlProp:
     pass
 
-    class Level(str):
+    class Level:
         ENCODER_KEY = 'kCEK'
         ID = 'k1'
         NAME = 'k2'
@@ -86,7 +85,7 @@ class LvlProp(str):
         PLATFORMER_SEED = 'k111'
         SHAKE_DISABLED = 'k112'
 
-        class Editor(str):
+        class Editor:
             CAMERA_X = 'kI1'
             CAMERA_Y = 'kI2'
             CAMERA_ZOOM = 'kI3'
@@ -95,11 +94,11 @@ class LvlProp(str):
             BUILD_TAB_PAGES = 'kI6'
             LAYER = 'kI7'
 
-        class Official(str):
+        class Official:
             REQUIRED_COINS = 'k37'
             IS_UNLOCKED = 'k38'
 
-    class List(str):
+    class List:
         ENCODER_KEY = 'kCEK'
         ID = 'k1'
         NAME = 'k2'

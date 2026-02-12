@@ -1,9 +1,7 @@
-
-
-class ObjEnum(int):
+class ObjEnum:
     pass
 
-    class Easing(int):
+    class Easing:
         NONE = 0
         EASE_IN_OUT = 1
         EASE_IN = 2
@@ -24,31 +22,31 @@ class ObjEnum(int):
         BACK_IN = 17
         BACK_OUT = 18
 
-    class ItemLabel(int):
+    class ItemLabel:
         pass
 
-        class Alignment(int):
+        class Alignment:
             CENTER = 0
             LEFT = 1
             RIGHT = 2
 
-        class SpecialId(int):
+        class SpecialId:
             MAINTIME = -1
             POINTS = -2
             ATTEMPTS = -3
 
-    class Level(int):
+    class Level:
         pass
 
-        class Color17(int):
+        class Color17:
             pass
 
-            class PlayerColor(int):
+            class PlayerColor:
                 NONE = 0
                 PLAYER_1 = 1
                 PLAYER_2 = 2
 
-    class OldColor(int):
+    class OldColor:
         PLAYER_1 = 1
         PLAYER_2 = 2
         COLOR_1 = 3
@@ -58,66 +56,66 @@ class ObjEnum(int):
         COLOR_4 = 7
         LINE_3D = 8
 
-    class SingleColorType(int):
+    class SingleColorType:
         DEFAULT = 0
         BASE = 1
         DETAIL = 2
 
-    class Trigger(int):
+    class Trigger:
         pass
 
-        class AdvFollow(int):
+        class AdvFollow:
             pass
 
-            class Init(int):
+            class Init:
                 INIT = 0
                 SET = 1
                 ADD = 2
 
-            class Mode(int):
+            class Mode:
                 MODE_1 = 0
                 MODE_2 = 1
                 MODE_3 = 2
 
-        class Arrow(int):
+        class Arrow:
             pass
 
-            class Direction(int):
+            class Direction:
                 NONE = 0
                 UP = 1
                 DOWN = 2
                 LEFT = 3
                 RIGHT = 4
 
-        class Bpm(int):
+        class Bpm:
             pass
 
-            class Speed(int):
+            class Speed:
                 NORMAL = 0
                 SLOW = 1
                 FAST = 2
                 VERY_FAST = 3
                 SUPER_FAST = 4
 
-        class CameraEdge(int):
+        class CameraEdge:
             pass
 
-            class Direction(int):
+            class Direction:
                 NONE = 0
                 LEFT = 1
                 RIGHT = 2
                 UP = 3
                 DOWN = 4
 
-        class Effect(int):
+        class Effect:
             pass
 
-            class EnterOnly(int):
+            class EnterOnly:
                 NONE = 0
                 ENTER = 1
                 EXIT = 2
 
-            class SpecialCenter(int):
+            class SpecialCenter:
                 P1 = -1
                 P2 = -2
                 C = -3
@@ -130,24 +128,24 @@ class ObjEnum(int):
                 CR = -10
                 TR = -11
 
-        class EnterPreset(int):
+        class EnterPreset:
             pass
 
-            class EnterOnly(int):
+            class EnterOnly:
                 NONE = 0
                 ENTER = 1
                 EXIT = 2
 
-        class Gradient(int):
+        class Gradient:
             pass
 
-            class Blending(int):
+            class Blending:
                 NORMAL = 0
                 ADDITIVE = 1
                 MULTIPLY = 2
                 INVERT = 3
 
-            class Layer(int):
+            class Layer:
                 BG = 1
                 MG = 2
                 B5 = 3
@@ -164,24 +162,24 @@ class ObjEnum(int):
                 UI = 14
                 MAX = 15
 
-        class InstantCount(int):
+        class InstantCount:
             pass
 
-            class Mode(int):
+            class Mode:
                 EQUAL = 0
                 LARGER = 1
                 SMALLER = 2
 
-        class ItemCompare(int):
+        class ItemCompare:
             pass
 
-            class ItemOp(int):
+            class ItemOp:
                 ADD = 1
                 SUBTRACT = 2
                 MULTIPLY = 3
                 DIVIDE = 4
 
-            class ItemType(int):
+            class ItemType:
                 DEFAULT = 0
                 ITEM = 1
                 TIMER = 2
@@ -189,27 +187,27 @@ class ObjEnum(int):
                 MAINTIME = 4
                 ATTEMPTS = 5
 
-            class RoundOp(int):
+            class RoundOp:
                 NONE = 0
                 ROUND = 1
                 FLOOR = 2
                 CEILING = 3
 
-            class SignOp(int):
+            class SignOp:
                 NONE = 0
                 ABSOLUTE = 1
                 NEGATIVE = 2
 
-        class ItemEdit(int):
+        class ItemEdit:
             pass
 
-            class ItemOp(int):
+            class ItemOp:
                 ADD = 1
                 SUBTRACT = 2
                 MULTIPLY = 3
                 DIVIDE = 4
 
-            class ItemType(int):
+            class ItemType:
                 DEFAULT = 0
                 ITEM = 1
                 TIMER = 2
@@ -217,86 +215,86 @@ class ObjEnum(int):
                 MAINTIME = 4
                 ATTEMPTS = 5
 
-            class RoundOp(int):
+            class RoundOp:
                 NONE = 0
                 ROUND = 1
                 FLOOR = 2
                 CEILING = 3
 
-            class SignOp(int):
+            class SignOp:
                 NONE = 0
                 ABSOLUTE = 1
                 NEGATIVE = 2
 
-        class Keyframe(int):
+        class Keyframe:
             pass
 
-            class SpinDirection(int):
+            class SpinDirection:
                 NONE = 0
                 CW = 1
                 CCW = 2
 
-            class TimeMode(int):
+            class TimeMode:
                 TIME = 0
                 EVEN = 1
                 DIST = 2
 
-        class Move(int):
+        class Move:
             pass
 
-            class TargetAxis(int):
+            class TargetAxis:
                 NONE = 0
                 X = 1
                 Y = 2
 
-        class OffsetCamera(int):
+        class OffsetCamera:
             pass
 
-            class Axis(int):
+            class Axis:
                 NONE = 0
                 X = 1
                 Y = 2
 
-        class OffsetGameplay(int):
+        class OffsetGameplay:
             pass
 
-            class Axis(int):
+            class Axis:
                 NONE = 0
                 X = 1
                 Y = 2
 
-        class Options(int):
+        class Options:
             DISABLE = -1
             IGNORE = 0
             ENABLE = 1
 
-        class Pickup(int):
+        class Pickup:
             pass
 
-            class Mode(int):
+            class Mode:
                 ADD = 0
                 MULTIPLY = 1
                 DIVIDE = 2
 
-        class Pulse(int):
+        class Pulse:
             pass
 
-            class TargetType(int):
+            class TargetType:
                 CHANNEL = 0
                 GROUP = 1
 
-        class Sequence(int):
+        class Sequence:
             pass
 
-            class Mode(int):
+            class Mode:
                 STOP = 0
                 LOOP = 1
                 LAST = 2
 
-        class Sfx(int):
+        class Sfx:
             pass
 
-            class Direction(int):
+            class Direction:
                 CIRCULAR = 0
                 HORIZONTAL = 1
                 LEFT = 2
@@ -305,7 +303,7 @@ class ObjEnum(int):
                 DOWN = 5
                 UP = 6
 
-            class Reverb(int):
+            class Reverb:
                 GENERIC = 0
                 PADDED_CELL = 1
                 ROOM = 2
@@ -328,10 +326,10 @@ class ObjEnum(int):
                 SEWER_PIPE = 19
                 UNDER_WATER = 20
 
-        class Shader(int):
+        class Shader:
             pass
 
-            class Layer(int):
+            class Layer:
                 BG = 1
                 MG = 2
                 B5 = 3
@@ -348,10 +346,10 @@ class ObjEnum(int):
                 UI = 14
                 MAX = 15
 
-        class Song(int):
+        class Song:
             pass
 
-            class Direction(int):
+            class Direction:
                 CIRCULAR = 0
                 HORIZONTAL = 1
                 LEFT = 2
@@ -360,60 +358,60 @@ class ObjEnum(int):
                 DOWN = 5
                 UP = 6
 
-        class StaticCamera(int):
+        class StaticCamera:
             pass
 
-            class Axis(int):
+            class Axis:
                 NONE = 0
                 X = 1
                 Y = 2
 
-        class Stop(int):
+        class Stop:
             pass
 
-            class Mode(int):
+            class Mode:
                 STOP = 0
                 PAUSE = 1
                 RESUME = 2
 
-        class Teleport(int):
+        class Teleport:
             pass
 
-            class Gravity(int):
+            class Gravity:
                 NONE = 0
                 NORMAL = 1
                 FLIPPED = 2
                 TOGGLE = 3
 
-        class Touch(int):
+        class Touch:
             pass
 
-            class Mode(int):
+            class Mode:
                 FLIP = 0
                 ON = 1
                 OFF = 2
 
-            class OnlyPlayer(int):
+            class OnlyPlayer:
                 NONE = 0
                 P1 = 1
                 P2 = 2
 
-        class Ui(int):
+        class Ui:
             pass
 
-            class RefX(int):
+            class RefX:
                 AUTO = 1
                 CENTER = 2
                 LEFT = 3
                 RIGHT = 4
 
-            class RefY(int):
+            class RefY:
                 AUTO = 1
                 CENTER = 2
                 BOTTOM = 3
                 TOP = 4
 
-    class ZLayer(int):
+    class ZLayer:
         B5 = -5
         B4 = -3
         B3 = -1

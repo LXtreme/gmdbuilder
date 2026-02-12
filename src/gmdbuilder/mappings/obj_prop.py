@@ -1,5 +1,5 @@
 
-class ObjProp(str):
+class ObjProp:
     ID = "a1"
     X = "a2"
     Y = "a3"
@@ -54,7 +54,7 @@ class ObjProp(str):
     DONT_BOOST_X = "a509"
     EXTENDED_COLLISION = "a511"
 
-    class Animated(str):
+    class Animated:
         RANDOMIZE_START = "a106"
         ANIMATION_SPEED = "a107"
         USE_SPEED = "a122"
@@ -64,10 +64,10 @@ class ObjProp(str):
         SINGLE_FRAME = "a462"
         OFFSET_ANIM = "a592"
 
-        class Explosion(str):
+        class Explosion:
             DISABLE_SHINE = "a127"
 
-    class ItemLabel(str):
+    class ItemLabel:
         ITEM_ID = "a80"
         SECONDS_ONLY = "a389"
         SPECIAL_ID = "a390"
@@ -75,7 +75,7 @@ class ObjProp(str):
         TIME_COUNTER = "a466"
         KERNING = "a488"
 
-    class Level(str):
+    class Level:
         AUDIO_TRACK = 'kA1'
         GAMEMODE = 'kA2'
         MINI_MODE = 'kA3'
@@ -119,40 +119,40 @@ class ObjProp(str):
         COLORS = 'kS38'
         COLOR_PAGE = 'kS39'
 
-        class Color17(str):
+        class Color17:
             pass
 
-            class Background(str):
+            class Background:
                 RED = 'kS1'
                 GREEN = 'kS2'
                 BLUE = 'kS3'
                 PLAYER_COLOR = 'kS16'
 
-            class Ground(str):
+            class Ground:
                 RED = 'kS4'
                 GREEN = 'kS5'
                 BLUE = 'kS6'
                 PLAYER_COLOR = 'kS17'
 
-            class Line(str):
+            class Line:
                 RED = 'kS7'
                 GREEN = 'kS8'
                 BLUE = 'kS9'
                 PLAYER_COLOR = 'kS18'
 
-            class Object(str):
+            class Object:
                 RED = 'kS10'
                 GREEN = 'kS11'
                 BLUE = 'kS12'
                 PLAYER_COLOR = 'kS19'
 
-            class Object2(str):
+            class Object2:
                 RED = 'kS13'
                 GREEN = 'kS14'
                 BLUE = 'kS15'
                 PLAYER_COLOR = 'kS20'
 
-        class Color19(str):
+        class Color19:
             BACKGROUND = 'kS29'
             GROUND = 'kS30'
             LINE = 'kS31'
@@ -163,17 +163,17 @@ class ObjProp(str):
             COLOR_4 = 'kS36'
             LINE_3D = 'kS37'
 
-    class Particle(str):
+    class Particle:
         DATA = "a145"
         USE_OBJ_COLOR = "a146"
         UNIFORM_OBJ_COLOR = "a147"
         QUICK_START = "a211"
 
-    class Saw(str):
+    class Saw:
         ROTATION_SPEED = "a97"
         DISABLE_ROTATION = "a98"
 
-    class StartPos(str):
+    class StartPos:
         TARGET_ORDER = 'kA19'
         REVERSE_MODE = 'kA20'
         DISABLE = 'kA21'
@@ -202,17 +202,17 @@ class ObjProp(str):
         DECREASE_BOOST_SLIDE = 'kA45'
         SONG_DONT_RESET = 'kA46'
 
-    class Template(str):
+    class Template:
         REFERENCE_ONLY = "a157"
 
-    class Text(str):
+    class Text:
         DATA = "a31"
         KERNING = "a488"
 
-    class Timewarp(str):
+    class Timewarp:
         MOD = "a120"
 
-    class Trigger(str):
+    class Trigger:
         TOUCH_TRIGGER = "a11"
         EDITOR_PREVIEW = "a13"
         INTERACTIBLE = "a36"
@@ -229,7 +229,7 @@ class ObjProp(str):
         DISABLE_MULTI_ACTIVATE = "a444"
         CONTROL_ID = "a534"
 
-        class AdvFollow(str):
+        class AdvFollow:
             TARGET_ID = "a51"
             FOLLOW_ID = "a71"
             PLAYER_1 = "a138"
@@ -299,20 +299,20 @@ class ObjProp(str):
             EXCLUSIVE = "a571"
             INIT = "a572"
 
-        class AdvRandom(str):
+        class AdvRandom:
             m_56 = "a56"
             TARGETS = "a152"
 
-        class Alpha(str):
+        class Alpha:
             DURATION = "a10"
             OPACITY = "a35"
             GROUP_ID = "a51"
 
-        class Animate(str):
+        class Animate:
             TARGET_ID = "a51"
             ANIMATION_ID = "a76"
 
-        class AnimateKeyframe(str):
+        class AnimateKeyframe:
             TARGET_ID = "a51"
             PARENT_ID = "a71"
             ANIMATION_ID = "a76"
@@ -323,7 +323,7 @@ class ObjProp(str):
             POS_Y_MOD = "a545"
             SCALE_Y_MOD = "a546"
 
-        class Arrow(str):
+        class Arrow:
             DIR_Y_NEG = "a166"
             DIR_X_POS = "a167"
             EDIT_VELOCITY = "a169"
@@ -336,49 +336,49 @@ class ObjProp(str):
             OVERRIDE_VELOCITY = "a584"
             DONT_SLIDE = "a585"
 
-        class BgSpeed(str):
+        class BgSpeed:
             X_MOD = "a143"
             Y_MOD = "a144"
 
-        class Bpm(str):
+        class Bpm:
             DURATION = "a10"
             BPM = "a498"
             SPEED = "a499"
             DISABLE = "a500"
             BPB = "a501"
 
-        class CameraEdge(str):
+        class CameraEdge:
             TARGET_ID = "a51"
             DIRECTION = "a164"
 
-        class CameraGuide(str):
+        class CameraGuide:
             OFFSET_X = "a28"
             OFFSET_Y = "a29"
             ZOOM = "a371"
             PREVIEW_OPACITY = "a506"
 
-        class CameraMode(str):
+        class CameraMode:
             FREE_MODE = "a111"
             EDIT_SETTINGS = "a112"
             EASING = "a113"
             PADDING = "a114"
 
-        class ChangeBg(str):
+        class ChangeBg:
             BG_ID = "a533"
 
-        class ChangeGr(str):
+        class ChangeGr:
             GR_ID = "a533"
 
-        class ChangeMg(str):
+        class ChangeMg:
             MG_ID = "a533"
 
-        class Checkpoint(str):
+        class Checkpoint:
             SPAWN_ID = "a51"
             TARGET_POS = "a71"
             PLAYER_POS = "a138"
             RESPAWN_ID = "a448"
 
-        class Collectible(str):
+        class Collectible:
             GROUP_ID = "a51"
             SUB_COUNT = "a78"
             ITEM_ID = "a80"
@@ -388,10 +388,10 @@ class ObjProp(str):
             PARTICLE = "a440"
             NO_ANIM = "a463"
 
-            class Coin(str):
+            class Coin:
                 COIN_ID = "a12"
 
-        class Collision(str):
+        class Collision:
             m_10 = "a10"
             TARGET_ID = "a51"
             ACTIVATE_GROUP = "a56"
@@ -402,11 +402,11 @@ class ObjProp(str):
             PLAYER_2 = "a200"
             BETWEEN_PLAYERS = "a201"
 
-        class CollisionBlock(str):
+        class CollisionBlock:
             BLOCK_ID = "a80"
             DYNAMIC = "a94"
 
-        class Color(str):
+        class Color:
             RED = "a7"
             GREEN = "a8"
             BLUE = "a9"
@@ -422,21 +422,21 @@ class ObjProp(str):
             COPY_OPACITY = "a60"
             DISABLE_LEGACY_HSV = "a210"
 
-        class Count(str):
+        class Count:
             TARGET_ID = "a51"
             ACTIVATE_GROUP = "a56"
             COUNT = "a77"
             ITEM_ID = "a80"
             MULTI_ACTIVATE = "a104"
 
-        class Dash(str):
+        class Dash:
             SPEED = "a586"
             COLLIDE = "a587"
             END_BOOST = "a588"
             STOP_SLIDE = "a589"
             MAX_DURATION = "a590"
 
-        class EditAdvFollow(str):
+        class EditAdvFollow:
             TARGET_ID = "a51"
             FOLLOW_ID = "a71"
             PLAYER_1 = "a138"
@@ -512,7 +512,7 @@ class ObjProp(str):
             M_571 = "a571"
             M_572 = "a572"
 
-        class Effect(str):
+        class Effect:
             DURATION = "a10"
             HSV = "a49"
             TARGET_ID = "a51"
@@ -571,37 +571,37 @@ class ObjProp(str):
             SPECIAL_CENTER = "a538"
             DEAP = "a539"
 
-        class End(str):
+        class End:
             SPAWN_ID = "a51"
             TARGET_POS = "a71"
             NO_EFFECTS = "a460"
             NO_SFX = "a461"
             INSTANT = "a487"
 
-        class EndWall(str):
+        class EndWall:
             GROUP_ID = "a51"
             LOCK_Y = "a59"
             REVERSE = "a118"
 
-        class EnterPreset(str):
+        class EnterPreset:
             ENTER_ONLY = "a217"
             ENTER_CHANNEL = "a344"
 
-        class Event(str):
+        class Event:
             SPAWN_ID = "a51"
             EVENTS = "a430"
             M_431 = "a431"
             EXTRA_ID_1 = "a447"
             EXTRA_ID_2 = "a525"
 
-        class Follow(str):
+        class Follow:
             DURATION = "a10"
             TARGET_ID = "a51"
             FOLLOW_TARGET = "a71"
             MOD_X = "a72"
             MOD_Y = "a73"
 
-        class FollowPlayerY(str):
+        class FollowPlayerY:
             DURATION = "a10"
             TARGET_ID = "a51"
             SPEED = "a90"
@@ -609,7 +609,7 @@ class ObjProp(str):
             OFFSET = "a92"
             MAX_SPEED = "a105"
 
-        class ForceBlock(str):
+        class ForceBlock:
             VALUE = "a149"
             VALUE_MIN = "a526"
             VALUE_MAX = "a527"
@@ -617,19 +617,19 @@ class ObjProp(str):
             RANGE = "a529"
             FORCE_ID = "a530"
 
-        class GamemodePortal(str):
+        class GamemodePortal:
             FREE_MODE = "a111"
             EDIT_SETTINGS = "a112"
             EASING = "a113"
             PADDING = "a114"
 
-        class GameplayOffset(str):
+        class GameplayOffset:
             OFFSET_X = "a28"
             OFFSET_Y = "a29"
             DONT_ZOOM_X = "a58"
             DONT_ZOOM_Y = "a59"
 
-        class Gradient(str):
+        class Gradient:
             BLENDING = "a174"
             LAYER = "a202"
             U = "a203"
@@ -646,13 +646,13 @@ class ObjProp(str):
             PREVIEW_OPACITY = "a456"
             DISABLE_ALL = "a508"
 
-        class Gravity(str):
+        class Gravity:
             PLAYER_1 = "a138"
             VALUE = "a148"
             PLAYER_2 = "a200"
             PLAYER_TOUCH = "a201"
 
-        class InstantCollision(str):
+        class InstantCollision:
             TRUE_ID = "a51"
             FALSE_ID = "a71"
             BLOCK_A = "a80"
@@ -661,14 +661,14 @@ class ObjProp(str):
             PLAYER_2 = "a200"
             BETWEEN_PLAYERS = "a201"
 
-        class InstantCount(str):
+        class InstantCount:
             TARGET_ID = "a51"
             ACTIVATE_GROUP = "a56"
             COUNT = "a77"
             ITEM_ID = "a80"
             MODE = "a88"
 
-        class ItemCompare(str):
+        class ItemCompare:
             TRUE_ID = "a51"
             FALSE_ID = "a71"
             ITEM_ID_1 = "a80"
@@ -686,7 +686,7 @@ class ObjProp(str):
             SIGN_OP_1 = "a578"
             SIGN_OP_2 = "a579"
 
-        class ItemEdit(str):
+        class ItemEdit:
             TARGET_ITEM_ID = "a51"
             ITEM_ID_1 = "a80"
             ITEM_ID_2 = "a95"
@@ -702,14 +702,14 @@ class ObjProp(str):
             SIGN_OP_1 = "a578"
             SIGN_OP_2 = "a579"
 
-        class ItemPersist(str):
+        class ItemPersist:
             ITEM_ID = "a80"
             SET_PERSISTENT = "a491"
             TARGET_ALL = "a492"
             RESET = "a493"
             TIMER = "a494"
 
-        class Keyframe(str):
+        class Keyframe:
             DURATION = "a10"
             EASING = "a30"
             GROUP_ID = "a51"
@@ -729,20 +729,20 @@ class ObjProp(str):
             FULL_ROTATIONS = "a537"
             SPAWN_DELAY = "a557"
 
-        class LinkVisible(str):
+        class LinkVisible:
             GROUP_ID = "a51"
 
-        class MgEdit(str):
+        class MgEdit:
             DURATION = "a10"
             OFFSET_Y = "a29"
             EASING = "a30"
             EASE_RATE = "a85"
 
-        class MgSpeed(str):
+        class MgSpeed:
             X_MOD = "a143"
             Y_MOD = "a144"
 
-        class Move(str):
+        class Move:
             DURATION = "a10"
             MOVE_X = "a28"
             MOVE_Y = "a29"
@@ -771,24 +771,24 @@ class ObjProp(str):
             M_519 = "a519"
             SILENT = "a544"
 
-        class ObjectControl(str):
+        class ObjectControl:
             TARGET_ID = "a51"
 
-        class OffsetCamera(str):
+        class OffsetCamera:
             OFFSET_X = "a28"
             OFFSET_Y = "a29"
             EASING = "a30"
             EASE_RATE = "a85"
             AXIS = "a101"
 
-        class OffsetGameplay(str):
+        class OffsetGameplay:
             AXIS = "a101"
 
-        class OnDeath(str):
+        class OnDeath:
             GROUP_ID = "a51"
             ACTIVATE_GROUP = "a56"
 
-        class Options(str):
+        class Options:
             STREAK_ADDITIVE = "a159"
             UNLINK_DUAL_GRAVITY = "a160"
             HIDE_GROUND = "a161"
@@ -804,18 +804,18 @@ class ObjProp(str):
             DISABLE_DEATH_SFX = "a576"
             BOOST_SLIDE = "a593"
 
-        class OrbSaw(str):
+        class OrbSaw:
             ROTATION_SPEED = "a97"
             DISABLE_ROTATION = "a98"
 
-        class Pickup(str):
+        class Pickup:
             COUNT = "a77"
             ITEM_ID = "a80"
             MODE = "a88"
             OVERRIDE = "a139"
             MOD = "a449"
 
-        class PlayerControl(str):
+        class PlayerControl:
             m_58 = "a58"
             m_59 = "a59"
             PLAYER_1 = "a138"
@@ -826,7 +826,7 @@ class ObjProp(str):
             STOP_ROTATION = "a542"
             STOP_SLIDE = "a543"
 
-        class Pulse(str):
+        class Pulse:
             RED = "a7"
             GREEN = "a8"
             BLUE = "a9"
@@ -843,15 +843,15 @@ class ObjProp(str):
             EXCLUSIVE = "a86"
             DISABLE_STATIC_HSV = "a210"
 
-        class Random(str):
+        class Random:
             CHANCE = "a10"
             TRUE_ID = "a51"
             FALSE_ID = "a71"
 
-        class Reset(str):
+        class Reset:
             GROUP_ID = "a51"
 
-        class Rotate(str):
+        class Rotate:
             DURATION = "a10"
             EASING = "a30"
             TARGET_ID = "a51"
@@ -873,7 +873,7 @@ class ObjProp(str):
             MAX_X_ID = "a518"
             MAX_Y_ID = "a519"
 
-        class RotateCamera(str):
+        class RotateCamera:
             DURATION = "a10"
             EASING = "a30"
             DEGREES = "a68"
@@ -881,7 +881,7 @@ class ObjProp(str):
             EASE_RATE = "a85"
             SNAP_360 = "a394"
 
-        class Scale(str):
+        class Scale:
             DURATION = "a10"
             EASING = "a30"
             TARGET_ID = "a51"
@@ -895,7 +895,7 @@ class ObjProp(str):
             RELATIVE_ROTATION = "a452"
             RELATIVE_SCALE = "a577"
 
-        class Sequence(str):
+        class Sequence:
             SEQUENCE = "a435"
             MODE = "a436"
             MIN_INTERVAL = "a437"
@@ -903,7 +903,7 @@ class ObjProp(str):
             RESET_TYPE = "a439"
             UNIQUE_REMAP = "a505"
 
-        class Sfx(str):
+        class Sfx:
             DURATION = "a10"
             GROUP_ID_1 = "a51"
             GROUP_ID_2 = "a71"
@@ -948,7 +948,7 @@ class ObjProp(str):
             VOLUME_RAND = "a598"
             PITCH_STEPS = "a599"
 
-        class Shader(str):
+        class Shader:
             FADE_TIME = "a10"
             EASING = "a30"
             SHOCKWAVE_CENTER_ID = "a51"
@@ -1106,12 +1106,12 @@ class ObjProp(str):
             MOTION_BLUR_EMPTY_ONLY = "a515"
             DISABLE_PREVIEW = "a531"
 
-        class Shake(str):
+        class Shake:
             DURATION = "a10"
             STRENGTH = "a75"
             INTERVAL = "a84"
 
-        class Song(str):
+        class Song:
             DURATION = "a10"
             GROUP_ID_1 = "a51"
             GROUP_ID_2 = "a71"
@@ -1159,7 +1159,7 @@ class ObjProp(str):
             M_598 = "a598"
             M_599 = "a599"
 
-        class Spawn(str):
+        class Spawn:
             GROUP_ID = "a51"
             DELAY = "a63"
             DISABLE_PREVIEW = "a102"
@@ -1168,7 +1168,7 @@ class ObjProp(str):
             DELAY_RAND = "a556"
             RESET_REMAP = "a581"
 
-        class SpawnParticle(str):
+        class SpawnParticle:
             PARTICLE_GROUP = "a51"
             POSITION_GROUP = "a71"
             OFFSET_X = "a547"
@@ -1181,11 +1181,11 @@ class ObjProp(str):
             SCALE = "a554"
             SCALE_RAND = "a555"
 
-        class StateBlock(str):
+        class StateBlock:
             STATE_ON = "a51"
             STATE_OFF = "a71"
 
-        class StaticCamera(str):
+        class StaticCamera:
             DURATION = "a10"
             EASING = "a30"
             TARGET_ID = "a71"
@@ -1198,12 +1198,12 @@ class ObjProp(str):
             VELOCITY_MOD = "a454"
             EXIT_INSTANT = "a465"
 
-        class Stop(str):
+        class Stop:
             TARGET_ID = "a51"
             USE_CONTROL_ID = "a535"
             MODE = "a580"
 
-        class Teleport(str):
+        class Teleport:
             TARGET_ID = "a51"
             SMOOTH_EASE = "a55"
             USE_FORCE = "a345"
@@ -1221,13 +1221,13 @@ class ObjProp(str):
             SNAP_GROUND = "a510"
             REDIRECT_DASH = "a591"
 
-            class ExitPortal(str):
+            class ExitPortal:
                 M_350 = "a350"
 
-            class Portal(str):
+            class Portal:
                 DISTANCE = "a54"
 
-        class Time(str):
+        class Time:
             TARGET_ID = "a51"
             ITEM_ID = "a80"
             START_TIME = "a467"
@@ -1237,34 +1237,34 @@ class ObjProp(str):
             START_PAUSED = "a471"
             STOP = "a474"
 
-        class TimeControl(str):
+        class TimeControl:
             ITEM_ID = "a80"
             STOP = "a472"
 
-        class TimeEvent(str):
+        class TimeEvent:
             TARGET_ID = "a51"
             ITEM_ID = "a80"
             TARGET_TIME = "a473"
             MULTI_ACTIVATE = "a475"
 
-        class Toggle(str):
+        class Toggle:
             GROUP_ID = "a51"
             ACTIVATE_GROUP = "a56"
 
-        class ToggleBlock(str):
+        class ToggleBlock:
             GROUP_ID = "a51"
             ACTIVATE_GROUP = "a56"
             CLAIM_TOUCH = "a445"
             SPAWN_ONLY = "a504"
 
-        class Touch(str):
+        class Touch:
             GROUP_ID = "a51"
             HOLD_MODE = "a81"
             TOGGLE_MODE = "a82"
             DUAL_MODE = "a89"
             ONLY_PLAYER = "a198"
 
-        class Ui(str):
+        class Ui:
             GROUP_ID = "a51"
             UI_TARGET = "a71"
             REF_X = "a385"
@@ -1272,7 +1272,7 @@ class ObjProp(str):
             RELATIVE_X = "a387"
             RELATIVE_Y = "a388"
 
-        class ZoomCamera(str):
+        class ZoomCamera:
             DURATION = "a10"
             EASING = "a30"
             EASE_RATE = "a85"
