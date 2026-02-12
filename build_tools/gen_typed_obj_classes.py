@@ -87,7 +87,12 @@ def base_name(expr: ast.expr) -> str:
 def is_enumish_class(cls: ast.ClassDef) -> bool:
     """
     Accept Enum-like bases: Enum, IntEnum, StrEnum, Flag, IntFlag, or anything ending with Enum/Flag.
+    Also accept plain classes (no bases) to support simple namespace classes.
     """
+    # Accept classes with no bases (plain classes)
+    if not cls.bases:
+        return True
+    
     for b in cls.bases:
         bn = base_name(b)
         if not bn:
@@ -107,6 +112,7 @@ def parse_enum_file(enums_py: Path) -> EnumNode:
     """
     Parses nested Enum classes and builds an EnumNode tree.
     Picks the first top-level Enum-ish class as the root.
+    If no top-level class exists, creates a synthetic root from module-level assignments.
 
     Deduplication:
     - Within each Enum class, multiple labels may map to the same raw_key string (aliases).
@@ -192,11 +198,71 @@ def parse_enum_file(enums_py: Path) -> EnumNode:
 
         return node
 
+    # Create a synthetic root from module-level assignments and classes
+    # This handles flat file structures where properties are at module level
+    root = EnumNode(name="ObjProp")
+    
+    # raw_key -> list of labels (encounter order)
+    alias_map: Dict[str, List[str]] = {}
+
+    def consider_member(label_name: str, raw_key: str) -> None:
+        if not isinstance(raw_key, str) or not raw_key:
+            return
+        if not valid_identifier(raw_key):
+            return
+        if not valid_identifier(label_name):
+            return
+        alias_map.setdefault(raw_key, []).append(label_name)
+
+    # Collect module-level assignments
+    for item in tree.body:
+        if isinstance(item, ast.Assign) and len(item.targets) == 1 and isinstance(item.targets[0], ast.Name):
+            label_name = item.targets[0].id
+            val = item.value
+            if isinstance(val, ast.Constant) and isinstance(val.value, str):
+                consider_member(label_name, val.value)
+        
+        if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name) and item.value is not None:
+            label_name = item.target.id
+            val = item.value
+            if isinstance(val, ast.Constant) and isinstance(val.value, str):
+                consider_member(label_name, val.value)
+
+    # Convert to members
+    seen_keys_in_order: List[str] = []
+    seen_set: set[str] = set()
+
+    def maybe_add_key(raw_key: str) -> None:
+        if raw_key in seen_set:
+            return
+        seen_set.add(raw_key)
+        seen_keys_in_order.append(raw_key)
+
+    for item in tree.body:
+        if isinstance(item, ast.Assign) and len(item.targets) == 1 and isinstance(item.targets[0], ast.Name):
+            val = item.value
+            if isinstance(val, ast.Constant) and isinstance(val.value, str):
+                rk = val.value
+                if rk in alias_map:
+                    maybe_add_key(rk)
+        if isinstance(item, ast.AnnAssign) and item.value is not None:
+            val = item.value
+            if isinstance(val, ast.Constant) and isinstance(val.value, str):
+                rk = val.value
+                if rk in alias_map:
+                    maybe_add_key(rk)
+
+    for rk in seen_keys_in_order:
+        labels = alias_map[rk]
+        primary = labels[0]
+        root.members.append((rk, primary, labels))
+
+    # Add nested classes as children
     for item in tree.body:
         if isinstance(item, ast.ClassDef) and is_enumish_class(item):
-            return build_from_class(item)
+            root.children.append(build_from_class(item))
 
-    raise SystemExit(f"No top-level Enum class found in: {enums_py}")
+    return root
 
 
 # ----------------------------
@@ -247,12 +313,11 @@ def emit_typeddict_classes(
     lines: List[str] = []
 
     def walk(node: EnumNode, parent_td_name: Optional[str]) -> None:
-        td_name = root_typeddict_name if parent_td_name is None else node.name
+        td_name = root_typeddict_name if parent_td_name is None else node.name + "Type"
         base_clause = "TypedDict" if parent_td_name is None else parent_td_name
 
-        lines.append(f"class {td_name}({base_clause}, total=False):")
-
-        emitted_any = False
+        # Collect fields first to check if we have any
+        fields_to_emit = []
         for raw_key, primary_label, aliases in node.members:
             num = extract_numeric_id(raw_key, prefix)
 
@@ -264,14 +329,16 @@ def emit_typeddict_classes(
                 typ = tsv_types.get(num, "").strip() or "Any"
 
             comment = format_comment(primary_label, aliases)
-            lines.append(f"    {raw_key}: {typ}  {comment}")
-            emitted_any = True
+            fields_to_emit.append(f"    {raw_key}: {typ}  {comment}")
 
-        if not emitted_any:
-            lines.append("    pass")
+        # Only emit class if it has fields
+        if fields_to_emit:
+            lines.append(f"class {td_name}({base_clause}, total=False):")
+            for field in fields_to_emit:
+                lines.append(field)
+            lines.append("")
 
-        lines.append("")
-
+        # Walk children regardless of whether parent was emitted
         for child in node.children:
             walk(child, td_name)
 

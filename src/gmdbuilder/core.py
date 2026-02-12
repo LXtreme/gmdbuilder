@@ -85,7 +85,6 @@ ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
 }
 """Unfinished mapping of Object IDs to non-common Object TypedDicts"""
 
-
 class Object(dict[str, Any]):
     """
     Note: Not for users to call directly
