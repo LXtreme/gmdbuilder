@@ -33,16 +33,10 @@ class ItemLabel:
         POINTS = -2
         ATTEMPTS = -3
 
-class Level:
-    pass
-
-    class Color17:
-        pass
-
-        class PlayerColor:
-            NONE = 0
-            PLAYER_1 = 1
-            PLAYER_2 = 2
+class LevelPlayerColor17:
+    NONE = 0
+    PLAYER_1 = 1
+    PLAYER_2 = 2
 
 class OldColor:
     PLAYER_1 = 1
@@ -75,35 +69,26 @@ class Trigger:
             MODE_2 = 1
             MODE_3 = 2
 
-    class Arrow:
-        pass
+    class ArrowDirection:
+        NONE = 0
+        UP = 1
+        DOWN = 2
+        LEFT = 3
+        RIGHT = 4
 
-        class Direction:
-            NONE = 0
-            UP = 1
-            DOWN = 2
-            LEFT = 3
-            RIGHT = 4
+    class BpmSpeed:
+        NORMAL = 0
+        SLOW = 1
+        FAST = 2
+        VERY_FAST = 3
+        SUPER_FAST = 4
 
-    class Bpm:
-        pass
-
-        class Speed:
-            NORMAL = 0
-            SLOW = 1
-            FAST = 2
-            VERY_FAST = 3
-            SUPER_FAST = 4
-
-    class CameraEdge:
-        pass
-
-        class Direction:
-            NONE = 0
-            LEFT = 1
-            RIGHT = 2
-            UP = 3
-            DOWN = 4
+    class CameraEdgeDirection:
+        NONE = 0
+        LEFT = 1
+        RIGHT = 2
+        UP = 3
+        DOWN = 4
 
     class Effect:
         pass
@@ -126,13 +111,10 @@ class Trigger:
             CR = -10
             TR = -11
 
-    class EnterPreset:
-        pass
-
-        class EnterOnly:
-            NONE = 0
-            ENTER = 1
-            EXIT = 2
+    class EnterOnlyPreset:
+        NONE = 0
+        ENTER = 1
+        EXIT = 2
 
     class Gradient:
         pass
@@ -160,13 +142,10 @@ class Trigger:
             UI = 14
             MAX = 15
 
-    class InstantCount:
-        pass
-
-        class Mode:
-            EQUAL = 0
-            LARGER = 1
-            SMALLER = 2
+    class InstantCountMode:
+        EQUAL = 0
+        LARGER = 1
+        SMALLER = 2
 
     class ItemCompare:
         pass
@@ -237,57 +216,39 @@ class Trigger:
             EVEN = 1
             DIST = 2
 
-    class Move:
-        pass
+    class MoveTargetAxis:
+        NONE = 0
+        X = 1
+        Y = 2
 
-        class TargetAxis:
-            NONE = 0
-            X = 1
-            Y = 2
+    class OffsetCameraAxis:
+        NONE = 0
+        X = 1
+        Y = 2
 
-    class OffsetCamera:
-        pass
-
-        class Axis:
-            NONE = 0
-            X = 1
-            Y = 2
-
-    class OffsetGameplay:
-        pass
-
-        class Axis:
-            NONE = 0
-            X = 1
-            Y = 2
+    class OffsetGameplayAxis:
+        NONE = 0
+        X = 1
+        Y = 2
 
     class Options:
         DISABLE = -1
         IGNORE = 0
         ENABLE = 1
 
-    class Pickup:
-        pass
+    class PickupMode:
+        ADD = 0
+        MULTIPLY = 1
+        DIVIDE = 2
 
-        class Mode:
-            ADD = 0
-            MULTIPLY = 1
-            DIVIDE = 2
+    class PulseTargetType:
+        CHANNEL = 0
+        GROUP = 1
 
-    class Pulse:
-        pass
-
-        class TargetType:
-            CHANNEL = 0
-            GROUP = 1
-
-    class Sequence:
-        pass
-
-        class Mode:
-            STOP = 0
-            LOOP = 1
-            LAST = 2
+    class SequenceMode:
+        STOP = 0
+        LOOP = 1
+        LAST = 2
 
     class Sfx:
         pass
@@ -324,62 +285,47 @@ class Trigger:
             SEWER_PIPE = 19
             UNDER_WATER = 20
 
-    class Shader:
-        pass
+    class ShaderLayer:
+        BG = 1
+        MG = 2
+        B5 = 3
+        B4 = 4
+        B3 = 5
+        B2 = 6
+        B1 = 7
+        P = 8
+        T1 = 9
+        T2 = 10
+        T3 = 11
+        T4 = 12
+        G = 13
+        UI = 14
+        MAX = 15
 
-        class Layer:
-            BG = 1
-            MG = 2
-            B5 = 3
-            B4 = 4
-            B3 = 5
-            B2 = 6
-            B1 = 7
-            P = 8
-            T1 = 9
-            T2 = 10
-            T3 = 11
-            T4 = 12
-            G = 13
-            UI = 14
-            MAX = 15
+    class SongDirection:
+        CIRCULAR = 0
+        HORIZONTAL = 1
+        LEFT = 2
+        RIGHT = 3
+        VERTICAL = 4
+        DOWN = 5
+        UP = 6
 
-    class Song:
-        pass
+    class StaticCameraAxis:
+        NONE = 0
+        X = 1
+        Y = 2
 
-        class Direction:
-            CIRCULAR = 0
-            HORIZONTAL = 1
-            LEFT = 2
-            RIGHT = 3
-            VERTICAL = 4
-            DOWN = 5
-            UP = 6
+    class StopMode:
+        STOP = 0
+        PAUSE = 1
+        RESUME = 2
 
-    class StaticCamera:
-        pass
-
-        class Axis:
-            NONE = 0
-            X = 1
-            Y = 2
-
-    class Stop:
-        pass
-
-        class Mode:
-            STOP = 0
-            PAUSE = 1
-            RESUME = 2
-
-    class Teleport:
-        pass
-
-        class Gravity:
-            NONE = 0
-            NORMAL = 1
-            FLIPPED = 2
-            TOGGLE = 3
+    class TeleportGravity:
+        NONE = 0
+        NORMAL = 1
+        FLIPPED = 2
+        TOGGLE = 3
 
     class Touch:
         pass
