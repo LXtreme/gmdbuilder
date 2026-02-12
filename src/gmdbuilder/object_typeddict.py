@@ -1,5 +1,48 @@
 
-from typing import TypedDict, Required, Any
+from typing import Literal, TypedDict, Required, Any
+
+EASING = Literal[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
+XY_ONLY = Literal[0,1,2]
+COLOR1P9 = Literal[0,1,2,3,4,5,6,7,8]
+SINGLE_COLOR_TYPE = Literal[0,1,2]
+TRIGGER_LAYER = Literal[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+SOUND_DIRS = Literal[0,1,2,3,4,5,6]
+KEYFRAME_ROT_DIR = Literal[0,1,2]
+KEYFRAME_MODE = Literal[0,1,2]
+STOP_MODE = Literal[0,1,2]
+ADVANCED_FOLLOW_MODE = Literal[0,1,2]
+ADVANCED_FOLLOW_PAGE_2_MODE = Literal[0,1,2]
+AREA_DIR_BUTTONS_DIR = Literal[0,1,2]
+AREA_CENTER_SPECIAL = Literal[-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11]
+BACKGROUND = Literal[
+    1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
+    21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,
+    40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59
+]
+GROUND = Literal[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
+MIDDLE_GROUND = Literal[0,1,2,3]
+TOUCH_PLAYER_ONLY = Literal[0,1,2]
+TOUCH_TOGGLE = Literal[0,1,2]
+INSTANT_COUNT_COMPARISON = Literal[0,1,2]
+GRADIENT_BLEND = Literal[0,1,2,3]
+CAMERA_EDGE = Literal[0,1,2,3,4]
+REVERB_TYPE = Literal[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
+PICKUP_MULTIPLY_DIVIDE = Literal[0,1,2]
+ITEM_TRIGGER_TYPE = Literal[0,1,2,3,4,5]
+ITEM_TRIGGER_OP = Literal[0,1,2,3,4]
+ITEM_TRIGGER_ABS_NEG = Literal[0,1,2]
+ITEM_TRIGGER_ROUNDING = Literal[0,1,2,3]
+ITEM_TRIGGER_COMPARE_OP = Literal[0,1,2,3,4]
+SEQUENCE_MODE = Literal[0,1,2]
+ARROW_DIR = Literal[1,2,3,4]
+LABEL_ALIGN = Literal[0,1,2]
+LABEL_SPECIAL = Literal[0,-1,-2,-3]
+ALIGN_REF = Literal[0,1,2,3]
+OPTION_SET = Literal[0,1,-1]
+TELEPORT_GRAVITY = Literal[0,1,2,3]
+ENTER_EXIT_ONLY = Literal[0,1,2]
+BPM_SPEED = Literal[0,1,2,3,4]
+
 
 # DO NOT EDIT. INSTEAD EDIT TYPEMAP.TSV AND REGENERATE
 # ======================================================================
