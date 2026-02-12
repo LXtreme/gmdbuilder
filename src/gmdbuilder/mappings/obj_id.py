@@ -1,223 +1,223 @@
-class ObjId:
-    LEVEL_START = 0
-    TEXT = 914
-    ITEM_LABEL = 1615
-    PARTICLE_OBJECT = 2065
 
-    class Collectible:
-        SECRET_COIN = 142
-        KEY = 1275
-        USER_COIN = 1329
-        SMALL_COIN = 1614
+LEVEL_START = 0
+TEXT = 914
+ITEM_LABEL = 1615
+PARTICLE_OBJECT = 2065
 
-    class Deprecated:
-        OLD_COLOR_LINE = 104
-        OLD_COLOR_1 = 221
-        OLD_COLOR_2 = 717
-        OLD_COLOR_3 = 718
-        OLD_COLOR_4 = 734
+class Collectible:
+    SECRET_COIN = 142
+    KEY = 1275
+    USER_COIN = 1329
+    SMALL_COIN = 1614
 
-    class Modifier:
-        WAVE_COLLISION = 1755
-        STOP_JUMP = 1813
-        STOP_DASH = 1829
-        HEAD_COLLISION = 1859
-        GRAVITY_FLIP = 2866
+class Deprecated:
+    OLD_COLOR_LINE = 104
+    OLD_COLOR_1 = 221
+    OLD_COLOR_2 = 717
+    OLD_COLOR_3 = 718
+    OLD_COLOR_4 = 734
 
-    class Orb:
-        YELLOW = 36
-        BLUE = 84
-        PINK = 141
-        GREEN = 1022
-        BLACK = 1330
-        RED = 1333
-        TOGGLE = 1594
-        DASH_GREEN = 1704
-        DASH_PINK = 1751
-        SPIDER = 3004
-        TELEPORT = 3027
+class Modifier:
+    WAVE_COLLISION = 1755
+    STOP_JUMP = 1813
+    STOP_DASH = 1829
+    HEAD_COLLISION = 1859
+    GRAVITY_FLIP = 2866
 
-    class Pad:
-        YELLOW = 35
-        BLUE = 67
-        PINK = 140
-        RED = 1332
-        SPIDER = 3005
+class Orb:
+    YELLOW = 36
+    BLUE = 84
+    PINK = 141
+    GREEN = 1022
+    BLACK = 1330
+    RED = 1333
+    TOGGLE = 1594
+    DASH_GREEN = 1704
+    DASH_PINK = 1751
+    SPIDER = 3004
+    TELEPORT = 3027
 
-    class Portal:
-        GRAVITY_NORMAL = 10
-        GRAVITY_INVERTED = 11
-        CUBE = 12
-        SHIP = 13
-        MIRROR_ENTER = 45
-        MIRROR_EXIT = 46
-        BALL = 47
-        SIZE_NORMAL = 99
-        SIZE_SMALL = 101
-        UFO = 111
-        DUAL_ENTER = 286
-        DUAL_EXIT = 287
-        WAVE = 660
-        ROBOT = 745
-        SPIDER = 1331
-        SWING = 1933
-        GRAVITY_TOGGLE = 2926
+class Pad:
+    YELLOW = 35
+    BLUE = 67
+    PINK = 140
+    RED = 1332
+    SPIDER = 3005
 
-        class Teleport:
-            LINKED = 747
-            EXIT = 2064
-            ENTER = 2902
+class Portal:
+    GRAVITY_NORMAL = 10
+    GRAVITY_INVERTED = 11
+    CUBE = 12
+    SHIP = 13
+    MIRROR_ENTER = 45
+    MIRROR_EXIT = 46
+    BALL = 47
+    SIZE_NORMAL = 99
+    SIZE_SMALL = 101
+    UFO = 111
+    DUAL_ENTER = 286
+    DUAL_EXIT = 287
+    WAVE = 660
+    ROBOT = 745
+    SPIDER = 1331
+    SWING = 1933
+    GRAVITY_TOGGLE = 2926
 
-    class Speed:
-        SLOW = 200
-        NORMAL = 201
-        FAST = 202
-        VERY_FAST = 203
-        SUPER_FAST = 1334
+    class Teleport:
+        LINKED = 747
+        EXIT = 2064
+        ENTER = 2902
 
-    class Trigger:
-        START_POSITION = 31
-        TRAIL_ENABLE = 32
-        TRAIL_DISABLE = 33
-        COLOR = 899
-        MOVE = 901
-        PULSE = 1006
-        ALPHA = 1007
-        TOGGLE = 1049
-        SPAWN = 1268
-        ROTATE = 1346
-        FOLLOW = 1347
-        SHAKE = 1520
-        ANIMATE = 1585
-        TOUCH = 1595
-        COUNT = 1611
-        PLAYER_HIDE = 1612
-        PLAYER_SHOW = 1613
-        STOP = 1616
-        INSTANT_COUNT = 1811
-        ON_DEATH = 1812
-        FOLLOW_PLAYER_Y = 1814
-        COLLISION = 1815
-        COLLISION_BLOCK = 1816
-        PICKUP = 1817
-        BG_EFFECT_ENABLE = 1818
-        BG_EFFECT_DISABLE = 1819
-        RANDOM = 1912
-        ZOOM_CAMERA = 1913
-        STATIC_CAMERA = 1914
-        OFFSET_CAMERA = 1916
-        REVERSE = 1917
-        END_WALL = 1931
-        PLAYER_CONTROL = 1932
-        SONG = 1934
-        TIMEWARP = 1935
-        ROTATE_CAMERA = 2015
-        CAMERA_GUIDE = 2016
-        CAMERA_EDGE = 2062
-        CHECKPOINT = 2063
-        GRAVITY = 2066
-        SCALE = 2067
-        ADV_RANDOM = 2068
-        FORCE_BLOCK = 2069
-        OPTIONS = 2899
-        ARROW = 2900
-        GAMEPLAY_OFFSET = 2901
-        GRADIENT = 2903
-        CAMERA_MODE = 2925
-        EDIT_MG = 2999
-        ADV_FOLLOW = 3016
-        TELEPORT = 3022
-        CHANGE_BG = 3029
-        CHANGE_GR = 3030
-        CHANGE_MG = 3031
-        KEYFRAME = 3032
-        ANIMATE_KEYFRAME = 3033
-        END = 3600
-        SFX = 3602
-        EDIT_SFX = 3603
-        EVENT = 3604
-        EDIT_SONG = 3605
-        BG_SPEED = 3606
-        SEQUENCE = 3607
-        SPAWN_PARTICLE = 3608
-        INSTANT_COLLISION = 3609
-        MG_SPEED = 3612
-        UI = 3613
-        TIME = 3614
-        TIME_EVENT = 3615
-        TIME_CONTROL = 3617
-        RESET = 3618
-        ITEM_EDIT = 3619
-        ITEM_COMPARE = 3620
-        STATE_BLOCK = 3640
-        ITEM_PERSIST = 3641
-        BPM = 3642
-        TOGGLE_BLOCK = 3643
-        FORCE_CIRCLE = 3645
-        OBJECT_CONTROL = 3655
-        EDIT_ADV_FOLLOW = 3660
-        RETARGET_ADV_FOLLOW = 3661
-        LINK_VISIBLE = 3662
+class Speed:
+    SLOW = 200
+    NORMAL = 201
+    FAST = 202
+    VERY_FAST = 203
+    SUPER_FAST = 1334
 
-        class Area:
-            MOVE = 3006
-            ROTATE = 3007
-            SCALE = 3008
-            FADE = 3009
-            TINT = 3010
-            EDIT_MOVE = 3011
-            EDIT_ROTATE = 3012
-            EDIT_SCALE = 3013
-            EDIT_FADE = 3014
-            EDIT_TINT = 3015
-            STOP = 3024
+class Trigger:
+    START_POSITION = 31
+    TRAIL_ENABLE = 32
+    TRAIL_DISABLE = 33
+    COLOR = 899
+    MOVE = 901
+    PULSE = 1006
+    ALPHA = 1007
+    TOGGLE = 1049
+    SPAWN = 1268
+    ROTATE = 1346
+    FOLLOW = 1347
+    SHAKE = 1520
+    ANIMATE = 1585
+    TOUCH = 1595
+    COUNT = 1611
+    PLAYER_HIDE = 1612
+    PLAYER_SHOW = 1613
+    STOP = 1616
+    INSTANT_COUNT = 1811
+    ON_DEATH = 1812
+    FOLLOW_PLAYER_Y = 1814
+    COLLISION = 1815
+    COLLISION_BLOCK = 1816
+    PICKUP = 1817
+    BG_EFFECT_ENABLE = 1818
+    BG_EFFECT_DISABLE = 1819
+    RANDOM = 1912
+    ZOOM_CAMERA = 1913
+    STATIC_CAMERA = 1914
+    OFFSET_CAMERA = 1916
+    REVERSE = 1917
+    END_WALL = 1931
+    PLAYER_CONTROL = 1932
+    SONG = 1934
+    TIMEWARP = 1935
+    ROTATE_CAMERA = 2015
+    CAMERA_GUIDE = 2016
+    CAMERA_EDGE = 2062
+    CHECKPOINT = 2063
+    GRAVITY = 2066
+    SCALE = 2067
+    ADV_RANDOM = 2068
+    FORCE_BLOCK = 2069
+    OPTIONS = 2899
+    ARROW = 2900
+    GAMEPLAY_OFFSET = 2901
+    GRADIENT = 2903
+    CAMERA_MODE = 2925
+    EDIT_MG = 2999
+    ADV_FOLLOW = 3016
+    TELEPORT = 3022
+    CHANGE_BG = 3029
+    CHANGE_GR = 3030
+    CHANGE_MG = 3031
+    KEYFRAME = 3032
+    ANIMATE_KEYFRAME = 3033
+    END = 3600
+    SFX = 3602
+    EDIT_SFX = 3603
+    EVENT = 3604
+    EDIT_SONG = 3605
+    BG_SPEED = 3606
+    SEQUENCE = 3607
+    SPAWN_PARTICLE = 3608
+    INSTANT_COLLISION = 3609
+    MG_SPEED = 3612
+    UI = 3613
+    TIME = 3614
+    TIME_EVENT = 3615
+    TIME_CONTROL = 3617
+    RESET = 3618
+    ITEM_EDIT = 3619
+    ITEM_COMPARE = 3620
+    STATE_BLOCK = 3640
+    ITEM_PERSIST = 3641
+    BPM = 3642
+    TOGGLE_BLOCK = 3643
+    FORCE_CIRCLE = 3645
+    OBJECT_CONTROL = 3655
+    EDIT_ADV_FOLLOW = 3660
+    RETARGET_ADV_FOLLOW = 3661
+    LINK_VISIBLE = 3662
 
-        class Enter:
-            MOVE = 3017
-            ROTATE = 3018
-            SCALE = 3019
-            FADE = 3020
-            TINT = 3021
-            STOP = 3023
+    class Area:
+        MOVE = 3006
+        ROTATE = 3007
+        SCALE = 3008
+        FADE = 3009
+        TINT = 3010
+        EDIT_MOVE = 3011
+        EDIT_ROTATE = 3012
+        EDIT_SCALE = 3013
+        EDIT_FADE = 3014
+        EDIT_TINT = 3015
+        STOP = 3024
 
-        class EnterPreset:
-            FADE_ONLY = 22
-            FADE_BOTTOM = 23
-            FADE_TOP = 24
-            FADE_LEFT = 25
-            FADE_RIGHT = 26
-            SCALE_UP = 27
-            SCALE_DOWN = 28
-            CHAOTIC = 55
-            HALF_LEFT = 56
-            HALF_RIGHT = 57
-            HALF = 58
-            HALF_INVERT = 59
-            NO_FADE = 1915
+    class Enter:
+        MOVE = 3017
+        ROTATE = 3018
+        SCALE = 3019
+        FADE = 3020
+        TINT = 3021
+        STOP = 3023
 
-        class OldColor:
-            GROUND = 29
-            BACKGROUND = 30
-            OUTLINE = 105
-            GROUND_2 = 900
-            LINE = 915
+    class EnterPreset:
+        FADE_ONLY = 22
+        FADE_BOTTOM = 23
+        FADE_TOP = 24
+        FADE_LEFT = 25
+        FADE_RIGHT = 26
+        SCALE_UP = 27
+        SCALE_DOWN = 28
+        CHAOTIC = 55
+        HALF_LEFT = 56
+        HALF_RIGHT = 57
+        HALF = 58
+        HALF_INVERT = 59
+        NO_FADE = 1915
 
-        class Shader:
-            OPTIONS = 2904
-            SHOCKWAVE = 2905
-            SHOCKLINE = 2907
-            GLITCH = 2909
-            CHROMATIC = 2910
-            CHROMATIC_GLITCH = 2911
-            PIXELATE = 2912
-            LENS_CIRCLE = 2913
-            RADIAL_BLUR = 2914
-            MOTION_BLUR = 2915
-            BULGE = 2916
-            PINCH = 2917
-            GRAY_SCALE = 2919
-            SEPIA = 2920
-            INVERT_COLOR = 2921
-            HUE = 2922
-            EDIT_COLOR = 2923
-            SPLIT_SCREEN = 2924
+    class OldColor:
+        GROUND = 29
+        BACKGROUND = 30
+        OUTLINE = 105
+        GROUND_2 = 900
+        LINE = 915
+
+    class Shader:
+        OPTIONS = 2904
+        SHOCKWAVE = 2905
+        SHOCKLINE = 2907
+        GLITCH = 2909
+        CHROMATIC = 2910
+        CHROMATIC_GLITCH = 2911
+        PIXELATE = 2912
+        LENS_CIRCLE = 2913
+        RADIAL_BLUR = 2914
+        MOTION_BLUR = 2915
+        BULGE = 2916
+        PINCH = 2917
+        GRAY_SCALE = 2919
+        SEPIA = 2920
+        INVERT_COLOR = 2921
+        HUE = 2922
+        EDIT_COLOR = 2923
+        SPLIT_SCREEN = 2924
