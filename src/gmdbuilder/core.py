@@ -2,46 +2,21 @@
 
 from functools import lru_cache
 from typing import Any, Literal, TypeVar, cast, overload
-from gmdkit.serialization import type_cast as tc
-from gmdkit.models.object import ObjectList as KitObjectList, Object as KitObject
-from gmdkit.casting.object_props import PROPERTY_DECODERS, PROPERTY_ENCODERS # type: ignore
+from gmdkit.models.object import Object as KitObject
+from gmdkit.models.prop.list import IDList, IntPair, RemapList
+
+
 from gmdbuilder.mappings.obj_prop import ObjProp
-from gmdbuilder.futils import translate_list_string, translate_map_string
 from gmdbuilder.mappings.obj_id import ObjId
 from gmdbuilder.validation import validate
 import gmdbuilder.object_typeddict as td
+
 ObjectType = td.ObjectType
 
 T = TypeVar('T', bound=ObjectType)
 
-
-RAW_DECODERS = {}
-for key, decoder in PROPERTY_DECODERS.items():
-    # Keep basic types as-is
-    if decoder in (tc.to_bool, int, float):
-        RAW_DECODERS[key] = decoder
-    else:
-        RAW_DECODERS[key] = str
-
-RAW_ENCODERS = {}
-for key, encoder in PROPERTY_ENCODERS.items(): # type: ignore
-    if encoder in (tc.from_bool, tc.from_float):
-        RAW_ENCODERS[key] = encoder
-    else:
-        RAW_ENCODERS[key] = str
-
-
-class RawObject(KitObject):
-    DECODER = staticmethod(tc.dict_cast(RAW_DECODERS, numkey=True)) # type: ignore
-    ENCODER = staticmethod(tc.dict_cast(RAW_ENCODERS, default=tc.serialize)) # type: ignore
-
-class RawObjectList(KitObjectList):
-    DECODER = RawObject.from_string # type: ignore
-    ENCODER = staticmethod(lambda obj: obj.to_string()) # type: ignore
-
-
 id = ObjId.Trigger
-ID_TO_TYPEDDICT = {
+ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
     id.ALPHA: td.AlphaType,
     id.ADV_FOLLOW: td.AdvFollowType,
     id.ADV_RANDOM: td.AdvRandomType,
@@ -132,14 +107,14 @@ class Object(dict[str, Any]):
             self._obj_id = int(v)
         super().__setitem__(k, v)
 
-    def update(self, *args: Any, **kwargs: Any):  # type: ignore[override]
+    def update(self, *args: Any, **kwargs: Any):
         # Construct items dict from args and kwargs
         items: dict[str, Any]
         if args:
             if len(args) != 1:
                 raise TypeError(f"update() takes at most 1 positional argument ({len(args)} given)")
             __m = args[0]
-            items = dict(__m)  # type: ignore[arg-type]
+            items = dict(__m)
             items.update(kwargs)
         else:
             items = dict(kwargs)
@@ -166,26 +141,28 @@ def _to_raw_key_cached(key: object) -> int | str:
             return int(tail)
     raise ValueError()
 
-def to_raw_object(obj: ObjectType) -> dict[int|str, Any]:
+def to_kit_object(obj: ObjectType) -> KitObject:
     """
-    Convert ObjectType to a new raw int-keyed dict for gmdkit or debugging.
+    Convert ObjectType to a new gmdkit int-keyed dict for gmdkit or debugging.
     
     Example:
-        {'a1': 900, 'a2': 50} → {1: 900, 2: 50}
+        {'a1': 900, 'a2': 50, 'a57': {2}} → {1: 900, 2: 50, 57: IDList([2])}
     """
     raw: dict[int|str, Any] = {}
-    for key, value in obj.items():
-        value = cast(Any, value)
-        if key == ObjProp.GROUPS:
-            value = '.'.join(map(str, sorted(value)))
-        elif key == ObjProp.Trigger.Event.EVENTS:
-            value = '.'.join(map(str, sorted(value)))
-        
-        try:
-            raw[_to_raw_key_cached(key)] = value
-        except ValueError as e:
-            raise ValueError(f"Object has bad/unsupported key {key!r}:\n{obj=}") from e
-    return raw
+    for k, v in obj.items():
+        match k:
+            case ObjProp.GROUPS:
+                raw[_to_raw_key_cached(k)] = IDList(v)
+            case ObjProp.PARENT_GROUPS:
+                raw[_to_raw_key_cached(k)] = IDList(v)
+            case ObjProp.Trigger.Spawn.REMAPS:
+                raw[_to_raw_key_cached(k)] = RemapList.from_dict(v)
+            case _:
+                try:
+                    raw[_to_raw_key_cached(k)] = v
+                except ValueError as e:
+                    raise ValueError(f"Object has bad/unsupported key {k!r}:\n{obj=}") from e
+    return KitObject(raw)
 
 
 @lru_cache(maxsize=1024)
@@ -197,40 +174,28 @@ def _from_raw_key_cached(key: object) -> str:
     raise ValueError()
 
 
-@overload
-def from_raw_object(raw_obj: dict[int|str, Any]) -> ObjectType: ...
-@overload
-def from_raw_object(raw_obj: dict[int|str, Any], *, obj_type: type[T]) -> T: ...
-def from_raw_object(
-    raw_obj: dict[int|str, Any], *,
-    obj_type: type[ObjectType] | None = None
-) -> ObjectType:
+def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
     """
-    Convert raw int-keyed dict from gmdkit to a new ObjectType.
+    Convert gmdkit object dict to object typeddict.
     
     Example:
-        {1: 900, 2: 50} → {'a1': 900, 'a2': 50}
+        {1: 900, 2: 50, 57: IDList([2])} → {a1: 900, a2: 50, a57: {2}}
     """
-    
-    if (key := 57) in raw_obj:
-        raw_obj[key] = translate_list_string(raw_obj[key])
-    if (key := 442) in raw_obj:
-        raw_obj[key] = translate_map_string(raw_obj[key])
-    
-    converted: ObjectType = { ObjProp.ID: -1 }
-    
-    for key, value in raw_obj.items():
-        try:
-            converted[_from_raw_key_cached(key)] = value
-        except ValueError as e:
-            raise ValueError(f"Object has bad/unsupported key {key!r}: \n{raw_obj=}") from e
-    
-    if int(converted[ObjProp.ID]) == -1:
-        raise TypeError(f"Missing required Object ID key 1 in raw object: \n{raw_obj=}")
-    
-    wrapped = Object(converted[ObjProp.ID])
-    wrapped.update(converted)
-    return cast(ObjectType, wrapped)
+    new = {}
+    for k, v in obj.items():
+        match k:
+            case 57:
+                new[ObjProp.GROUPS] = set(v) if v else set()
+            case 274:
+                new[ObjProp.PARENT_GROUPS] = set(v) if v else set()
+            case 442:
+                new[ObjProp.Trigger.Spawn.REMAPS] = v.to_dict()
+            case _:
+                try:
+                    new[_from_raw_key_cached(k)] = v
+                except ValueError as e:
+                    raise ValueError(f"Object has bad/unsupported key {k!r}: \n{obj=}") from e
+    return new
 
 
 @overload
@@ -244,7 +209,7 @@ def from_object_string(obj_string: str, *, obj_type: type[ObjectType] | None = N
     Example:
         "1,1,2,50,3,45;" → {'a1': 1, 'a2': 50, 'a3': 45}
     """
-    return from_raw_object(RawObject.from_string(obj_string))
+    return from_kit_object(KitObject.from_string(obj_string)) # type: ignore
 
 
 @overload
@@ -263,4 +228,4 @@ def new_object(object_id: int) -> ObjectType:
         ObjectType dict with default properties (using 'a<num>' keys)
     """
     # Convert from gmdkit's {1: val, 2: val} to our {'a1': val, 'a2': val}
-    return from_raw_object(RawObject.default(object_id))
+    return from_kit_object(KitObject.default(object_id)) # type: ignore

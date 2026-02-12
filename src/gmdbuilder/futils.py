@@ -17,7 +17,7 @@ def translate_list_string(group_string: str) -> set[int]:
 
 
 @lru_cache(maxsize=4096)
-def translate_map_string(remap_string: str) -> dict[int, int]:
+def translate_remap_string(remap_string: str) -> dict[int, int]:
     """Returns 'dict[source] = target' from dot-seperated num-string"""
     if not remap_string:
         raise ValueError("String is empty")

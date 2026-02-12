@@ -938,7 +938,7 @@ class SpawnType(TriggerType, total=False):
     a63: float  # DELAY
     a102: bool  # DISABLE_PREVIEW
     a441: bool  # ORDERED
-    a442: Any  # REMAPS
+    a442: dict[int,int]  # REMAPS
     a556: float  # DELAY_RAND
     a581: bool  # RESET_REMAP
 

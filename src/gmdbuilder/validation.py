@@ -87,6 +87,8 @@ def validate(obj_id: int, key: str, v: Any):
             if not (1 <= group_id <= 9999):
                 raise ValidationError(f"Group ID {group_id} in Groups must be in range 1-9999")
         return
+    elif key == ObjProp.PARENT_GROUPS:
+        return
     elif key == ObjProp.Trigger.Spawn.REMAPS:
         return
     

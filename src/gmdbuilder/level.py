@@ -2,14 +2,15 @@
 
 from pathlib import Path
 from typing import Any, Callable, Iterator, SupportsIndex, cast
-from gmdbuilder.object_typeddict import ObjectType
-from gmdbuilder.validation import validate_obj
 from questionary import confirm
 from gmdkit.models.level import Level as KitLevel
+from gmdkit.models.object import ObjectList as KitObjectList
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 
-from gmdbuilder.core import RawObjectList, from_raw_object, Object
+from gmdbuilder.core import Object, to_kit_object, from_kit_object
 from gmdbuilder.mappings.obj_prop import ObjProp
+from gmdbuilder.validation import validate_obj
+from gmdbuilder.object_typeddict import ObjectType
 
 
 
@@ -93,10 +94,11 @@ class ObjectList(list[ObjectType]):
     def append(self, obj: ObjectType, *, import_mode_backend_only: bool = False):
         """Validate and append an object."""
         if import_mode_backend_only:
-            self.added_objects.append(obj)
+            super().append(obj)
         else:
             obj = self._wrap_object(obj)
-        super().append(obj)
+            super().append(obj)
+            self.added_objects.append(obj)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
@@ -127,49 +129,48 @@ objects = ObjectList(live_editor=False)
 tag_group = 9999
 """Deletes all objects with this group and adds this group to new added objects"""
 
-_kit_level: KitLevel | LiveEditor | None = None
+_kit_level: KitLevel | None = None
 _source_file: Path | None = None
-_live_editor_connected = False
+_live_editor: LiveEditor | None = None
 
 def from_file(file_path: str | Path) -> None:
     """Load level from .gmd file into the module-level objects list."""
-    global objects, tag_group, _kit_level, _source_file, _live_editor_connected
+    global objects, tag_group, _kit_level, _source_file, _live_editor
     
-    if _source_file is not None or _live_editor_connected:
+    if _source_file is not None or _live_editor is not None:
         raise RuntimeError("FORBIDDEN: Level file is loaded! Loading multiple levels at once overrides global state")
     
     path = Path(file_path)
     if not path.exists():
         raise FileNotFoundError(f"Level file not found: {file_path=}")
     
-    _kit_level = KitLevel.from_file(path) # type: ignore
+    _kit_level = KitLevel.from_file(path)
     _source_file = path
     objects = ObjectList(live_editor=False)
-    raw_string = _kit_level.objects.to_string(encoded=True) # type: ignore
-    raw_objects = RawObjectList.from_string(raw_string, encoded=True) # type: ignore
+    raw_string = _kit_level.objects.to_string(encoded=True)
     
-    for raw_obj in raw_objects: # type: ignore
-        obj = from_raw_object(raw_obj) # type: ignore
-        if tag_group not in obj.get(ObjProp.GROUPS, set()): # type: ignore
-            objects.append(obj, import_mode_backend_only=True) # type: ignore
+    for kit_obj in KitObjectList.from_string(raw_string, encoded=True):
+        obj = from_kit_object(kit_obj)
+        if tag_group not in obj.get(ObjProp.GROUPS, set()):
+            objects.append(obj, import_mode_backend_only=True)
 
 
 def from_live_editor(url: str = WEBSOCKET_URL) -> None:
-    global objects, tag_group, _kit_level, _source_file, _live_editor_connected
+    global objects, tag_group, _kit_level, _live_editor, _source_file
     
-    if _source_file is not None or _live_editor_connected:
+    if _source_file is not None or _live_editor is not None:
         raise RuntimeError("FORBIDDEN: Level file is loaded! Loading multiple levels at once overrides global state")
     
     objects = ObjectList(live_editor=True)
-    _kit_level = LiveEditor(url)
-    _kit_level.connect()
-    _kit_level.remove_object_group(tag_group) # type: ignore
-    _, kit_objects = _kit_level.get_level_string() # type: ignore
+    _live_editor = LiveEditor(url)
+    _live_editor.connect()
+    _live_editor.remove_object_group(tag_group)
+    _, kit_objects = _live_editor.get_level_string()
     
-    for raw_obj in kit_objects: # type: ignore
-        objects.append(from_raw_object(raw_obj), bypass_validation=True) # type: ignore
-    
-    _live_editor_connected = True
+    for kit_obj in kit_objects:
+        obj = from_kit_object(kit_obj)
+        if tag_group not in obj.get(ObjProp.GROUPS, set()):
+            objects.append(obj, import_mode_backend_only=True)
 
 
 class new():
@@ -286,7 +287,7 @@ def _validate_and_prepare_objects(validated_objects: ObjectList) -> None:
     """Run validation and preparation checks on objects before export."""
     
     for obj in validated_objects.added_objects:
-        groups = obj.get(ObjProp.GROUPS, {tag_group})
+        groups = obj.get(ObjProp.GROUPS, set())
         groups.add(tag_group)
         obj[ObjProp.GROUPS] = groups
 
@@ -309,30 +310,32 @@ def export_to_file(file_path: str | Path | None = None) -> None:
     else:
         export_path = Path(file_path)
     
-    new_objects = _validate_and_prepare_objects(objects)
+    _validate_and_prepare_objects(objects)
     
-    kit_objects = _kit_level.objects # type: ignore
+    kit_objects = _kit_level.objects
     kit_objects.clear()
-    kit_objects.extend(new_objects) # type: ignore
+    kit_objects.extend(to_kit_object(obj) for obj in objects)
     
-    _kit_level.to_file(str(export_path)) # type: ignore
+    _kit_level.to_file(str(export_path))
     new.reset_all()
     objects.clear()
 
 
 def export_to_live_editor(*, batch_size: int = 500) -> None:
     """Export level to live editor."""
-    global objects, _kit_level, _live_editor_connected
+    global objects, _live_editor
     
-    if not _live_editor_connected:
+    if _live_editor is None:
         raise RuntimeError("No live editor connection. Use level.from_live_editor() first")
-    
-    if _kit_level is None:
-        raise RuntimeError("Live editor instance not found")
     
     _validate_and_prepare_objects(objects)
     
-    _kit_level.add_objects(objects.added_objects, batch_size) #type: ignore
-    _kit_level.close() #type: ignore
+    # Convert to gmdkit ObjectList
+    kit_objects = KitObjectList()
+    kit_objects.extend(to_kit_object(obj) for obj in objects.added_objects)
+    
+    _live_editor.add_objects(kit_objects, batch_size)
+    _live_editor.close()
     new.reset_all()
     objects.clear()
+    _live_editor = None
