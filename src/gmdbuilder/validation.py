@@ -1,7 +1,7 @@
 
 from functools import lru_cache
 from typing import Any, TYPE_CHECKING
-from gmdbuilder.mappings.obj_prop import ObjProp
+from gmdbuilder.mappings import obj_prop as ObjProp
 
 if TYPE_CHECKING:
     from gmdbuilder.object_typeddict import ObjectType

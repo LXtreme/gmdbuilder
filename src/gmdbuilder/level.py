@@ -8,7 +8,7 @@ from gmdkit.models.object import ObjectList as KitObjectList
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 
 from gmdbuilder.core import Object, to_kit_object, from_kit_object
-from gmdbuilder.mappings.obj_prop import ObjProp
+from gmdbuilder.mappings import obj_prop as ObjProp
 from gmdbuilder.validation import validate_obj
 from gmdbuilder.object_typeddict import ObjectType
 

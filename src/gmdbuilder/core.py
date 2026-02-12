@@ -1,13 +1,13 @@
 """Core utilities for working with ObjectType dicts."""
 
 from functools import lru_cache
-from typing import Any, Literal, TypeVar, cast, overload
+from typing import Any, Literal, TypeVar, overload
 from gmdkit.models.object import Object as KitObject
-from gmdkit.models.prop.list import IDList, IntPair, RemapList
+from gmdkit.models.prop.list import IDList, RemapList
 
 
-from gmdbuilder.mappings.obj_prop import ObjProp
-from gmdbuilder.mappings.obj_id import ObjId
+from gmdbuilder.mappings import obj_prop as ObjProp
+from gmdbuilder.mappings import obj_id as ObjId
 from gmdbuilder.validation import validate
 import gmdbuilder.object_typeddict as td
 
@@ -156,7 +156,7 @@ def to_kit_object(obj: ObjectType) -> KitObject:
             case ObjProp.PARENT_GROUPS:
                 raw[_to_raw_key_cached(k)] = IDList(v)
             case ObjProp.Trigger.Spawn.REMAPS:
-                raw[_to_raw_key_cached(k)] = RemapList.from_dict(v)
+                raw[_to_raw_key_cached(k)] = RemapList.from_dict(v) # type: ignore
             case _:
                 try:
                     raw[_to_raw_key_cached(k)] = v
@@ -195,7 +195,7 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
                     new[_from_raw_key_cached(k)] = v
                 except ValueError as e:
                     raise ValueError(f"Object has bad/unsupported key {k!r}: \n{obj=}") from e
-    return new
+    return new # type: ignore
 
 
 @overload
