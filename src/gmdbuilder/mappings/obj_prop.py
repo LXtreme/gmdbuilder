@@ -299,7 +299,7 @@ class Trigger:
         INIT = "a572"
 
     class AdvRandom:
-        m_56 = "a56"
+        M_56 = "a56"
         TARGETS = "a152"
 
     class Alpha:
@@ -391,7 +391,7 @@ class Trigger:
             COIN_ID = "a12"
 
     class Collision:
-        m_10 = "a10"
+        M_10 = "a10"
         TARGET_ID = "a51"
         ACTIVATE_GROUP = "a56"
         BLOCK_A = "a80"
@@ -518,9 +518,9 @@ class Trigger:
         MAIN_ONLY = "a65"
         DETAIL_ONLY = "a66"
         CENTER_ID = "a71"
-        m_138 = "a138"
-        m_200 = "a200"
-        m_201 = "a201"
+        M_138 = "a138"
+        M_200 = "a200"
+        M_201 = "a201"
         ENTER_ONLY = "a217"
         MOVE_DIST = "a218"
         MOVE_DIST_RAND = "a219"
@@ -528,7 +528,7 @@ class Trigger:
         OFFSET_RAND = "a221"
         LENGTH = "a222"
         LENGTH_RAND = "a223"
-        m_224 = "a224"
+        M_224 = "a224"
         EFFECT_ID = "a225"
         MOVE_ANGLE = "a231"
         MOVE_ANGLE_RAND = "a232"
@@ -815,10 +815,10 @@ class Trigger:
         MOD = "a449"
 
     class PlayerControl:
-        m_58 = "a58"
-        m_59 = "a59"
+        M_58 = "a58"
+        M_59 = "a59"
         PLAYER_1 = "a138"
-        m_141 = "a141"
+        M_141 = "a141"
         PLAYER_2 = "a200"
         STOP_JUMP = "a540"
         STOP_MOVE = "a541"
