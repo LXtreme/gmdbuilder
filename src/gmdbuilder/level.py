@@ -8,9 +8,9 @@ from gmdkit.models.object import ObjectList as KitObjectList
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 
 from gmdbuilder.core import Object, to_kit_object, from_kit_object
-from gmdbuilder.mappings import obj_prop as ObjProp
+from gmdbuilder.mappings import obj_prop
 from gmdbuilder.validation import validate_obj
-from gmdbuilder.object_typeddict import ObjectType
+from gmdbuilder.object_types import ObjectType
 
 
 
@@ -70,7 +70,7 @@ class ObjectList(list[ObjectType]):
         if isinstance(obj, Object):
             return cast(ObjectType, obj)
         validate_obj(obj)
-        wrapped = Object(obj[ObjProp.ID])
+        wrapped = Object(obj[obj_prop.ID])
         wrapped.update(obj)
         return cast(ObjectType, wrapped)
     
@@ -151,7 +151,7 @@ def from_file(file_path: str | Path) -> None:
     
     for kit_obj in KitObjectList.from_string(raw_string, encoded=True):
         obj = from_kit_object(kit_obj)
-        if tag_group not in obj.get(ObjProp.GROUPS, set()):
+        if tag_group not in obj.get(obj_prop.GROUPS, set()):
             objects.append(obj, import_mode_backend_only=True)
 
 
@@ -169,7 +169,7 @@ def from_live_editor(url: str = WEBSOCKET_URL) -> None:
     
     for kit_obj in kit_objects:
         obj = from_kit_object(kit_obj)
-        if tag_group not in obj.get(ObjProp.GROUPS, set()):
+        if tag_group not in obj.get(obj_prop.GROUPS, set()):
             objects.append(obj, import_mode_backend_only=True)
 
 
@@ -194,13 +194,13 @@ class new():
         cls._used_control_ids: set[int] = set()
         
         for obj in objects:
-            if (key := ObjProp.GROUPS) in obj:
+            if (key := obj_prop.GROUPS) in obj:
                 cls._used_group_ids.update(obj[key])
-            if (key := ObjProp.Trigger.Count.ITEM_ID) in obj:
+            if (key := obj_prop.Trigger.Count.ITEM_ID) in obj:
                 cls._used_item_ids.add(int(obj[key]))
-            if (key := ObjProp.Trigger.CollisionBlock.BLOCK_ID) in obj:
+            if (key := obj_prop.Trigger.CollisionBlock.BLOCK_ID) in obj:
                 cls._used_collision_ids.add(int(obj[key]))
-            if (key := ObjProp.Trigger.CONTROL_ID) in obj:
+            if (key := obj_prop.Trigger.CONTROL_ID) in obj:
                 cls._used_control_ids.add(int(obj[key]))
         
         cls._group_iter = (i for i in range(1, 9999) if i not in cls._used_group_ids)
@@ -287,9 +287,9 @@ def _validate_and_prepare_objects(validated_objects: ObjectList) -> None:
     """Run validation and preparation checks on objects before export."""
     
     for obj in validated_objects.added_objects:
-        groups = obj.get(ObjProp.GROUPS, set())
+        groups = obj.get(obj_prop.GROUPS, set())
         groups.add(tag_group)
-        obj[ObjProp.GROUPS] = groups
+        obj[obj_prop.GROUPS] = groups
 
 
 def export_to_file(file_path: str | Path | None = None) -> None:

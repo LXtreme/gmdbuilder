@@ -6,16 +6,16 @@ from gmdkit.models.object import Object as KitObject
 from gmdkit.models.prop.list import IDList, RemapList
 
 
-from gmdbuilder.mappings import obj_prop as ObjProp
-from gmdbuilder.mappings import obj_id as ObjId
+from gmdbuilder.mappings import obj_prop
+from gmdbuilder.mappings import obj_id
 from gmdbuilder.validation import validate
-import gmdbuilder.object_typeddict as td
+import gmdbuilder.object_types as td
 
 ObjectType = td.ObjectType
 
 T = TypeVar('T', bound=ObjectType)
 
-id = ObjId.Trigger
+id = obj_id.Trigger
 ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
     id.ALPHA: td.AlphaType,
     id.ADV_FOLLOW: td.AdvFollowType,
@@ -103,7 +103,7 @@ class Object(dict[str, Any]):
 
     def __setitem__(self, k: str, v: Any):
         validate(self._obj_id, k, v)
-        if k == ObjProp.ID:
+        if k == obj_prop.ID:
             self._obj_id = int(v)
         super().__setitem__(k, v)
 
@@ -121,8 +121,8 @@ class Object(dict[str, Any]):
         
         for k, v in items.items():
             validate(self._obj_id, k, v)
-        if ObjProp.ID in items:
-            self._obj_id = int(items[ObjProp.ID])
+        if obj_prop.ID in items:
+            self._obj_id = int(items[obj_prop.ID])
         super().update(items)
 
 
@@ -151,11 +151,11 @@ def to_kit_object(obj: ObjectType) -> KitObject:
     raw: dict[int|str, Any] = {}
     for k, v in obj.items():
         match k:
-            case ObjProp.GROUPS:
+            case obj_prop.GROUPS:
                 raw[_to_raw_key_cached(k)] = IDList(v)
-            case ObjProp.PARENT_GROUPS:
+            case obj_prop.PARENT_GROUPS:
                 raw[_to_raw_key_cached(k)] = IDList(v)
-            case ObjProp.Trigger.Spawn.REMAPS:
+            case obj_prop.Trigger.Spawn.REMAPS:
                 raw[_to_raw_key_cached(k)] = RemapList.from_dict(v) # type: ignore
             case _:
                 try:
@@ -185,11 +185,11 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
     for k, v in obj.items():
         match k:
             case 57:
-                new[ObjProp.GROUPS] = set(v) if v else set()
+                new[obj_prop.GROUPS] = set(v) if v else set()
             case 274:
-                new[ObjProp.PARENT_GROUPS] = set(v) if v else set()
+                new[obj_prop.PARENT_GROUPS] = set(v) if v else set()
             case 442:
-                new[ObjProp.Trigger.Spawn.REMAPS] = v.to_dict()
+                new[obj_prop.Trigger.Spawn.REMAPS] = v.to_dict()
             case _:
                 try:
                     new[_from_raw_key_cached(k)] = v
