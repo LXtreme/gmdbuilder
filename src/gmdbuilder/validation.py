@@ -1,6 +1,8 @@
 
 from functools import lru_cache
 from typing import Any
+
+from gmdbuilder.fields import COMMON_ALLOWED_KEYS, ID_TO_ALLOWED_KEYS, value_is_correct_type
 from gmdbuilder.mappings import obj_prop
 from gmdbuilder.object_types import ObjectType
 
@@ -51,6 +53,18 @@ class ValidationError(Exception):
 # ALLOWED_BY_ID = {k: typeddict_keys(v) for k, v in ID_TO_TYPEDDICT.items()}
 
 
+@lru_cache(maxsize=None)
+def _assert_int_in_range(v: Any, min_val: int = 1, max_val: int = 9999):
+    if not (isinstance(v, int) and min_val <= v <= max_val):
+        raise ValueError(f"Key must be an int in range {min_val}-{max_val}, got {v!r}")
+
+
+@lru_cache(maxsize=1024)
+def _validate_key_allowed(obj_id: int, key: str):
+    if key not in COMMON_ALLOWED_KEYS and key not in ID_TO_ALLOWED_KEYS.get(obj_id, {}):
+        raise ValueError(f"Key {key} is not allowed for object ID {obj_id}")
+
+
 def validate_obj(obj: ObjectType):
     obj_id = obj[obj_prop.ID]
     for k, v in obj.items(): validate(obj_id, k, v)
@@ -59,44 +73,43 @@ def validate_obj(obj: ObjectType):
 @lru_cache(maxsize=1024)
 def _validate_key_value(k: str, v: Any):
     match k:
-        case obj_prop.ID:
-            if not (1 <= v <= 9999):
-                raise ValidationError(f"ID {v} is not a vaid object ID")
-        case obj_prop.X: ...
-        case obj_prop.Y: ...
-        case obj_prop.GROUPS: ...
+        case (obj_prop.Trigger.Move.TARGET_ID 
+            | obj_prop.Trigger.Move.TARGET_CENTER_ID 
+            | obj_prop.Trigger.Move.TARGET_POS):
+            _assert_int_in_range(v)
         case _:
-            print(f'placeholder warning: {k} : {v} is not validated.')
-
-
-@lru_cache(maxsize=1024)
-def _validate_key_allowed(obj_id: int, k: str):
-    pass
+            if not value_is_correct_type(k,v):
+                 raise ValueError(f"Value {v!r} is not the correct type.")
+            print(f'placeholder warning: {k!r} : {v!r} is not validated.')
 
 
 def validate(obj_id: int, key: str, v: Any):
     """immediate validation. to be called by 'level.objects' mutations"""
-    if not setting.immediate.property_type_check: return
     
-    if key == obj_prop.GROUPS:
-        for group_id in v:
-            if not isinstance(group_id, int):
-                raise ValidationError(f"Group ID {group_id} in Groups must be an int, got {type(group_id)}")
-            if not (1 <= group_id <= 9999):
-                raise ValidationError(f"Group ID {group_id} in Groups must be in range 1-9999")
-        return
-    elif key == obj_prop.PARENT_GROUPS:
-        return
-    elif key == obj_prop.Trigger.Spawn.REMAPS:
-        return
-    
-    _validate_key_allowed(obj_id, key)
     try:
-        _validate_key_value(key, v)
-    except TypeError as e:
-        print(f"Type error validating key {key} with value {v} on object ID {obj_id}")
-        raise e
-    
+        if setting.immediate.property_allowed_check:
+            _validate_key_allowed(obj_id, key)
+        if setting.immediate.property_type_check:
+            _validate_key_value(key, v)
+    except ValueError as e:
+        raise ValueError(f"Invalid value for key {key!r} on object ID {obj_id}: {v!r}") from e
+    except TypeError: # Unhashable value
+        match key:
+            case obj_prop.GROUPS:
+                for group_id in v:
+                    _assert_int_in_range(group_id)
+                return
+            case obj_prop.PARENT_GROUPS:
+                for group_id in v:
+                    _assert_int_in_range(group_id)
+                return
+            case obj_prop.Trigger.Spawn.REMAPS:
+                for source, target in v.items():
+                    _assert_int_in_range(source)
+                    _assert_int_in_range(target)
+                return
+            case _:
+                print(f"placeholder warning: {key} : {v!r} is not validated.")
 
 
 def export_validation(final_object_list: list[ObjectType]):

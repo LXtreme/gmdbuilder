@@ -1,6 +1,7 @@
 """Level loading and exporting for Geometry Dash."""
 
 from pathlib import Path
+import time
 from typing import Any, Callable, Iterator, SupportsIndex, cast
 from questionary import confirm
 from gmdkit.models.level import Level as KitLevel
@@ -132,13 +133,24 @@ tag_group = 9999
 _kit_level: KitLevel | None = None
 _source_file: Path | None = None
 _live_editor: LiveEditor | None = None
+# _start_time: float | None = None
+
+
+def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
+    now = time.perf_counter()
+    a = _state[0]
+    _state[0] = now
+    return now - a
+
 
 def from_file(file_path: str | Path) -> None:
     """Load level from .gmd file into the module-level objects list."""
-    global objects, tag_group, _kit_level, _source_file, _live_editor
+    global objects, tag_group, _kit_level, _source_file, _live_editor, _start_time
     
     if _source_file is not None or _live_editor is not None:
         raise RuntimeError("FORBIDDEN: Level file is loaded! Loading multiple levels at once overrides global state")
+    
+    _time_since_last()
     
     path = Path(file_path)
     if not path.exists():
@@ -147,12 +159,13 @@ def from_file(file_path: str | Path) -> None:
     _kit_level = KitLevel.from_file(path)
     _source_file = path
     objects = ObjectList(live_editor=False)
-    raw_string = _kit_level.objects.to_string(encoded=True)
     
-    for kit_obj in KitObjectList.from_string(raw_string, encoded=True):
+    for kit_obj in _kit_level.objects:
         obj = from_kit_object(kit_obj)
         if tag_group not in obj.get(obj_prop.GROUPS, set()):
             objects.append(obj, import_mode_backend_only=True)
+    
+    print(f"Loaded level from {file_path} with {len(objects)} objects in {_time_since_last():.2f} seconds.")
 
 
 def from_live_editor(url: str = WEBSOCKET_URL) -> None:
@@ -294,7 +307,9 @@ def _validate_and_prepare_objects(validated_objects: ObjectList) -> None:
 
 def export_to_file(file_path: str | Path | None = None) -> None:
     """Export level to .gmd file."""
-    global objects, _kit_level, _source_file
+    global objects, _kit_level, _source_file, _start_time
+    
+    print(f"gmdbuilder took {_time_since_last():.2f} seconds to prepare for export.")
     
     if _kit_level is None:
         raise RuntimeError("No level loaded. Use level.from_file() first")
@@ -317,6 +332,9 @@ def export_to_file(file_path: str | Path | None = None) -> None:
     kit_objects.extend(to_kit_object(obj) for obj in objects)
     
     _kit_level.to_file(str(export_path))
+    
+    print(f"Exported level to {export_path} with {len(objects)} objects in {_time_since_last():.2f} seconds.")
+    
     new.reset_all()
     objects.clear()
 

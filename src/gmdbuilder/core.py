@@ -7,7 +7,6 @@ from gmdkit.models.prop.list import IDList, RemapList
 
 
 from gmdbuilder.mappings import obj_prop
-from gmdbuilder.mappings import obj_id
 from gmdbuilder.validation import validate
 import gmdbuilder.object_types as td
 
@@ -15,75 +14,6 @@ ObjectType = td.ObjectType
 
 T = TypeVar('T', bound=ObjectType)
 
-id = obj_id.Trigger
-ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
-    id.ALPHA: td.AlphaType,
-    id.ADV_FOLLOW: td.AdvFollowType,
-    id.ADV_RANDOM: td.AdvRandomType,
-    id.ANIMATE: td.AnimateType,
-    id.ANIMATE_KEYFRAME: td.AnimateKeyframeType,
-    id.ARROW: td.ArrowType,
-    id.BPM: td.BpmType,
-    id.CAMERA_EDGE: td.CameraEdgeType,
-    id.CAMERA_GUIDE: td.CameraGuideType,
-    id.CAMERA_MODE: td.CameraModeType,
-    id.CHANGE_BG: td.ChangeBgType,
-    id.CHANGE_GR: td.ChangeGrType,
-    id.CHANGE_MG: td.ChangeMgType,
-    id.CHECKPOINT: td.CheckpointType,
-    id.COUNT: td.CountType,
-    id.COLOR: td.ColorType,
-    id.COLLISION: td.CollisionType,
-    id.COLLISION_BLOCK: td.CollisionBlockType,
-    id.EDIT_ADV_FOLLOW: td.EditAdvFollowType,
-    id.EDIT_MG: td.MgEditType,
-    id.END: td.EndType,
-    id.FOLLOW: td.FollowType,
-    id.FOLLOW_PLAYER_Y: td.FollowPlayerYType,
-    id.GAMEPLAY_OFFSET: td.GameplayOffsetType,
-    id.GRADIENT: td.GradientType,
-    id.GRAVITY: td.GravityType,
-    id.INSTANT_COLLISION: td.InstantCollisionType,
-    id.INSTANT_COUNT: td.InstantCountType,
-    id.ITEM_COMPARE: td.ItemCompareType,
-    id.ITEM_EDIT: td.ItemEditType,
-    id.ITEM_PERSIST: td.ItemPersistType,
-    id.KEYFRAME: td.KeyframeType,
-    id.LINK_VISIBLE: td.LinkVisibleType,
-    id.MG_SPEED: td.MgSpeedType,
-    id.MOVE: td.MoveType,
-    id.ON_DEATH: td.OnDeathType,
-    id.OPTIONS: td.OptionsType,
-    id.OFFSET_CAMERA: td.OffsetCameraType,
-    id.PICKUP: td.PickupType,
-    id.PLAYER_CONTROL: td.PlayerControlType,
-    id.PULSE: td.PulseType,
-    id.RANDOM: td.RandomType,
-    id.RESET: td.ResetType,
-    id.ROTATE: td.RotateType,
-    id.ROTATE_CAMERA: td.RotateCameraType,
-    id.SCALE: td.ScaleType,
-    id.SEQUENCE: td.SequenceType,
-    id.SFX: td.SfxType,
-    id.STOP: td.StopType,
-    id.SHAKE: td.ShakeType,
-    id.SONG: td.SongType,
-    id.SPAWN: td.SpawnType,
-    id.SPAWN_PARTICLE: td.SpawnParticleType,
-    id.STATE_BLOCK: td.StateBlockType,
-    id.STATIC_CAMERA: td.StaticCameraType,
-    id.TELEPORT: td.TeleportType,
-    id.TIME: td.TimeType,
-    id.TIMEWARP: td.TimewarpType,
-    id.TIME_CONTROL: td.TimeControlType,
-    id.TIME_EVENT: td.TimeEventType,
-    id.TOGGLE: td.ToggleType,
-    id.TOGGLE_BLOCK: td.ToggleBlockType,
-    id.TOUCH: td.TouchType,
-    id.UI: td.UiType,
-    id.ZOOM_CAMERA: td.ZoomCameraType,
-}
-"""Unfinished mapping of Object IDs to non-common Object TypedDicts"""
 
 class Object(dict[str, Any]):
     """
@@ -189,6 +119,8 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
                 new[obj_prop.PARENT_GROUPS] = set(v) if v else set()
             case 442:
                 new[obj_prop.Trigger.Spawn.REMAPS] = v.to_dict()
+            case 52:
+                new[obj_prop.Trigger.Pulse.TARGET_TYPE] = bool(v)
             case _:
                 try:
                     new[_from_raw_key_cached(k)] = v
