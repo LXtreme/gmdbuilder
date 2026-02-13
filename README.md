@@ -42,7 +42,7 @@ pip install git+https://github.com/UHDanke/gmdkit.git
 ```python
 from gmdbuilder import level
 
-# This group gets deleted on load and automatically added to new objects
+# This group gets deleted at level-load and automatically added to new objects at level-export
 level.tag_group = 9999 # Set to 9999 by default
 
 # From .gmd file, supports full object editing/deleting
@@ -76,7 +76,7 @@ obj_list.delete_where(lambda obj: obj[ObjProp.ID] == 1)
 object = from_object_string("1,1611,2,50,3,45;", obj_type=CountType)
 object[ObjProp.Trigger.Count.ACTIVATE_GROUP] = True
 
-# Export level
+# Export object edits, deletions and additions
 level.export_to_file(file_path="example_updated.gmd")
 
 # Export added objects to WSLiveEditor
