@@ -8,8 +8,9 @@ A type-safe general-purpose Python framework for pragmatic Geometry Dash level e
 
 gmdbuilder lets you:
 - Read & write Geometry Dash levels
+- Automatically scan and protect against bugs (property types/ranges, spawn limit, etc.)
 - Work directly with triggers, groups, and objects - and choose your own abstractions
-- Use templates and pre-built systems to accelerate development
+- Use pre-built systems and templates to accelerate development
 
 **gmdbuilder** is developed in collaboration with HDanke, the creator of **gmdkit** (a dependency of this framework) and his unofficial **GD Editor Docs**.
 
@@ -54,7 +55,7 @@ level.from_live_editor()
 obj_list = level.objects # mutations are validated
 
 # Object properties are in the form { "a<key number>": value }
-repr(obj[1])
+repr(obj_list[1])
 
 # Object ID and Property enums (all values are Literal) 
 from gmdbuilder.mappings.obj_prop import ObjProp

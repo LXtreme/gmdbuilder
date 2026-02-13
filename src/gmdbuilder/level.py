@@ -52,7 +52,10 @@ class ObjectList(list[ObjectType]):
         if callable(condition):
             predicate = condition
         else:
-            predicate = lambda obj: all(obj.get(k, self._MISSING) == v for k, v in condition.items())
+            predicate = lambda obj: all(
+                k in obj and (obj.get(k) == v or v is None)
+                for k, v in condition.items()
+            )
         
         deleted = 0
         
