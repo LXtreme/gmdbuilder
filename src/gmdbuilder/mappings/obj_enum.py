@@ -147,38 +147,10 @@ class Trigger:
         LARGER = 1
         SMALLER = 2
 
-    class ItemCompare:
+    class Item:
         pass
 
-        class ItemOp:
-            ADD = 1
-            SUBTRACT = 2
-            MULTIPLY = 3
-            DIVIDE = 4
-
-        class ItemType:
-            DEFAULT = 0
-            ITEM = 1
-            TIMER = 2
-            POINTS = 3
-            MAINTIME = 4
-            ATTEMPTS = 5
-
-        class RoundOp:
-            NONE = 0
-            ROUND = 1
-            FLOOR = 2
-            CEILING = 3
-
-        class SignOp:
-            NONE = 0
-            ABSOLUTE = 1
-            NEGATIVE = 2
-
-    class ItemEdit:
-        pass
-
-        class ItemOp:
+        class MathOp:
             ADD = 1
             SUBTRACT = 2
             MULTIPLY = 3
@@ -242,8 +214,8 @@ class Trigger:
         DIVIDE = 2
 
     class PulseTargetType:
-        CHANNEL = 0
-        GROUP = 1
+        CHANNEL = False
+        GROUP = True
 
     class SequenceMode:
         STOP = 0

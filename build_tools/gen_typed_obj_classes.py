@@ -21,7 +21,7 @@ import argparse
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 
 # ----------------------------
@@ -33,21 +33,21 @@ class EnumNode:
     name: str
     # members: (raw_key, primary_label, all_labels)
     # raw_key like 'a51'
-    members: List[Tuple[str, str, List[str]]] = field(default_factory=list)
-    children: List["EnumNode"] = field(default_factory=list)
+    members: list[tuple[str, str, list[str]]] = field(default_factory=list)
+    children: list["EnumNode"] = field(default_factory=list)
 
 
 # ----------------------------
 # TSV parsing
 # ----------------------------
 
-def read_tsv_types(tsv_path: Path) -> Dict[str, str]:
+def read_tsv_types(tsv_path: Path) -> dict[str, str]:
     """
     Reads TSV with columns: key, type, labels
     Returns mapping: {"123": "float|int", ...}
     Blank type -> "".
     """
-    out: Dict[str, str] = {}
+    out: dict[str, str] = {}
     if not tsv_path.exists():
         return out
 
@@ -126,10 +126,10 @@ def parse_enum_file(enums_py: Path) -> EnumNode:
         node = EnumNode(name=cls.name)
 
         # raw_key -> list of labels (encounter order)
-        alias_map: Dict[str, List[str]] = {}
+        alias_map: dict[str, list[str]] = {}
 
         def consider_member(label_name: str, raw_key: str) -> None:
-            if not isinstance(raw_key, str) or not raw_key:
+            if not raw_key:
                 return
             # TypedDict field names must be identifiers
             if not valid_identifier(raw_key):
@@ -161,7 +161,7 @@ def parse_enum_file(enums_py: Path) -> EnumNode:
 
         # Convert alias map -> node.members (stable order by first appearance in file)
         # We preserve encounter order by scanning cls.body again and adding keys the first time we see them.
-        seen_keys_in_order: List[str] = []
+        seen_keys_in_order: list[str] = []
         seen_set: set[str] = set()
 
         def maybe_add_key(raw_key: str) -> None:
@@ -203,10 +203,10 @@ def parse_enum_file(enums_py: Path) -> EnumNode:
     root = EnumNode(name="ObjProp")
     
     # raw_key -> list of labels (encounter order)
-    alias_map: Dict[str, List[str]] = {}
+    alias_map: dict[str, list[str]] = {}
 
     def consider_member(label_name: str, raw_key: str) -> None:
-        if not isinstance(raw_key, str) or not raw_key:
+        if not raw_key:
             return
         if not valid_identifier(raw_key):
             return
@@ -229,7 +229,7 @@ def parse_enum_file(enums_py: Path) -> EnumNode:
                 consider_member(label_name, val.value)
 
     # Convert to members
-    seen_keys_in_order: List[str] = []
+    seen_keys_in_order: list[str] = []
     seen_set: set[str] = set()
 
     def maybe_add_key(raw_key: str) -> None:
@@ -282,7 +282,7 @@ def extract_numeric_id(raw_key: str, prefix: str) -> Optional[str]:
     return None
 
 
-def format_comment(primary: str, aliases: List[str]) -> str:
+def format_comment(primary: str, aliases: list[str]) -> str:
     """
     Comment style:
     - If no aliases: "# NAME"
@@ -297,7 +297,7 @@ def format_comment(primary: str, aliases: List[str]) -> str:
 
 def emit_typeddict_classes(
     root: EnumNode,
-    tsv_types: Dict[str, str],
+    tsv_types: dict[str, str],
     prefix: str,
     root_typeddict_name: str,
     include_other_strings: bool,
@@ -310,14 +310,14 @@ def emit_typeddict_classes(
 
     Field names are raw enum values (a123), not enum labels.
     """
-    lines: List[str] = []
+    lines: list[str] = []
 
     def walk(node: EnumNode, parent_td_name: Optional[str]) -> None:
         td_name = root_typeddict_name if parent_td_name is None else node.name + "Type"
         base_clause = "TypedDict" if parent_td_name is None else parent_td_name
 
         # Collect fields first to check if we have any
-        fields_to_emit = []
+        fields_to_emit: list[str] = []
         for raw_key, primary_label, aliases in node.members:
             num = extract_numeric_id(raw_key, prefix)
 

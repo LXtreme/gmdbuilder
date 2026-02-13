@@ -292,8 +292,8 @@ class CameraEdgeType(TriggerType, total=False):
     a164: CAMERA_EDGE  # DIRECTION
 
 class CameraGuideType(TriggerType, total=False):
-    a28: int  # OFFSET_X
-    a29: int  # OFFSET_Y
+    a28: float  # OFFSET_X
+    a29: float  # OFFSET_Y
     a371: float  # ZOOM
     a506: float  # PREVIEW_OPACITY
 
@@ -304,13 +304,13 @@ class CameraModeType(TriggerType, total=False):
     a114: float  # PADDING
 
 class ChangeBgType(TriggerType, total=False):
-    a533: BACKGROUND|GROUND  # BG_ID
+    a533: BACKGROUND  # BG_ID
 
 class ChangeGrType(TriggerType, total=False):
-    a533: BACKGROUND|GROUND  # GR_ID
+    a533: GROUND  # GR_ID
 
 class ChangeMgType(TriggerType, total=False):
-    a533: BACKGROUND|GROUND  # MG_ID
+    a533: MIDDLE_GROUND  # MG_ID
 
 class CheckpointType(TriggerType, total=False):
     a51: int  # SPAWN_ID
@@ -564,8 +564,8 @@ class GamemodePortalType(TriggerType, total=False):
     a114: float  # PADDING
 
 class GameplayOffsetType(TriggerType, total=False):
-    a28: int  # OFFSET_X
-    a29: int  # OFFSET_Y
+    a28: float  # OFFSET_X
+    a29: float  # OFFSET_Y
     a58: bool  # DONT_ZOOM_X
     a59: bool  # DONT_ZOOM_Y
 
@@ -602,7 +602,7 @@ class InstantCountType(TriggerType, total=False):
     a56: bool  # ACTIVATE_GROUP
     a77: int  # COUNT
     a80: int  # ITEM_ID
-    a88: INSTANT_COUNT_COMPARISON|PICKUP_MULTIPLY_DIVIDE  # MODE
+    a88: INSTANT_COUNT_COMPARISON  # MODE
 
 class ItemCompareType(TriggerType, total=False):
     a51: int  # TRUE_ID
@@ -614,7 +614,7 @@ class ItemCompareType(TriggerType, total=False):
     a479: float  # MOD_1
     a480: ITEM_TRIGGER_OP  # ITEM_OP_1
     a481: ITEM_TRIGGER_OP  # ITEM_OP_2
-    a482: ITEM_TRIGGER_OP|ITEM_TRIGGER_COMPARE_OP  # ITEM_OP_3
+    a482: ITEM_TRIGGER_COMPARE_OP  # ITEM_OP_3
     a483: float  # MOD_2
     a484: float  # TOLERANCE
     a485: ITEM_TRIGGER_ROUNDING  # ROUND_OP_1
@@ -632,7 +632,7 @@ class ItemEditType(TriggerType, total=False):
     a479: float  # MOD
     a480: ITEM_TRIGGER_OP  # ITEM_OP_1
     a481: ITEM_TRIGGER_OP  # ITEM_OP_2
-    a482: ITEM_TRIGGER_OP|ITEM_TRIGGER_COMPARE_OP  # ITEM_OP_3
+    a482: ITEM_TRIGGER_OP  # ITEM_OP_3
     a485: ITEM_TRIGGER_ROUNDING  # ROUND_OP_1
     a486: ITEM_TRIGGER_ROUNDING  # ROUND_OP_2
     a578: ITEM_TRIGGER_ABS_NEG  # SIGN_OP_1
@@ -670,7 +670,7 @@ class LinkVisibleType(TriggerType, total=False):
 
 class MgEditType(TriggerType, total=False):
     a10: float  # DURATION
-    a29: int  # OFFSET_Y
+    a29: float  # OFFSET_Y
     a30: EASING  # EASING
     a85: float  # EASE_RATE
 
@@ -680,8 +680,8 @@ class MgSpeedType(TriggerType, total=False):
 
 class MoveType(TriggerType, total=False):
     a10: float  # DURATION
-    a28: int  # MOVE_X
-    a29: int  # MOVE_Y
+    a28: float  # MOVE_X
+    a29: float  # MOVE_Y
     a30: EASING  # EASING
     a51: int  # TARGET_ID
     a58: bool  # LOCK_PLAYER_X
@@ -699,7 +699,7 @@ class MoveType(TriggerType, total=False):
     a393: bool  # USE_SMALL_STEP
     a394: bool  # DIRECTION_MODE
     a395: int  # TARGET_CENTER_ID
-    a396: int  # TARGET_DISTANCE
+    a396: float  # TARGET_DISTANCE
     a397: bool  # DYNAMIC_MODE
     a516: int  # M_516
     a517: int  # M_517
@@ -711,8 +711,8 @@ class ObjectControlType(TriggerType, total=False):
     a51: int  # TARGET_ID
 
 class OffsetCameraType(TriggerType, total=False):
-    a28: int  # OFFSET_X
-    a29: int  # OFFSET_Y
+    a28: float  # OFFSET_X
+    a29: float  # OFFSET_Y
     a30: EASING  # EASING
     a85: float  # EASE_RATE
     a101: XY_ONLY  # AXIS
@@ -747,7 +747,7 @@ class OrbSawType(TriggerType, total=False):
 class PickupType(TriggerType, total=False):
     a77: int  # COUNT
     a80: int  # ITEM_ID
-    a88: INSTANT_COUNT_COMPARISON|PICKUP_MULTIPLY_DIVIDE  # MODE
+    a88: PICKUP_MULTIPLY_DIVIDE  # MODE
     a139: bool  # OVERRIDE
     a449: float  # MOD
 
