@@ -1,8 +1,9 @@
 """Level loading and exporting for Geometry Dash."""
 
+from collections import deque
 from pathlib import Path
 import time
-from typing import Any, Callable, Iterator, SupportsIndex, cast
+from typing import Any, Callable, Iterable, SupportsIndex, cast
 from questionary import confirm
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList
@@ -97,12 +98,10 @@ class ObjectList(list[ObjectType]):
     
     def append(self, obj: ObjectType, *, import_mode_backend_only: bool = False):
         """Validate and append an object."""
-        if import_mode_backend_only:
-            super().append(obj)
-        else:
+        if not import_mode_backend_only:
             obj = self._wrap_object(obj)
-            super().append(obj)
             self.added_objects.append(obj)
+        super().append(obj)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
@@ -112,7 +111,7 @@ class ObjectList(list[ObjectType]):
         super().insert(index, wrapped)
         self.added_objects.append(wrapped)
     
-    def extend(self, iterable: list[ObjectType]):  # type: ignore[override]
+    def extend(self, iterable: Iterable[ObjectType]):
         """Validate and extend with multiple objects."""
         validated = [self._wrap_object(obj) for obj in iterable]
         super().extend(validated)
@@ -163,12 +162,17 @@ def from_file(file_path: str | Path) -> None:
     _source_file = path
     objects = ObjectList(live_editor=False)
     
+    obj_count = len(_kit_level.objects)
+    
     for kit_obj in _kit_level.objects:
         obj = from_kit_object(kit_obj)
         if tag_group not in obj.get(obj_prop.GROUPS, set()):
             objects.append(obj, import_mode_backend_only=True)
     
-    print(f"Loaded level from {file_path} with {len(objects)} objects in {_time_since_last():.2f} seconds.")
+    new.register_free_ids()
+    
+    print(f"\nLoaded '{file_path}' with {obj_count} objects in {_time_since_last():.3f} seconds.")
+    print(f"\nRemoved {obj_count-len(objects)} objects with tag group {tag_group}, level is now {len(objects)} objects.")
 
 
 def from_live_editor(url: str = WEBSOCKET_URL) -> None:
@@ -187,123 +191,107 @@ def from_live_editor(url: str = WEBSOCKET_URL) -> None:
         obj = from_kit_object(kit_obj)
         if tag_group not in obj.get(obj_prop.GROUPS, set()):
             objects.append(obj, import_mode_backend_only=True)
+    
+    new.register_free_ids()
 
 
 class new():
     """Return the next free ID for group, item, color, collision, control IDs."""
-    _initialized = False
-    _group_iter: Iterator[int] | None = None
-    _item_iter: Iterator[int] | None = None
-    _color_iter: Iterator[int] | None = None
-    _collision_iter: Iterator[int] | None = None
-    _control_iter: Iterator[int] | None = None
+    _group_pool: deque[int] = deque()
+    _item_pool: deque[int] = deque()
+    _color_pool: deque[int] = deque()
+    _collision_pool: deque[int] = deque()
+    _control_pool: deque[int] = deque()
+    used_group_ids: set[int] = set()
+    used_item_ids: set[int] = set()
+    used_color_ids: set[int] = set()
+    used_collision_ids: set[int] = set()
+    used_control_ids: set[int] = set()
     
     @classmethod
-    def _register_free_ids(cls):
-        cls._initialized = True
+    def register_free_ids(cls):
+        """Runs once automatically at level-load"""
         global objects
         
-        cls._used_group_ids: set[int] = set()
-        cls._used_item_ids: set[int] = set()
-        cls._used_color_ids: set[int] = set()
-        cls._used_collision_ids: set[int] = set()
-        cls._used_control_ids: set[int] = set()
+        if len(objects) == 0:
+            raise RuntimeError("Objects not found. Load a level first with from_file() or from_live_editor()")
         
         for obj in objects:
             if (key := obj_prop.GROUPS) in obj:
-                cls._used_group_ids.update(obj[key])
+                cls.used_group_ids.update(obj[key])
             if (key := obj_prop.Trigger.Count.ITEM_ID) in obj:
-                cls._used_item_ids.add(int(obj[key]))
+                cls.used_item_ids.add(obj[key])
             if (key := obj_prop.Trigger.CollisionBlock.BLOCK_ID) in obj:
-                cls._used_collision_ids.add(int(obj[key]))
+                cls.used_collision_ids.add(obj[key])
             if (key := obj_prop.Trigger.CONTROL_ID) in obj:
-                cls._used_control_ids.add(int(obj[key]))
+                cls.used_control_ids.add(obj[key])
         
-        cls._group_iter = (i for i in range(1, 9999) if i not in cls._used_group_ids)
-        cls._item_iter = (i for i in range(1, 9999) if i not in cls._used_item_ids)
-        # cls._color_iter = (i for i in range(1, 9999) if i not in cls._used_color_ids)
-        cls._collision_iter = (i for i in range(1, 9999) if i not in cls._used_collision_ids)
-        cls._control_iter = (i for i in range(1, 9999) if i not in cls._used_control_ids)
+        # Build deques of available IDs (O(1) popleft)
+        cls._group_pool = deque(i for i in range(1, 9999) if i not in cls.used_group_ids)
+        cls._item_pool = deque(i for i in range(1, 9999) if i not in cls.used_item_ids)
+        cls._color_pool = deque(i for i in range(1, 9999) if i not in cls.used_color_ids)
+        cls._collision_pool = deque(i for i in range(1, 9999) if i not in cls.used_collision_ids)
+        cls._control_pool = deque(i for i in range(1, 9999) if i not in cls.used_control_ids)
     
     
     @classmethod
-    def _get_next(cls, iterator: Iterator[int] | None, id_type: str) -> int:
-        if not cls._initialized:
-            cls._register_free_ids()
-        if iterator is None:
-            raise RuntimeError(f"Iterator for {id_type} IDs is not initialized")
-        try:
-            return next(iterator)
-        except StopIteration:
-            raise RuntimeError(f"No free {id_type} IDs available")
+    def _get_next(cls, pool_name: str, used_set: set[int], id_type: str) -> int:
+        """Get next free ID from pool. O(1) operation."""
+        pool = getattr(cls, f"_{pool_name}_pool")
+        if not pool:
+            raise RuntimeError(f"No free {id_type} IDs available (1-9999 range exhausted)")
+        
+        next_id = pool.popleft()
+        used_set.add(next_id)
+        return next_id
     
     @classmethod
     def group(cls) -> int:
         """Get next free group ID (1-9999)."""
-        return cls._get_next(cls._group_iter, "group")
+        return cls._get_next("group", cls.used_group_ids, "group")
     
     @classmethod
     def item(cls) -> int:
         """Get next free item ID (1-9999)."""
-        return cls._get_next(cls._item_iter, "item")
+        return cls._get_next("item", cls.used_item_ids, "item")
     
     @classmethod
     def color(cls) -> int:
         """Get next free color ID (1-9999)."""
-        return cls._get_next(cls._color_iter, "color")
+        return cls._get_next("color", cls.used_color_ids, "color")
     
     @classmethod
     def collision(cls) -> int:
         """Get next free collision block ID (1-9999)."""
-        return cls._get_next(cls._collision_iter, "collision")
+        return cls._get_next("collision", cls.used_collision_ids, "collision")
     
     @classmethod
     def control(cls) -> int:
         """Get next free control ID (1-9999)."""
-        return cls._get_next(cls._control_iter, "control")
+        return cls._get_next("control", cls.used_control_ids, "control")
     
-    @classmethod
-    def group_multi(cls, count: int) -> tuple[int,...]:
-        """Get next free group IDs (1-9999)."""
-        return tuple(cls._get_next(cls._group_iter, "group") for _ in range(count))
-    
-    @classmethod
-    def item_multi(cls, count: int) -> tuple[int,...]:
-        """Get next free item IDs (1-9999)."""
-        return tuple(cls._get_next(cls._item_iter, "item") for _ in range(count))
-    
-    @classmethod
-    def color_multi(cls, count: int) -> tuple[int,...]:
-        """Get next free color IDs (1-9999)."""
-        return tuple(cls._get_next(cls._color_iter, "color") for _ in range(count))
-    
-    @classmethod
-    def collision_multi(cls, count: int) -> tuple[int,...]:
-        """Get next free collision block IDs (1-9999)."""
-        return tuple(cls._get_next(cls._collision_iter, "collision") for _ in range(count))
-    
-    @classmethod
-    def control_multi(cls, count: int) -> tuple[int,...]:
-        """Get next free control IDs (1-9999)."""
-        return tuple(cls._get_next(cls._control_iter, "control") for _ in range(count))
     
     @classmethod
     def reset_all(cls):
-        """Reset and rescan level objects. Call after significant object changes."""
         cls._initialized = False
-        cls._group_iter = None
-        cls._item_iter = None
-        cls._color_iter = None
-        cls._collision_iter = None
-        cls._control_iter = None
+        cls._group_pool.clear()
+        cls._item_pool.clear()
+        cls._color_pool.clear()
+        cls._collision_pool.clear()
+        cls._control_pool.clear()
+        cls.used_group_ids.clear()
+        cls.used_item_ids.clear()
+        cls.used_color_ids.clear()
+        cls.used_collision_ids.clear()
+        cls.used_control_ids.clear()
 
 
 
 def _validate_and_prepare_objects(validated_objects: ObjectList) -> None:
     """Run validation and preparation checks on objects before export."""
-    
+    global tag_group
     for obj in validated_objects.added_objects:
-        groups = obj.get(obj_prop.GROUPS, set())
+        groups = obj.get(obj_prop.GROUPS, {tag_group})
         groups.add(tag_group)
         obj[obj_prop.GROUPS] = groups
 
@@ -312,7 +300,7 @@ def export_to_file(file_path: str | Path | None = None) -> None:
     """Export level to .gmd file."""
     global objects, _kit_level, _source_file, _start_time
     
-    print(f"gmdbuilder took {_time_since_last():.2f} seconds to prepare for export.")
+    print(f"\ngmdbuilder took {_time_since_last():.4f} seconds to prepare for export.")
     
     if _kit_level is None:
         raise RuntimeError("No level loaded. Use level.from_file() first")
@@ -336,7 +324,7 @@ def export_to_file(file_path: str | Path | None = None) -> None:
     
     _kit_level.to_file(str(export_path))
     
-    print(f"Exported level to {export_path} with {len(objects)} objects in {_time_since_last():.2f} seconds.")
+    print(f"\nExported level to {export_path} with {len(objects)} objects in {_time_since_last():.3f} seconds.\n")
     
     new.reset_all()
     objects.clear()
