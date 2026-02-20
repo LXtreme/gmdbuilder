@@ -3,7 +3,7 @@
 from collections import deque
 from pathlib import Path
 import time
-from typing import Any, Callable, Iterable, SupportsIndex, cast
+from typing import Any, Callable, Iterable, Literal, SupportsIndex, cast, overload
 from questionary import confirm
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList
@@ -202,21 +202,20 @@ class IDAllocator:
         self.used_collision_ids: set[int] = set()
         self.used_control_ids: set[int] = set()
     
-    # def reserve_id(self, id_type: str, id_value: int):
-    #     """Manually reserve an ID (e.g. for objects not in the main list)."""
-    #     if id_type == "group":
-    #         self.used_group_ids.add(id_value)
-    #     elif id_type == "item":
-    #         self.used_item_ids.add(id_value)
-    #     elif id_type == "color":
-    #         self.used_color_ids.add(id_value)
-    #     elif id_type == "collision":
-    #         self.used_collision_ids.add(id_value)
-    #     elif id_type == "control":
-    #         self.used_control_ids.add(id_value)
-    #     else:
-    #         raise ValueError(f"Unknown ID type: {id_type}")
-    
+    def reserve_id(self, id_type: str, id_value: int):
+        """Manually reserve an ID (e.g. for objects not in the main list)."""
+        if id_type == "group":
+            self.used_group_ids.add(id_value)
+        elif id_type == "item":
+            self.used_item_ids.add(id_value)
+        elif id_type == "color":
+            self.used_color_ids.add(id_value)
+        elif id_type == "collision":
+            self.used_collision_ids.add(id_value)
+        elif id_type == "control":
+            self.used_control_ids.add(id_value)
+        else:
+            raise ValueError(f"Unknown ID type: {id_type}")
     
     def _register_free_ids(self):
         """Runs automatically at first new ID call."""
@@ -244,8 +243,7 @@ class IDAllocator:
         self._collision_pool = deque(sorted(all_ids - self.used_collision_ids))
         self._control_pool = deque(sorted(all_ids - self.used_control_ids))
     
-    
-    def _get_next(self, pool_name: str, used_set: set[int]) -> int:
+    def _get_next(self, pool_name: str) -> int:
         """Get next free ID from pool. O(1) operation."""
         if not self._initialized:
             self._register_free_ids()
@@ -254,29 +252,110 @@ class IDAllocator:
         if not pool:
             raise RuntimeError(f"No free {pool_name} IDs available (1-9999 range exhausted)")
         
+        used_set = getattr(self, f"used_{pool_name}_ids")
         next_id = pool.popleft()
         used_set.add(next_id)
         return next_id
     
-    def group(self) -> int:
+    @overload
+    def group(self) -> int: ...
+    @overload
+    def group(self, count: Literal[1]) -> int: ... # type: ignore[override]
+    @overload
+    def group(self, count: Literal[2]) -> tuple[int, int]: ...
+    @overload
+    def group(self, count: Literal[3]) -> tuple[int, int, int]: ...
+    @overload
+    def group(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
+    @overload
+    def group(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
+    @overload
+    def group(self, count: int) -> tuple[int, ...]: ...
+    def group(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free group ID (1-9999)."""
-        return self._get_next("group", self.used_group_ids)
+        if count == 1:
+            return self._get_next("group")
+        return tuple(self._get_next("group") for _ in range(count))
     
-    def item(self) -> int:
+    @overload
+    def item(self) -> int: 
+    @overload
+    def item(self, count: Literal[1]) -> int: ... # type: ignore[override]
+    @overload
+    def item(self, count: Literal[2]) -> tuple[int, int]: ...
+    @overload
+    def item(self, count: Literal[3]) -> tuple[int, int, int]: ...
+    @overload
+    def item(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
+    @overload
+    def item(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
+    @overload
+    def item(self, count: int) -> tuple[int, ...]: ...
+    def item(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free item ID (1-9999)."""
-        return self._get_next("item", self.used_item_ids)
+        if count == 1:
+            return self._get_next("item")
+        return tuple(self._get_next("item") for _ in range(count))
     
-    def color(self) -> int:
+    @overload
+    def color(self) -> int: ...
+    @overload
+    def color(self, count: Literal[1]) -> int: ... # type: ignore[override]
+    @overload
+    def color(self, count: Literal[2]) -> tuple[int, int]: ...
+    @overload
+    def color(self, count: Literal[3]) -> tuple[int, int, int]: ...
+    @overload
+    def color(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
+    @overload
+    def color(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
+    @overload
+    def color(self, count: int) -> tuple[int, ...]: ...
+    def color(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free color ID (1-9999)."""
-        return self._get_next("color", self.used_color_ids)
+        if count == 1:
+            return self._get_next("color")
+        return tuple(self._get_next("color") for _ in range(count))
     
-    def collision(self) -> int:
+    @overload
+    def collision(self) -> int: ...
+    @overload
+    def collision(self, count: Literal[1]) -> int: ... # type: ignore[override]
+    @overload
+    def collision(self, count: Literal[2]) -> tuple[int, int]: ...
+    @overload
+    def collision(self, count: Literal[3]) -> tuple[int, int, int]: ...
+    @overload
+    def collision(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
+    @overload
+    def collision(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
+    @overload
+    def collision(self, count: int) -> tuple[int, ...]: ...
+    def collision(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free collision block ID (1-9999)."""
-        return self._get_next("collision", self.used_collision_ids)
+        if count == 1:
+            return self._get_next("collision")
+        return tuple(self._get_next("collision") for _ in range(count))
     
-    def control(self) -> int:
+    @overload
+    def control(self) -> int: ...
+    @overload
+    def control(self, count: Literal[1]) -> int: ... # type: ignore[override]
+    @overload
+    def control(self, count: Literal[2]) -> tuple[int, int]: ...
+    @overload
+    def control(self, count: Literal[3]) -> tuple[int, int, int]: ...
+    @overload
+    def control(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
+    @overload
+    def control(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
+    @overload
+    def control(self, count: int) -> tuple[int, ...]: ...
+    def control(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free control ID (1-9999)."""
-        return self._get_next("control", self.used_control_ids)
+        if count == 1:
+            return self._get_next("control")
+        return tuple(self._get_next("control") for _ in range(count))
     
     def reset_all(self):
         self._initialized = False
