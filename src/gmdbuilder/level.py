@@ -135,7 +135,6 @@ tag_group = 9999
 _kit_level: KitLevel | None = None
 _source_file: Path | None = None
 _live_editor: LiveEditor | None = None
-# _start_time: float | None = None
 
 
 def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
@@ -147,7 +146,7 @@ def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
 
 def from_file(file_path: str | Path) -> None:
     """Load level from .gmd file into the module-level objects list."""
-    global objects, tag_group, _kit_level, _source_file, _live_editor, _start_time
+    global objects, tag_group, _kit_level, _source_file, _live_editor
     
     if _source_file is not None or _live_editor is not None:
         raise RuntimeError("FORBIDDEN: Level file is loaded! Loading multiple levels at once overrides global state")
@@ -168,8 +167,6 @@ def from_file(file_path: str | Path) -> None:
         obj = from_kit_object(kit_obj)
         if tag_group not in obj.get(obj_prop.GROUPS, set()):
             objects.append(obj, import_mode_backend_only=True)
-    
-    new.register_free_ids()
     
     print(f"\nLoaded '{file_path}' with {obj_count} objects in {_time_since_last():.3f} seconds.")
     print(f"\nRemoved {obj_count-len(objects)} objects with tag group {tag_group}, level is now {len(objects)} objects.")
@@ -192,25 +189,37 @@ def from_live_editor(url: str = WEBSOCKET_URL) -> None:
         if tag_group not in obj.get(obj_prop.GROUPS, set()):
             objects.append(obj, import_mode_backend_only=True)
     
-    new.register_free_ids()
 
-
-class new():
-    """Return the next free ID for group, item, color, collision, control IDs."""
-    _group_pool: deque[int] = deque()
-    _item_pool: deque[int] = deque()
-    _color_pool: deque[int] = deque()
-    _collision_pool: deque[int] = deque()
-    _control_pool: deque[int] = deque()
-    used_group_ids: set[int] = set()
-    used_item_ids: set[int] = set()
-    used_color_ids: set[int] = set()
-    used_collision_ids: set[int] = set()
-    used_control_ids: set[int] = set()
+class IDAllocator:
+    """Singleton class to manage unique ID allocation. Instance is 'new'."""
     
-    @classmethod
-    def register_free_ids(cls):
-        """Runs once automatically at level-load"""
+    def __init__(self):
+        self._initialized = False
+        
+        self.used_group_ids: set[int] = set()
+        self.used_item_ids: set[int] = set()
+        self.used_color_ids: set[int] = set()
+        self.used_collision_ids: set[int] = set()
+        self.used_control_ids: set[int] = set()
+    
+    def reserve_id(self, id_type: str, id_value: int):
+        """Manually reserve an ID (e.g. for objects not in the main list)."""
+        if id_type == "group":
+            self.used_group_ids.add(id_value)
+        elif id_type == "item":
+            self.used_item_ids.add(id_value)
+        elif id_type == "color":
+            self.used_color_ids.add(id_value)
+        elif id_type == "collision":
+            self.used_collision_ids.add(id_value)
+        elif id_type == "control":
+            self.used_control_ids.add(id_value)
+        else:
+            raise ValueError(f"Unknown ID type: {id_type}")
+    
+    
+    def _register_free_ids(self):
+        """Runs automatically at first new ID call."""
         global objects
         
         if len(objects) == 0:
@@ -218,74 +227,71 @@ class new():
         
         for obj in objects:
             if (key := obj_prop.GROUPS) in obj:
-                cls.used_group_ids.update(obj[key])
+                self.used_group_ids.update(obj[key])
             if (key := obj_prop.Trigger.Count.ITEM_ID) in obj:
-                cls.used_item_ids.add(obj[key])
+                self.used_item_ids.add(obj[key])
             if (key := obj_prop.Trigger.CollisionBlock.BLOCK_ID) in obj:
-                cls.used_collision_ids.add(obj[key])
+                self.used_collision_ids.add(obj[key])
             if (key := obj_prop.Trigger.CONTROL_ID) in obj:
-                cls.used_control_ids.add(obj[key])
+                self.used_control_ids.add(obj[key])
         
         # Build deques of available IDs (O(1) popleft)
-        cls._group_pool = deque(i for i in range(1, 9999) if i not in cls.used_group_ids)
-        cls._item_pool = deque(i for i in range(1, 9999) if i not in cls.used_item_ids)
-        cls._color_pool = deque(i for i in range(1, 9999) if i not in cls.used_color_ids)
-        cls._collision_pool = deque(i for i in range(1, 9999) if i not in cls.used_collision_ids)
-        cls._control_pool = deque(i for i in range(1, 9999) if i not in cls.used_control_ids)
+        self._group_pool = deque(i for i in range(1, 9999) if i not in self.used_group_ids)
+        self._item_pool = deque(i for i in range(1, 9999) if i not in self.used_item_ids)
+        self._color_pool = deque(i for i in range(1, 9999) if i not in self.used_color_ids)
+        self._collision_pool = deque(i for i in range(1, 9999) if i not in self.used_collision_ids)
+        self._control_pool = deque(i for i in range(1, 9999) if i not in self.used_control_ids)
     
     
-    @classmethod
-    def _get_next(cls, pool_name: str, used_set: set[int], id_type: str) -> int:
+    def _get_next(self, pool_name: str, used_set: set[int]) -> int:
         """Get next free ID from pool. O(1) operation."""
-        pool = getattr(cls, f"_{pool_name}_pool")
+        pool = getattr(self, f"_{pool_name}_pool")
+        
+        if not self._initialized:
+            self._register_free_ids()
+        
         if not pool:
-            raise RuntimeError(f"No free {id_type} IDs available (1-9999 range exhausted)")
+            raise RuntimeError(f"No free {pool_name} IDs available (1-9999 range exhausted)")
         
         next_id = pool.popleft()
         used_set.add(next_id)
         return next_id
     
-    @classmethod
-    def group(cls) -> int:
+    def group(self) -> int:
         """Get next free group ID (1-9999)."""
-        return cls._get_next("group", cls.used_group_ids, "group")
+        return self._get_next("group", self.used_group_ids)
     
-    @classmethod
-    def item(cls) -> int:
+    def item(self) -> int:
         """Get next free item ID (1-9999)."""
-        return cls._get_next("item", cls.used_item_ids, "item")
+        return self._get_next("item", self.used_item_ids)
     
-    @classmethod
-    def color(cls) -> int:
+    def color(self) -> int:
         """Get next free color ID (1-9999)."""
-        return cls._get_next("color", cls.used_color_ids, "color")
+        return self._get_next("color", self.used_color_ids)
     
-    @classmethod
-    def collision(cls) -> int:
+    def collision(self) -> int:
         """Get next free collision block ID (1-9999)."""
-        return cls._get_next("collision", cls.used_collision_ids, "collision")
+        return self._get_next("collision", self.used_collision_ids)
     
-    @classmethod
-    def control(cls) -> int:
+    def control(self) -> int:
         """Get next free control ID (1-9999)."""
-        return cls._get_next("control", cls.used_control_ids, "control")
+        return self._get_next("control", self.used_control_ids)
     
-    
-    @classmethod
-    def reset_all(cls):
-        cls._initialized = False
-        cls._group_pool.clear()
-        cls._item_pool.clear()
-        cls._color_pool.clear()
-        cls._collision_pool.clear()
-        cls._control_pool.clear()
-        cls.used_group_ids.clear()
-        cls.used_item_ids.clear()
-        cls.used_color_ids.clear()
-        cls.used_collision_ids.clear()
-        cls.used_control_ids.clear()
+    def reset_all(self):
+        self._initialized = False
+        self._group_pool.clear()
+        self._item_pool.clear()
+        self._color_pool.clear()
+        self._collision_pool.clear()
+        self._control_pool.clear()
+        self.used_group_ids.clear()
+        self.used_item_ids.clear()
+        self.used_color_ids.clear()
+        self.used_collision_ids.clear()
+        self.used_control_ids.clear()
 
-
+new = IDAllocator()
+"""Allocate free IDs for level objects."""
 
 def _validate_and_prepare_objects(validated_objects: ObjectList) -> None:
     """Run validation and preparation checks on objects before export."""
