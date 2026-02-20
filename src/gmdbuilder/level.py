@@ -202,24 +202,25 @@ class IDAllocator:
         self.used_collision_ids: set[int] = set()
         self.used_control_ids: set[int] = set()
     
-    def reserve_id(self, id_type: str, id_value: int):
-        """Manually reserve an ID (e.g. for objects not in the main list)."""
-        if id_type == "group":
-            self.used_group_ids.add(id_value)
-        elif id_type == "item":
-            self.used_item_ids.add(id_value)
-        elif id_type == "color":
-            self.used_color_ids.add(id_value)
-        elif id_type == "collision":
-            self.used_collision_ids.add(id_value)
-        elif id_type == "control":
-            self.used_control_ids.add(id_value)
-        else:
-            raise ValueError(f"Unknown ID type: {id_type}")
+    # def reserve_id(self, id_type: str, id_value: int):
+    #     """Manually reserve an ID (e.g. for objects not in the main list)."""
+    #     if id_type == "group":
+    #         self.used_group_ids.add(id_value)
+    #     elif id_type == "item":
+    #         self.used_item_ids.add(id_value)
+    #     elif id_type == "color":
+    #         self.used_color_ids.add(id_value)
+    #     elif id_type == "collision":
+    #         self.used_collision_ids.add(id_value)
+    #     elif id_type == "control":
+    #         self.used_control_ids.add(id_value)
+    #     else:
+    #         raise ValueError(f"Unknown ID type: {id_type}")
     
     
     def _register_free_ids(self):
         """Runs automatically at first new ID call."""
+        self._initialized = True
         global objects
         
         if len(objects) == 0:
@@ -235,21 +236,21 @@ class IDAllocator:
             if (key := obj_prop.Trigger.CONTROL_ID) in obj:
                 self.used_control_ids.add(obj[key])
         
-        # Build deques of available IDs (O(1) popleft)
-        self._group_pool = deque(i for i in range(1, 9999) if i not in self.used_group_ids)
-        self._item_pool = deque(i for i in range(1, 9999) if i not in self.used_item_ids)
-        self._color_pool = deque(i for i in range(1, 9999) if i not in self.used_color_ids)
-        self._collision_pool = deque(i for i in range(1, 9999) if i not in self.used_collision_ids)
-        self._control_pool = deque(i for i in range(1, 9999) if i not in self.used_control_ids)
+        # Build sorted deques of available IDs using set difference (O(n) but very fast)
+        all_ids = set(range(1, 9999))
+        self._group_pool = deque(sorted(all_ids - self.used_group_ids))
+        self._item_pool = deque(sorted(all_ids - self.used_item_ids))
+        self._color_pool = deque(sorted(all_ids - self.used_color_ids))
+        self._collision_pool = deque(sorted(all_ids - self.used_collision_ids))
+        self._control_pool = deque(sorted(all_ids - self.used_control_ids))
     
     
     def _get_next(self, pool_name: str, used_set: set[int]) -> int:
         """Get next free ID from pool. O(1) operation."""
-        pool = getattr(self, f"_{pool_name}_pool")
-        
         if not self._initialized:
             self._register_free_ids()
         
+        pool = getattr(self, f"_{pool_name}_pool")        
         if not pool:
             raise RuntimeError(f"No free {pool_name} IDs available (1-9999 range exhausted)")
         

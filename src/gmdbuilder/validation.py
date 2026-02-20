@@ -65,14 +65,14 @@ def _validate_key_allowed(obj_id: int, key: str):
         raise ValueError(f"Key {key} is not allowed for object ID {obj_id}")
 
 
-def validate_obj(obj: ObjectType):
-    obj_id = obj[obj_prop.ID]
-    for k, v in obj.items(): validate(obj_id, k, v)
-
-
 @lru_cache(maxsize=1024)
 def _validate_key_value(k: str, v: Any):
     match k:
+            # | obj_prop.Trigger.Pickup.ITEM_ID
+            # | obj_prop.Trigger.CONTROL_ID
+            # | obj_prop.COLOR_1
+            # | obj_prop.COLOR_2
+            # | obj_prop.Trigger.CollisionBlock.BLOCK_ID)
         case (obj_prop.Trigger.Move.TARGET_ID 
             | obj_prop.Trigger.Move.TARGET_CENTER_ID 
             | obj_prop.Trigger.Move.TARGET_POS):
@@ -98,18 +98,20 @@ def validate(obj_id: int, key: str, v: Any):
             case obj_prop.GROUPS:
                 for group_id in v:
                     _assert_int_in_range(group_id)
-                return
             case obj_prop.PARENT_GROUPS:
                 for group_id in v:
                     _assert_int_in_range(group_id)
-                return
             case obj_prop.Trigger.Spawn.REMAPS:
                 for source, target in v.items():
                     _assert_int_in_range(source)
                     _assert_int_in_range(target)
-                return
             case _:
                 print(f"placeholder warning: {key} : {v!r} is not validated.")
+
+
+def validate_obj(obj: ObjectType):
+    obj_id = obj[obj_prop.ID]
+    for k, v in obj.items(): validate(obj_id, k, v)
 
 
 def export_validation(final_object_list: list[ObjectType]):

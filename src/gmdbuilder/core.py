@@ -57,11 +57,7 @@ class Object(dict[str, Any]):
 
 
 @lru_cache(maxsize=1024)
-def _to_raw_key_cached(key: object) -> int | str:
-    if isinstance(key, int):
-        return key
-    if not isinstance(key, str):
-        raise ValueError()
+def _to_raw_key_cached(key: str) -> int | str:
     if key.startswith('k'):
         return key
     if key.startswith('a'):
