@@ -3,7 +3,6 @@ from typing import Any, Callable, Literal, Union, get_args, get_origin, Required
 from gmdbuilder.mappings import obj_id, obj_prop
 from gmdbuilder import object_types as td
 
-
 ObjectType = td.ObjectType
 tid = obj_id.Trigger
 cid = obj_id.Collectible
@@ -14,6 +13,8 @@ ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
     tid.ANIMATE: td.AnimateType,
     tid.ANIMATE_KEYFRAME: td.AnimateKeyframeType,
     tid.ARROW: td.ArrowType,
+    tid.BG_EFFECT_ENABLE: td.TriggerType,
+    tid.BG_EFFECT_DISABLE: td.TriggerType,
     tid.BPM: td.BpmType,
     tid.CAMERA_EDGE: td.CameraEdgeType,
     tid.CAMERA_GUIDE: td.CameraGuideType,
@@ -28,9 +29,13 @@ ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
     tid.COLLISION_BLOCK: td.CollisionBlockType,
     tid.EDIT_ADV_FOLLOW: td.EditAdvFollowType,
     tid.EDIT_MG: td.MgEditType,
+    tid.EVENT: td.EventType,
+    tid.EDIT_SFX: td.SfxType,
+    tid.EDIT_SONG: td.SongType,
     tid.END: td.EndType,
     tid.FOLLOW: td.FollowType,
     tid.FOLLOW_PLAYER_Y: td.FollowPlayerYType,
+    tid.FORCE_BLOCK: td.ForceBlockType,
     tid.GAMEPLAY_OFFSET: td.GameplayOffsetType,
     tid.GRADIENT: td.GradientType,
     tid.GRAVITY: td.GravityType,
@@ -73,13 +78,68 @@ ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
     tid.TOUCH: td.TouchType,
     tid.UI: td.UiType,
     tid.ZOOM_CAMERA: td.ZoomCameraType,
-    cid.SECRET_COIN: td.CoinType,
+    tid.PLAYER_HIDE: td.TriggerType,
+    tid.PLAYER_SHOW: td.TriggerType,
+    tid.Enter.MOVE: td.EffectType,
+    tid.EnterPreset.FADE_ONLY: td.TriggerType,
     cid.KEY: td.CollectibleType,
-    cid.USER_COIN: td.CollectibleType,
+    cid.USER_COIN: td.AnimatedType,
     cid.SMALL_COIN: td.CollectibleType,
-    914: td.TextType,
+    obj_id.TEXT: td.TextType,
+    obj_id.ITEM_LABEL: td.ItemLabelType,
+    obj_id.PARTICLE_OBJECT: td.ParticleType,
+    obj_id.Orb.BLACK: td.TriggerType,
+    obj_id.Orb.BLUE: td.TriggerType,
+    obj_id.Orb.GREEN: td.TriggerType,
+    obj_id.Orb.RED: td.TriggerType,
+    obj_id.Orb.YELLOW: td.TriggerType,
+    obj_id.Orb.PINK: td.TriggerType,
+    obj_id.Orb.SPIDER: td.TriggerType,
+    obj_id.Orb.TELEPORT: td.TriggerType,
+    obj_id.Orb.TOGGLE: td.ToggleBlockType,
+    obj_id.Orb.DASH_GREEN: td.DashType,
+    obj_id.Orb.DASH_PINK: td.DashType,
+    obj_id.Portal.Teleport.ENTER: td.PortalType,
+    obj_id.Portal.Teleport.EXIT: td.ExitPortalType,
+    obj_id.Portal.Teleport.LINKED: td.PortalType,
+    3002: td.AnimatedType,
+    1020: td.SawType,
+    1582: td.SawType,
+    1709: td.SawType,
 }
 """Unfinished mapping of Object IDs to non-common Object TypedDicts"""
+
+
+def _append_types(cls: object, obj_type: type[ObjectType]):
+    if isinstance(cls, list):
+        for c in cls:
+            if isinstance(c, int):
+                ID_TO_TYPEDDICT[c] = obj_type
+    else:
+        for obj in [v for v in vars(cls).values() if isinstance(v, int)]:
+            ID_TO_TYPEDDICT[obj] = obj_type
+
+_append_types(obj_id.Pad, td.TriggerType)
+_append_types(obj_id.Portal, td.GamemodePortalType)
+_append_types(obj_id.Speed, td.TriggerType)
+_append_types(obj_id.Modifier, td.TriggerType)
+_append_types(obj_id.Trigger.Shader, td.ShaderType)
+_append_types(obj_id.Trigger.Area, td.EffectType)
+_append_types([i for i in range(920, 925)], td.AnimatedType)
+_append_types([i for i in range(1849, 1859)], td.AnimatedType)
+_append_types([1936, 1937, 1938, 1939], td.AnimatedType)
+_append_types([i for i in range(2020, 2056)], td.AnimatedType)
+_append_types([2864, 2865], td.AnimatedType)
+_append_types([i for i in range(2867, 2895)], td.AnimatedType)
+_append_types([3000, 3001, 3002], td.AnimatedType)
+_append_types([85, 86, 87, 88, 89], td.SawType)
+_append_types([97, 98], td.SawType)
+_append_types([137, 138, 139], td.SawType)
+_append_types([154, 155, 156], td.SawType)
+_append_types([i for i in range(180, 189)], td.SawType)
+_append_types([222, 223, 224], td.SawType)
+_append_types([375, 376, 377, 378], td.SawType)
+_append_types([i for i in range(394, 400)], td.SawType)
 
 ID_TO_ALLOWED_KEYS = {
     k: set(v.__required_keys__) | set(v.__optional_keys__) 

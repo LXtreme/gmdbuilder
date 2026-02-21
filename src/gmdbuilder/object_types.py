@@ -37,7 +37,7 @@ SEQUENCE_MODE = Literal[0,1,2]
 ARROW_DIR = Literal[1,2,3,4]
 LABEL_ALIGN = Literal[0,1,2]
 LABEL_SPECIAL = Literal[0,-1,-2,-3]
-UI_REF = Literal[0,1,2,3]
+UI_REF = Literal[0,1,2,3,4,5,6,7,8]
 OPTIONS = Literal[0,1,-1]
 TELEPORT_GRAVITY = Literal[0,1,2,3]
 ENTER_EXIT_ONLY = Literal[0,1,2]
@@ -112,6 +112,7 @@ class ObjectType(TypedDict, total=False):
     a511: bool  # EXTENDED_COLLISION
 
 class AnimatedType(ObjectType, total=False):
+    a36: bool  # INTERACTIBLE
     a106: bool  # RANDOMIZE_START
     a107: float  # ANIMATION_SPEED
     a122: bool  # USE_SPEED
@@ -133,13 +134,17 @@ class ItemLabelType(ObjectType, total=False):
     a488: int  # KERNING
 
 class ParticleType(ObjectType, total=False):
+    # trial props, not verified
+    a107: float  # ANIMATION_SPEED
+    a123: bool  # ANIMATE_ON_TRIGGER
     a145: str  # DATA
     a146: bool  # USE_OBJ_COLOR
     a147: bool  # UNIFORM_OBJ_COLOR
     a211: bool  # QUICK_START
+    a214: bool  # ANIMATE_ACTIVE_ONLY
 
 class SawType(ObjectType, total=False):
-    a97: int  # ROTATION_SPEED
+    a97: float  # ROTATION_SPEED
     a98: bool  # DISABLE_ROTATION
 
 class TemplateType(ObjectType, total=False):
@@ -150,6 +155,8 @@ class TextType(ObjectType, total=False):
     a488: int  # KERNING
 
 class TimewarpType(ObjectType, total=False):
+    a13: bool  # EDITOR_PREVIEW
+    a36: bool  # INTERACTIBLE
     a120: float  # MOD
 
 class TriggerType(ObjectType, total=False):
@@ -219,8 +226,8 @@ class AdvFollowType(TriggerType, total=False):
     a340: int  # ROT_OFFSET
     a357: float  # NEAR_ACCEL
     a358: float  # NEAR_ACCEL_RAND
-    a359: float|int  # NEAR_DIST
-    a360: float|int  # NEAR_DIST_RAND
+    a359: float  # NEAR_DIST
+    a360: float  # NEAR_DIST_RAND
     a361: float  # EASING
     a362: float  # EASING_RAND
     a363: int  # ROT_EASING
@@ -426,8 +433,8 @@ class EditAdvFollowType(TriggerType, total=False):
     a340: int  # M_340
     a357: float  # M_357
     a358: float  # M_358
-    a359: float|int  # M_359
-    a360: float|int  # M_360
+    a359: float  # M_359
+    a360: float  # M_360
     a361: float  # M_361
     a362: float  # M_362
     a363: int  # M_363
@@ -711,6 +718,7 @@ class ObjectControlType(TriggerType, total=False):
     a51: int  # TARGET_ID
 
 class OffsetCameraType(TriggerType, total=False):
+    a10: float  # DURATION
     a28: float  # OFFSET_X
     a29: float  # OFFSET_Y
     a30: EASING  # EASING
@@ -741,7 +749,7 @@ class OptionsType(TriggerType, total=False):
     a593: OPTIONS  # BOOST_SLIDE
 
 class OrbSawType(TriggerType, total=False):
-    a97: int  # ROTATION_SPEED
+    a97: float  # ROTATION_SPEED
     a98: bool  # DISABLE_ROTATION
 
 class PickupType(TriggerType, total=False):
@@ -881,7 +889,7 @@ class SfxType(TriggerType, total=False):
     a595: bool  # M_595
     a596: int  # SPEED_RAND
     a597: int  # PITCH_RAND
-    a598: int  # VOLUME_RAND
+    a598: float  # VOLUME_RAND
     a599: bool  # PITCH_STEPS
 
 class ShaderType(TriggerType, total=False):
@@ -909,8 +917,8 @@ class ShaderType(TriggerType, total=False):
     a191: float  # SHOCKWAVE_OUTER (ALIASES: GLITCH_MAX_SLICE_X_OFFSET, CHROMATIC_GLITCH_LINE_STRENGTH, MOTION_BLUR_FOLLOW_EASE, EDIT_COLOR_CG)
     a192: bool  # SHADER_OPT_DISABLE_ALL (ALIASES: CHROMATIC_GLITCH_DISABLE)
     a194: bool  # CHROMATIC_GLITCH_RELATIVE_POS (ALIASES: PIXELATE_SNAP_GRID, MOTION_BLUR_DUAL_DIR, PINCH_USE_Y, INVERT_COLOR_CLAMP_RGB)
-    a196: TRIGGER_LAYER  # SHADER_OPT_LAYER_MIN
-    a197: TRIGGER_LAYER  # SHADER_OPT_LAYER_MAX
+    a196: int  # SHADER_OPT_LAYER_MIN
+    a197: int  # SHADER_OPT_LAYER_MAX
     a200: bool  # SHOCKWAVE_PLAYER_2 (ALIASES: SHOCKLINE_PLAYER_2, LENS_CIRCLE_PLAYER_2, RADIAL_BLUR_PLAYER_2, MOTION_BLUR_PLAYER_2, BULGE_PLAYER_2, PINCH_PLAYER_2)
     a201: bool  # MOTION_BLUR_CENTER
     a290: float  # SHOCKWAVE_SCREEN_OFFSET_X (ALIASES: SHOCKLINE_SCREEN_OFFSET, LENS_CIRCLE_SCREEN_OFFSET_X, RADIAL_BLUR_SCREEN_OFFSET_X, BULGE_SCREEN_OFFSET_X, PINCH_SCREEN_OFFSET_X)
@@ -971,7 +979,7 @@ class SongType(TriggerType, total=False):
     a595: bool  # DONT_RESET
     a596: int  # M_596
     a597: int  # M_597
-    a598: int  # M_598
+    a598: float  # M_598
     a599: bool  # M_599
 
 class SpawnType(TriggerType, total=False):
@@ -986,13 +994,13 @@ class SpawnType(TriggerType, total=False):
 class SpawnParticleType(TriggerType, total=False):
     a51: int  # PARTICLE_GROUP
     a71: int  # POSITION_GROUP
-    a547: int  # OFFSET_X
-    a548: int  # OFFSET_Y
-    a549: int  # OFFVAR_X
-    a550: int  # OFFVAR_Y
+    a547: float  # OFFSET_X
+    a548: float  # OFFSET_Y
+    a549: float  # OFFVAR_X
+    a550: float  # OFFVAR_Y
     a551: bool  # MATCH_ROT
-    a552: int  # ROTATION
-    a553: int  # ROTATION_RAND
+    a552: float  # ROTATION
+    a553: float  # ROTATION_RAND
     a554: float  # SCALE
     a555: float  # SCALE_RAND
 
@@ -1094,7 +1102,3 @@ class ZoomCameraType(TriggerType, total=False):
     a371: float  # ZOOM
 
 # End
-
-# ======================================================================
-# CUSTOM OBJECT CLASSES FOR VALIDATION
-# ======================================================================
