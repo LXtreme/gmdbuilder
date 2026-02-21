@@ -11,7 +11,7 @@ from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 
 from gmdbuilder.core import Object, to_kit_object, from_kit_object
 from gmdbuilder.mappings import obj_prop
-from gmdbuilder.validation import validate_obj
+from gmdbuilder.validation import validate
 from gmdbuilder.object_types import ObjectType
 
 
@@ -74,7 +74,8 @@ class ObjectList(list[ObjectType]):
         """Wrap an object in ValidatedObject for runtime validation."""
         if isinstance(obj, Object):
             return cast(ObjectType, obj)
-        validate_obj(obj)
+        for k, v in obj.items():
+            validate(obj[obj_prop.ID], k, v)
         wrapped = Object(obj[obj_prop.ID])
         wrapped.update(obj)
         return cast(ObjectType, wrapped)
@@ -98,8 +99,8 @@ class ObjectList(list[ObjectType]):
     
     def append(self, obj: ObjectType, *, import_mode_backend_only: bool = False):
         """Validate and append an object."""
+        obj = self._wrap_object(obj)
         if not import_mode_backend_only:
-            obj = self._wrap_object(obj)
             self.added_objects.append(obj)
         super().append(obj)
     
@@ -196,6 +197,12 @@ class IDAllocator:
     def __init__(self):
         self._initialized = False
         
+        self._group_pool: deque[int] = deque()
+        self._item_pool: deque[int] = deque()
+        self._color_pool: deque[int] = deque()
+        self._collision_pool: deque[int] = deque()
+        self._control_pool: deque[int] = deque()
+        
         self.used_group_ids: set[int] = set()
         self.used_item_ids: set[int] = set()
         self.used_color_ids: set[int] = set()
@@ -264,12 +271,6 @@ class IDAllocator:
     @overload
     def group(self, count: Literal[2]) -> tuple[int, int]: ...
     @overload
-    def group(self, count: Literal[3]) -> tuple[int, int, int]: ...
-    @overload
-    def group(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
-    @overload
-    def group(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
-    @overload
     def group(self, count: int) -> tuple[int, ...]: ...
     def group(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free group ID (1-9999)."""
@@ -278,17 +279,11 @@ class IDAllocator:
         return tuple(self._get_next("group") for _ in range(count))
     
     @overload
-    def item(self) -> int: 
+    def item(self) -> int: ...
     @overload
     def item(self, count: Literal[1]) -> int: ... # type: ignore[override]
     @overload
     def item(self, count: Literal[2]) -> tuple[int, int]: ...
-    @overload
-    def item(self, count: Literal[3]) -> tuple[int, int, int]: ...
-    @overload
-    def item(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
-    @overload
-    def item(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
     @overload
     def item(self, count: int) -> tuple[int, ...]: ...
     def item(self, count: int = 1) -> tuple[int,...] | int:
@@ -304,12 +299,6 @@ class IDAllocator:
     @overload
     def color(self, count: Literal[2]) -> tuple[int, int]: ...
     @overload
-    def color(self, count: Literal[3]) -> tuple[int, int, int]: ...
-    @overload
-    def color(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
-    @overload
-    def color(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
-    @overload
     def color(self, count: int) -> tuple[int, ...]: ...
     def color(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free color ID (1-9999)."""
@@ -324,12 +313,6 @@ class IDAllocator:
     @overload
     def collision(self, count: Literal[2]) -> tuple[int, int]: ...
     @overload
-    def collision(self, count: Literal[3]) -> tuple[int, int, int]: ...
-    @overload
-    def collision(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
-    @overload
-    def collision(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
-    @overload
     def collision(self, count: int) -> tuple[int, ...]: ...
     def collision(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free collision block ID (1-9999)."""
@@ -343,12 +326,6 @@ class IDAllocator:
     def control(self, count: Literal[1]) -> int: ... # type: ignore[override]
     @overload
     def control(self, count: Literal[2]) -> tuple[int, int]: ...
-    @overload
-    def control(self, count: Literal[3]) -> tuple[int, int, int]: ...
-    @overload
-    def control(self, count: Literal[4]) -> tuple[int, int, int, int]: ...
-    @overload
-    def control(self, count: Literal[5]) -> tuple[int, int, int, int, int]: ...
     @overload
     def control(self, count: int) -> tuple[int, ...]: ...
     def control(self, count: int = 1) -> tuple[int,...] | int:

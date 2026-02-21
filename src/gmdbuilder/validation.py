@@ -68,19 +68,19 @@ def _validate_key_allowed(obj_id: int, key: str):
 @lru_cache(maxsize=1024)
 def _validate_key_value(k: str, v: Any):
     match k:
-            # | obj_prop.Trigger.Pickup.ITEM_ID
-            # | obj_prop.Trigger.CONTROL_ID
-            # | obj_prop.COLOR_1
-            # | obj_prop.COLOR_2
-            # | obj_prop.Trigger.CollisionBlock.BLOCK_ID)
         case (obj_prop.Trigger.Move.TARGET_ID 
             | obj_prop.Trigger.Move.TARGET_CENTER_ID 
-            | obj_prop.Trigger.Move.TARGET_POS):
+            | obj_prop.Trigger.Move.TARGET_POS
+            | obj_prop.Trigger.Pickup.ITEM_ID
+            | obj_prop.Trigger.CONTROL_ID
+            | obj_prop.COLOR_1
+            | obj_prop.COLOR_2
+            | obj_prop.Trigger.CollisionBlock.BLOCK_ID):
             _assert_int_in_range(v)
         case _:
             if not value_is_correct_type(k,v):
                  raise ValueError(f"Value {v!r} is not the correct type.")
-            print(f'placeholder warning: {k!r} : {v!r} is not validated.')
+            # print(f'placeholder warning: {k!r} : {v!r} is not validated.')
 
 
 def validate(obj_id: int, key: str, v: Any):
@@ -106,12 +106,8 @@ def validate(obj_id: int, key: str, v: Any):
                     _assert_int_in_range(source)
                     _assert_int_in_range(target)
             case _:
-                print(f"placeholder warning: {key} : {v!r} is not validated.")
-
-
-def validate_obj(obj: ObjectType):
-    obj_id = obj[obj_prop.ID]
-    for k, v in obj.items(): validate(obj_id, k, v)
+                ...
+                # print(f"placeholder warning: {key} : {v!r} is not validated.")
 
 
 def export_validation(final_object_list: list[ObjectType]):
