@@ -26,16 +26,16 @@ Python fits surprisingly well as a language for GD scripting:
 - Huge package ecosystem
 
 ## Installation
-Install the latest release from PyPI (i didnt set this up yet):
+Install the latest release from PyPI:
 
 ```bash
-pip install gmdkit
+pip install gmdbuilder
 ```
 
 Install the latest development version from GitHub:
 
 ```bash
-pip install git+https://github.com/UHDanke/gmdkit.git
+pip install git+https://github.com/LXtreme/gmdbuilder.git
 ```
 
 ## Getting Started
