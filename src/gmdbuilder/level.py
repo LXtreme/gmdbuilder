@@ -8,6 +8,7 @@ from questionary import confirm
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
+from gmdkit.serialization.functions import compress_string
 
 from gmdbuilder.core import Object, to_kit_object, from_kit_object
 from gmdbuilder.mappings import obj_prop
@@ -384,8 +385,18 @@ def export_to_file(file_path: str | Path | None = None) -> None:
     kit_objects = _kit_level.objects
     kit_objects.clear()
     kit_objects.extend(to_kit_object(obj) for obj in objects)
-    
-    _kit_level.to_file(str(export_path))
+
+    # gmdkit bug workaround: ObjectList.to_string() joins items with ";" but each
+    # Object already ends with ";" (END_DELIMITER), producing double ";;" in the
+    # output. Passing keep_sep=True makes it use "" as the separator instead,
+    # giving the correct single-semicolon GD format. We pre-build the compressed
+    # string and bypass ObjectString.save() (save=False) so it isn't overwritten.
+    obj_str_handler = _kit_level['k4']
+    correct_string = obj_str_handler.start.to_string() + kit_objects.to_string(keep_sep=True)
+    obj_str_handler.string = compress_string(correct_string)
+
+    _kit_level.to_file(str(export_path), save=False)
+    # _kit_level.to_file(str(export_path))
     
     print(f"\nExported level to {export_path} with {len(objects)} objects in {_time_since_last():.3f} seconds.\n")
     
