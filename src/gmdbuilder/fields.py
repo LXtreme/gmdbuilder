@@ -7,105 +7,205 @@ ObjectType = td.ObjectType
 tid = obj_id.Trigger
 cid = obj_id.Collectible
 ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
+    obj_id.Portal.GRAVITY_NORMAL: td.GamemodePortalType,
+    obj_id.Portal.GRAVITY_INVERTED: td.GamemodePortalType,
+    obj_id.Portal.CUBE: td.GamemodePortalType,
+    obj_id.Portal.SHIP: td.GamemodePortalType,
+    20: td.TriggerType,
+    tid.EnterPreset.FADE_ONLY: td.TriggerType,
+    tid.EnterPreset.FADE_BOTTOM: td.TriggerType,
+    tid.EnterPreset.FADE_TOP: td.TriggerType,
+    tid.EnterPreset.FADE_LEFT: td.TriggerType,
+    tid.EnterPreset.FADE_RIGHT: td.TriggerType,
+    tid.EnterPreset.SCALE_UP: td.TriggerType,
+    tid.EnterPreset.SCALE_DOWN: td.TriggerType,
+    tid.TRAIL_ENABLE: td.TriggerType,
+    tid.TRAIL_DISABLE: td.TriggerType,
+    obj_id.Pad.YELLOW: td.TriggerType,
+    obj_id.Orb.YELLOW: td.TriggerType,
+    40: td.TriggerType,
+    obj_id.Portal.MIRROR_ENTER: td.GamemodePortalType,
+    obj_id.Portal.MIRROR_EXIT: td.GamemodePortalType,
+    obj_id.Portal.BALL: td.GamemodePortalType,
+    tid.EnterPreset.CHAOTIC: td.TriggerType,
+    tid.EnterPreset.HALF_LEFT: td.TriggerType,
+    tid.EnterPreset.HALF_RIGHT: td.TriggerType,
+    tid.EnterPreset.HALF: td.TriggerType,
+    tid.EnterPreset.HALF_INVERT: td.TriggerType,
+    obj_id.Pad.BLUE: td.TriggerType,
+    71: td.TriggerType,
+    obj_id.Orb.BLUE: td.TriggerType,
+    obj_id.Portal.SIZE_NORMAL: td.GamemodePortalType,
+    obj_id.Portal.SIZE_SMALL: td.GamemodePortalType,
+    obj_id.Portal.UFO: td.GamemodePortalType,
+    obj_id.Pad.PINK: td.TriggerType,
+    obj_id.Orb.PINK: td.TriggerType,
+    162: td.EffectType,
+    obj_id.Speed.SLOW: td.TriggerType,
+    obj_id.Speed.NORMAL: td.TriggerType,
+    obj_id.Speed.FAST: td.TriggerType,
+    obj_id.Speed.VERY_FAST: td.TriggerType,
+    205: td.ShaderType,
+    obj_id.Portal.DUAL_ENTER: td.GamemodePortalType,
+    obj_id.Portal.DUAL_EXIT: td.GamemodePortalType,
+    obj_id.Portal.WAVE: td.GamemodePortalType,
+    obj_id.Portal.ROBOT: td.GamemodePortalType,
+    obj_id.Portal.Teleport.LINKED: td.PortalType,
+    tid.COLOR: td.ColorType,
+    tid.MOVE: td.MoveType,
+    obj_id.TEXT: td.TextType,
+    tid.PULSE: td.PulseType,
     tid.ALPHA: td.AlphaType,
-    tid.ADV_FOLLOW: td.AdvFollowType,
-    tid.ADV_RANDOM: td.AdvRandomType,
+    obj_id.Orb.GREEN: td.TriggerType,
+    tid.TOGGLE: td.ToggleType,
+    tid.SPAWN: td.SpawnType,
+    cid.KEY: td.CollectibleType,
+    cid.USER_COIN: td.AnimatedType,
+    obj_id.Orb.BLACK: td.TriggerType,
+    obj_id.Portal.SPIDER: td.GamemodePortalType,
+    obj_id.Pad.RED: td.TriggerType,
+    obj_id.Orb.RED: td.TriggerType,
+    obj_id.Speed.SUPER_FAST: td.TriggerType,
+    tid.ROTATE: td.RotateType,
+    tid.FOLLOW: td.FollowType,
+    1516: td.AnimatedType,
+    tid.SHAKE: td.ShakeType,
+    1582: td.SawType,
+    1583: td.AnimatedType,
     tid.ANIMATE: td.AnimateType,
-    tid.ANIMATE_KEYFRAME: td.AnimateKeyframeType,
-    tid.ARROW: td.ArrowType,
+    1587: td.CollectibleType,
+    1589: td.CollectibleType,
+    obj_id.Orb.TOGGLE: td.ToggleBlockType,
+    tid.TOUCH: td.TouchType,
+    1598: td.CollectibleType,
+    tid.COUNT: td.CountType,
+    tid.PLAYER_HIDE: td.TriggerType,
+    tid.PLAYER_SHOW: td.TriggerType,
+    cid.SMALL_COIN: td.CollectibleType,
+    obj_id.ITEM_LABEL: td.ItemLabelType,
+    tid.STOP: td.StopType,
+    1618: td.AnimatedType,
+    obj_id.Orb.DASH_GREEN: td.DashType,
+    obj_id.Orb.DASH_PINK: td.DashType,
+    1752: td.SawType,
+    obj_id.Modifier.WAVE_COLLISION: td.TriggerType,
+    tid.INSTANT_COUNT: td.InstantCountType,
+    tid.ON_DEATH: td.OnDeathType,
+    obj_id.Modifier.STOP_JUMP: td.TriggerType,
+    tid.FOLLOW_PLAYER_Y: td.FollowPlayerYType,
+    tid.COLLISION: td.CollisionType,
+    tid.COLLISION_BLOCK: td.CollisionBlockType,
+    tid.PICKUP: td.PickupType,
     tid.BG_EFFECT_ENABLE: td.TriggerType,
     tid.BG_EFFECT_DISABLE: td.TriggerType,
-    tid.BPM: td.BpmType,
-    tid.CAMERA_EDGE: td.CameraEdgeType,
+    obj_id.Modifier.STOP_DASH: td.TriggerType,
+    obj_id.Modifier.HEAD_COLLISION: td.TriggerType,
+    1860: td.AnimatedType,
+    tid.RANDOM: td.RandomType,
+    tid.ZOOM_CAMERA: td.ZoomCameraType,
+    tid.STATIC_CAMERA: td.StaticCameraType,
+    tid.EnterPreset.NO_FADE: td.TriggerType,
+    tid.OFFSET_CAMERA: td.OffsetCameraType,
+    tid.REVERSE: td.TriggerType,
+    tid.PLAYER_CONTROL: td.PlayerControlType,
+    obj_id.Portal.SWING: td.GamemodePortalType,
+    tid.SONG: td.SongType,
+    tid.TIMEWARP: td.TimewarpType,
+    tid.ROTATE_CAMERA: td.RotateCameraType,
     tid.CAMERA_GUIDE: td.CameraGuideType,
+    tid.CAMERA_EDGE: td.CameraEdgeType,
+    tid.CHECKPOINT: td.CheckpointType,
+    obj_id.Portal.Teleport.EXIT: td.ExitPortalType,
+    obj_id.PARTICLE_OBJECT: td.ParticleType,
+    tid.GRAVITY: td.GravityType,
+    tid.SCALE: td.ScaleType,
+    tid.ADV_RANDOM: td.AdvRandomType,
+    tid.FORCE_BLOCK: td.ForceBlockType,
+    2605: td.AnimatedType,
+    2694: td.AnimatedType,
+    obj_id.Modifier.GRAVITY_FLIP: td.TriggerType,
+    tid.OPTIONS: td.OptionsType,
+    tid.ARROW: td.ArrowType,
+    tid.GAMEPLAY_OFFSET: td.GameplayOffsetType,
+    obj_id.Portal.Teleport.ENTER: td.PortalType,
+    tid.GRADIENT: td.GradientType,
+    tid.Shader.OPTIONS: td.ShaderType,
+    tid.Shader.SHOCKWAVE: td.ShaderType,
+    tid.Shader.SHOCKLINE: td.ShaderType,
+    tid.Shader.GLITCH: td.ShaderType,
+    tid.Shader.CHROMATIC: td.ShaderType,
+    tid.Shader.CHROMATIC_GLITCH: td.ShaderType,
+    tid.Shader.PIXELATE: td.ShaderType,
+    tid.Shader.LENS_CIRCLE: td.ShaderType,
+    tid.Shader.RADIAL_BLUR: td.ShaderType,
+    tid.Shader.MOTION_BLUR: td.ShaderType,
+    tid.Shader.BULGE: td.ShaderType,
+    tid.Shader.PINCH: td.ShaderType,
+    tid.Shader.GRAY_SCALE: td.ShaderType,
+    tid.Shader.SEPIA: td.ShaderType,
+    tid.Shader.INVERT_COLOR: td.ShaderType,
+    tid.Shader.HUE: td.ShaderType,
+    tid.Shader.EDIT_COLOR: td.ShaderType,
+    tid.Shader.SPLIT_SCREEN: td.ShaderType,
     tid.CAMERA_MODE: td.CameraModeType,
+    obj_id.Portal.GRAVITY_TOGGLE: td.GamemodePortalType,
+    tid.EDIT_MG: td.MgEditType,
+    obj_id.Orb.SPIDER: td.TriggerType,
+    obj_id.Pad.SPIDER: td.TriggerType,
+    tid.Area.MOVE: td.EffectType,
+    tid.Area.ROTATE: td.EffectType,
+    tid.Area.SCALE: td.EffectType,
+    tid.Area.FADE: td.EffectType,
+    tid.Area.TINT: td.EffectType,
+    tid.Area.EDIT_MOVE: td.EffectType,
+    tid.Area.EDIT_ROTATE: td.EffectType,
+    tid.Area.EDIT_SCALE: td.EffectType,
+    tid.Area.EDIT_FADE: td.EffectType,
+    tid.Area.EDIT_TINT: td.EffectType,
+    tid.ADV_FOLLOW: td.AdvFollowType,
+    tid.Enter.MOVE: td.EffectType,
+    tid.Enter.ROTATE: td.TriggerType,
+    tid.Enter.SCALE: td.TriggerType,
+    tid.Enter.FADE: td.TriggerType,
+    tid.Enter.TINT: td.TriggerType,
+    tid.TELEPORT: td.TeleportType,
+    tid.Enter.STOP: td.TriggerType,
+    tid.Area.STOP: td.EffectType,
+    obj_id.Orb.TELEPORT: td.TriggerType,
     tid.CHANGE_BG: td.ChangeBgType,
     tid.CHANGE_GR: td.ChangeGrType,
     tid.CHANGE_MG: td.ChangeMgType,
-    tid.CHECKPOINT: td.CheckpointType,
-    tid.COUNT: td.CountType,
-    tid.COLOR: td.ColorType,
-    tid.COLLISION: td.CollisionType,
-    tid.COLLISION_BLOCK: td.CollisionBlockType,
-    tid.EDIT_ADV_FOLLOW: td.EditAdvFollowType,
-    tid.EDIT_MG: td.MgEditType,
-    tid.EVENT: td.EventType,
-    tid.EDIT_SFX: td.SfxType,
-    tid.EDIT_SONG: td.SongType,
-    tid.END: td.EndType,
-    tid.FOLLOW: td.FollowType,
-    tid.FOLLOW_PLAYER_Y: td.FollowPlayerYType,
-    tid.FORCE_BLOCK: td.ForceBlockType,
-    tid.GAMEPLAY_OFFSET: td.GameplayOffsetType,
-    tid.GRADIENT: td.GradientType,
-    tid.GRAVITY: td.GravityType,
-    tid.INSTANT_COLLISION: td.InstantCollisionType,
-    tid.INSTANT_COUNT: td.InstantCountType,
-    tid.ITEM_COMPARE: td.ItemCompareType,
-    tid.ITEM_EDIT: td.ItemEditType,
-    tid.ITEM_PERSIST: td.ItemPersistType,
     tid.KEYFRAME: td.KeyframeType,
-    tid.LINK_VISIBLE: td.LinkVisibleType,
-    tid.MG_SPEED: td.MgSpeedType,
-    tid.MOVE: td.MoveType,
-    tid.ON_DEATH: td.OnDeathType,
-    tid.OPTIONS: td.OptionsType,
-    tid.OFFSET_CAMERA: td.OffsetCameraType,
-    tid.PICKUP: td.PickupType,
-    tid.PLAYER_CONTROL: td.PlayerControlType,
-    tid.PULSE: td.PulseType,
-    tid.RANDOM: td.RandomType,
-    tid.RESET: td.ResetType,
-    tid.ROTATE: td.RotateType,
-    tid.ROTATE_CAMERA: td.RotateCameraType,
-    tid.SCALE: td.ScaleType,
-    tid.SEQUENCE: td.SequenceType,
+    tid.ANIMATE_KEYFRAME: td.AnimateKeyframeType,
+    3219: td.AnimatedType,
+    tid.END: td.EndType,
+    3601: td.CollectibleType,
     tid.SFX: td.SfxType,
-    tid.STOP: td.StopType,
-    tid.SHAKE: td.ShakeType,
-    tid.SONG: td.SongType,
-    tid.SPAWN: td.SpawnType,
+    tid.EDIT_SFX: td.SfxType,
+    tid.EVENT: td.EventType,
+    tid.EDIT_SONG: td.SongType,
+    tid.BG_SPEED: td.TriggerType,
+    tid.SEQUENCE: td.SequenceType,
     tid.SPAWN_PARTICLE: td.SpawnParticleType,
-    tid.STATE_BLOCK: td.StateBlockType,
-    tid.STATIC_CAMERA: td.StaticCameraType,
-    tid.TELEPORT: td.TeleportType,
-    tid.TIME: td.TimeType,
-    tid.TIMEWARP: td.TimewarpType,
-    tid.TIME_CONTROL: td.TimeControlType,
-    tid.TIME_EVENT: td.TimeEventType,
-    tid.TOGGLE: td.ToggleType,
-    tid.TOGGLE_BLOCK: td.ToggleBlockType,
-    tid.TOUCH: td.TouchType,
+    tid.INSTANT_COLLISION: td.InstantCollisionType,
+    tid.MG_SPEED: td.MgSpeedType,
     tid.UI: td.UiType,
-    tid.ZOOM_CAMERA: td.ZoomCameraType,
-    tid.PLAYER_HIDE: td.TriggerType,
-    tid.PLAYER_SHOW: td.TriggerType,
-    tid.Enter.MOVE: td.EffectType,
-    tid.EnterPreset.FADE_ONLY: td.TriggerType,
-    cid.KEY: td.CollectibleType,
-    cid.USER_COIN: td.AnimatedType,
-    cid.SMALL_COIN: td.CollectibleType,
-    obj_id.TEXT: td.TextType,
-    obj_id.ITEM_LABEL: td.ItemLabelType,
-    obj_id.PARTICLE_OBJECT: td.ParticleType,
-    obj_id.Orb.BLACK: td.TriggerType,
-    obj_id.Orb.BLUE: td.TriggerType,
-    obj_id.Orb.GREEN: td.TriggerType,
-    obj_id.Orb.RED: td.TriggerType,
-    obj_id.Orb.YELLOW: td.TriggerType,
-    obj_id.Orb.PINK: td.TriggerType,
-    obj_id.Orb.SPIDER: td.TriggerType,
-    obj_id.Orb.TELEPORT: td.TriggerType,
-    obj_id.Orb.TOGGLE: td.ToggleBlockType,
-    obj_id.Orb.DASH_GREEN: td.DashType,
-    obj_id.Orb.DASH_PINK: td.DashType,
-    obj_id.Portal.Teleport.ENTER: td.PortalType,
-    obj_id.Portal.Teleport.EXIT: td.ExitPortalType,
-    obj_id.Portal.Teleport.LINKED: td.PortalType,
-    3002: td.AnimatedType,
-    1020: td.SawType,
-    1582: td.SawType,
-    1709: td.SawType,
+    tid.TIME: td.TimeType,
+    tid.TIME_EVENT: td.TimeEventType,
+    tid.TIME_CONTROL: td.TimeControlType,
+    tid.RESET: td.ResetType,
+    tid.ITEM_EDIT: td.ItemEditType,
+    tid.ITEM_COMPARE: td.ItemCompareType,
+    tid.STATE_BLOCK: td.StateBlockType,
+    tid.ITEM_PERSIST: td.ItemPersistType,
+    tid.BPM: td.BpmType,
+    tid.TOGGLE_BLOCK: td.ToggleBlockType,
+    tid.FORCE_CIRCLE: td.ForceBlockType,
+    tid.EDIT_ADV_FOLLOW: td.EditAdvFollowType,
+    tid.RETARGET_ADV_FOLLOW: td.EditAdvFollowType,
+    tid.LINK_VISIBLE: td.LinkVisibleType,
+    4211: td.AnimatedType,
+    4300: td.AnimatedType,
 }
 """Unfinished mapping of Object IDs to non-common Object TypedDicts"""
 
@@ -119,27 +219,44 @@ def _assign_id_types(cls: object, obj_type: type[ObjectType]):
         for obj in [v for v in vars(cls).values() if isinstance(v, int)]:
             ID_TO_TYPEDDICT[obj] = obj_type
 
-_assign_id_types(obj_id.Pad, td.TriggerType)
-_assign_id_types(obj_id.Portal, td.GamemodePortalType)
-_assign_id_types(obj_id.Speed, td.TriggerType)
-_assign_id_types(obj_id.Modifier, td.TriggerType)
-_assign_id_types(obj_id.Trigger.Shader, td.ShaderType)
-_assign_id_types(obj_id.Trigger.Area, td.EffectType)
-_assign_id_types(range(920, 925), td.AnimatedType)
-_assign_id_types(range(1849, 1859), td.AnimatedType)
-_assign_id_types([1936, 1937, 1938, 1939], td.AnimatedType)
-_assign_id_types(range(2020, 2056), td.AnimatedType)
-_assign_id_types([2864, 2865], td.AnimatedType)
-_assign_id_types(range(2867, 2895), td.AnimatedType)
-_assign_id_types([3000, 3001, 3002], td.AnimatedType)
-_assign_id_types([85, 86, 87, 88, 89], td.SawType)
-_assign_id_types([97, 98], td.SawType)
-_assign_id_types([137, 138, 139], td.SawType)
-_assign_id_types([154, 155, 156], td.SawType)
-_assign_id_types(range(180, 189), td.SawType)
-_assign_id_types([222, 223, 224], td.SawType)
-_assign_id_types([375, 376, 377, 378], td.SawType)
-_assign_id_types(range(394, 400), td.SawType)
+_assign_id_types(range(85, 89 + 1), td.SawType)
+_assign_id_types(range(97, 98 + 1), td.SawType)
+_assign_id_types(range(137, 139 + 1), td.SawType)
+_assign_id_types(range(154, 156 + 1), td.SawType)
+_assign_id_types(range(180, 188 + 1), td.SawType)
+_assign_id_types(range(222, 224 + 1), td.SawType)
+_assign_id_types(range(375, 378 + 1), td.SawType)
+_assign_id_types(range(394, 399 + 1), td.SawType)
+_assign_id_types(range(678, 680 + 1), td.SawType)
+_assign_id_types(range(740, 742 + 1), td.SawType)
+_assign_id_types(range(920, 924 + 1), td.AnimatedType)
+_assign_id_types(range(997, 1000 + 1), td.SawType)
+_assign_id_types(range(1019, 1021 + 1), td.SawType)
+_assign_id_types(range(1050, 1054 + 1), td.AnimatedType)
+_assign_id_types(range(1055, 1061 + 1), td.SawType)
+_assign_id_types(range(1518, 1519 + 1), td.AnimatedType)
+_assign_id_types(range(1521, 1528 + 1), td.SawType)
+_assign_id_types(range(1591, 1593 + 1), td.AnimatedType)
+_assign_id_types(range(1619, 1620 + 1), td.SawType)
+_assign_id_types(range(1697, 1699 + 1), td.AnimatedType)
+_assign_id_types(range(1705, 1710 + 1), td.SawType)
+_assign_id_types(range(1734, 1736 + 1), td.SawType)
+_assign_id_types(range(1831, 1834 + 1), td.SawType)
+_assign_id_types(range(1839, 1842 + 1), td.AnimatedType)
+_assign_id_types(range(1849, 1858 + 1), td.AnimatedType)
+_assign_id_types(range(1936, 1939 + 1), td.AnimatedType)
+_assign_id_types(range(2020, 2055 + 1), td.AnimatedType)
+_assign_id_types(range(2629, 2630 + 1), td.AnimatedType)
+_assign_id_types(range(2864, 2865 + 1), td.AnimatedType)
+_assign_id_types(range(2867, 2894 + 1), td.AnimatedType)
+_assign_id_types(range(2895, 2897 + 1), td.TemplateType)
+_assign_id_types(range(3000, 3002 + 1), td.AnimatedType)
+_assign_id_types(range(3119, 3121 + 1), td.AnimatedType)
+_assign_id_types(range(3303, 3304 + 1), td.AnimatedType)
+_assign_id_types(range(3482, 3484 + 1), td.AnimatedType)
+_assign_id_types(range(3492, 3493 + 1), td.AnimatedType)
+_assign_id_types(range(4401, 4539 + 1), td.CollectibleType)
+
 
 ID_TO_ALLOWED_KEYS = {
     k: set(v.__required_keys__) | set(v.__optional_keys__) 
