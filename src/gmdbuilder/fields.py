@@ -210,14 +210,8 @@ ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
 """Unfinished mapping of Object IDs to non-common Object TypedDicts"""
 
 
-def _assign_id_types(cls: object, obj_type: type[ObjectType]):
-    if isinstance(cls, range) or isinstance(cls, list):
-        for c in cls:
-            if isinstance(c, int):
-                ID_TO_TYPEDDICT[c] = obj_type
-    else:
-        for obj in [v for v in vars(cls).values() if isinstance(v, int)]:
-            ID_TO_TYPEDDICT[obj] = obj_type
+def _assign_id_types(cls: range, obj_type: type[ObjectType]):
+    for c in cls: ID_TO_TYPEDDICT[c] = obj_type
 
 _assign_id_types(range(85, 89 + 1), td.SawType)
 _assign_id_types(range(97, 98 + 1), td.SawType)
