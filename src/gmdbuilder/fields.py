@@ -110,8 +110,8 @@ ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
 """Unfinished mapping of Object IDs to non-common Object TypedDicts"""
 
 
-def _append_types(cls: object, obj_type: type[ObjectType]):
-    if isinstance(cls, list):
+def _assign_id_types(cls: object, obj_type: type[ObjectType]):
+    if isinstance(cls, range) or isinstance(cls, list):
         for c in cls:
             if isinstance(c, int):
                 ID_TO_TYPEDDICT[c] = obj_type
@@ -119,27 +119,27 @@ def _append_types(cls: object, obj_type: type[ObjectType]):
         for obj in [v for v in vars(cls).values() if isinstance(v, int)]:
             ID_TO_TYPEDDICT[obj] = obj_type
 
-_append_types(obj_id.Pad, td.TriggerType)
-_append_types(obj_id.Portal, td.GamemodePortalType)
-_append_types(obj_id.Speed, td.TriggerType)
-_append_types(obj_id.Modifier, td.TriggerType)
-_append_types(obj_id.Trigger.Shader, td.ShaderType)
-_append_types(obj_id.Trigger.Area, td.EffectType)
-_append_types([i for i in range(920, 925)], td.AnimatedType)
-_append_types([i for i in range(1849, 1859)], td.AnimatedType)
-_append_types([1936, 1937, 1938, 1939], td.AnimatedType)
-_append_types([i for i in range(2020, 2056)], td.AnimatedType)
-_append_types([2864, 2865], td.AnimatedType)
-_append_types([i for i in range(2867, 2895)], td.AnimatedType)
-_append_types([3000, 3001, 3002], td.AnimatedType)
-_append_types([85, 86, 87, 88, 89], td.SawType)
-_append_types([97, 98], td.SawType)
-_append_types([137, 138, 139], td.SawType)
-_append_types([154, 155, 156], td.SawType)
-_append_types([i for i in range(180, 189)], td.SawType)
-_append_types([222, 223, 224], td.SawType)
-_append_types([375, 376, 377, 378], td.SawType)
-_append_types([i for i in range(394, 400)], td.SawType)
+_assign_id_types(obj_id.Pad, td.TriggerType)
+_assign_id_types(obj_id.Portal, td.GamemodePortalType)
+_assign_id_types(obj_id.Speed, td.TriggerType)
+_assign_id_types(obj_id.Modifier, td.TriggerType)
+_assign_id_types(obj_id.Trigger.Shader, td.ShaderType)
+_assign_id_types(obj_id.Trigger.Area, td.EffectType)
+_assign_id_types(range(920, 925), td.AnimatedType)
+_assign_id_types(range(1849, 1859), td.AnimatedType)
+_assign_id_types([1936, 1937, 1938, 1939], td.AnimatedType)
+_assign_id_types(range(2020, 2056), td.AnimatedType)
+_assign_id_types([2864, 2865], td.AnimatedType)
+_assign_id_types(range(2867, 2895), td.AnimatedType)
+_assign_id_types([3000, 3001, 3002], td.AnimatedType)
+_assign_id_types([85, 86, 87, 88, 89], td.SawType)
+_assign_id_types([97, 98], td.SawType)
+_assign_id_types([137, 138, 139], td.SawType)
+_assign_id_types([154, 155, 156], td.SawType)
+_assign_id_types(range(180, 189), td.SawType)
+_assign_id_types([222, 223, 224], td.SawType)
+_assign_id_types([375, 376, 377, 378], td.SawType)
+_assign_id_types(range(394, 400), td.SawType)
 
 ID_TO_ALLOWED_KEYS = {
     k: set(v.__required_keys__) | set(v.__optional_keys__) 
