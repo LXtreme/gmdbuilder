@@ -180,16 +180,23 @@ def from_live_editor(url: str = WEBSOCKET_URL) -> None:
     if _source_file is not None or _live_editor is not None:
         raise RuntimeError("FORBIDDEN: Level file is loaded! Loading multiple levels at once overrides global state")
     
+    _time_since_last()
+    
     objects = ObjectList(live_editor=True)
     _live_editor = LiveEditor(url)
     _live_editor.connect()
-    _live_editor.remove_object_group(tag_group)
-    _, kit_objects = _live_editor.get_level_string()
+    _live_editor.remove_objects(tag_group)
+    _, kit_objects = _live_editor.get_level()
+    
+    obj_count = len(kit_objects)
     
     for kit_obj in kit_objects:
         obj = from_kit_object(kit_obj)
         if tag_group not in obj.get(obj_prop.GROUPS, set()):
             objects.append(obj, import_mode_backend_only=True)
+    
+    print(f"\nLoaded level with {obj_count} objects in {_time_since_last():.3f} seconds.")
+    print(f"\nRemoved {obj_count-len(objects)} objects with tag group {tag_group}, level is now {len(objects)} objects.")
     
 
 class IDAllocator:
@@ -362,7 +369,7 @@ def _validate_and_prepare_objects(validated_objects: ObjectList) -> None:
 
 def export_to_file(file_path: str | Path | None = None) -> None:
     """Export level to .gmd file."""
-    global objects, _kit_level, _source_file, _start_time
+    global objects, _kit_level, _source_file
     
     print(f"\ngmdbuilder took {_time_since_last():.4f} seconds to prepare for export.")
     
@@ -419,6 +426,9 @@ def export_to_live_editor(*, batch_size: int = 500) -> None:
     
     _live_editor.add_objects(kit_objects, batch_size)
     _live_editor.close()
+    
+    print(f"\nExported to live editor with {len(objects)} objects in {_time_since_last():.3f} seconds.\n")
+    
     new.reset_all()
     objects.clear()
     _live_editor = None
