@@ -36,4 +36,4 @@ jobs:
         # run: ruff check .
 
       - name: Run tests
-        run: pytest tests
+        run: pytest tests -v --tb=short
