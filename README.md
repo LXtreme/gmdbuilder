@@ -7,14 +7,14 @@
 A type-safe general-purpose Python framework for pragmatic Geometry Dash level editing and scripting.
 
 gmdbuilder lets you:
-- Read & write Geometry Dash levels
-- Automatically scan and protect against bugs (property types/ranges, spawn limit, etc.)
+- Read & write GD levels
+- Autoscan to protect against bugs (property types/ranges, spawn limit, no empty triggers, etc.)
 - Work directly with triggers, groups, and objects - and choose your own abstractions
 - Use pre-built systems and templates to accelerate development
 
-**gmdbuilder** is developed in collaboration with HDanke, the creator of **gmdkit** (a dependency of this framework) and his unofficial **GD Editor Docs**.
+**gmdbuilder** is developed in collaboration with HDanke, the creator of [gmdkit](https://github.com/UHDanke/gmdkit) (a dependency of this framework) and his unofficial [GD Editor Docs](https://github.com/UHDanke/gd_docs).
 
-*(No overengineered language was made in the making of this project)* 
+*(No overengineered language was made in the making of this project)*
 
 ## Why Python?
 
@@ -57,20 +57,15 @@ obj_list = level.objects # mutations are validated
 # Object properties are in the form { "a<key number>": value }
 repr(obj_list[1])
 
-# Object ID and Property enums (all values are Literal) 
-from gmdbuilder.mappings.obj_prop import ObjProp
-from gmdbuilder.mappings.obj_id import ObjId
+# Enums are Literals:
+from gmdbuilder.mappings import obj_prop # property keys
+from gmdbuilder.mappings import obj_enum # property values
+from gmdbuilder.mappings import obj_id # object IDs
 
 for obj in obj_list:
-    if obj[ObjProp.ID] == ObjID.Trigger.MOVE:
-        obj[ObjProp.GROUPS] = {}
-    elif obj[ObjProp.ID] == ObjID.Trigger.COUNT:
-        obj_list.remove(obj)
+    if obj[obj_prop.ID] == obj_id.Trigger.MOVE:
+        obj[obj_prop.GROUPS] = {}
 
-# Translates to { a1: 1 }
-block = from_raw_object({1: 1})
-
-obj_list.delete_where(block)
 obj_list.delete_where(lambda obj: obj[ObjProp.ID] == 1)
 
 # Translates to { a1: 1611, a2: 50, a3: 45 }

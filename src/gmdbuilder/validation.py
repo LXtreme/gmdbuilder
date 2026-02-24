@@ -16,7 +16,7 @@ class setting:
         """Checks that all property value types and ranges are correct"""
 
     class export:
-        target_exists_check = False
+        target_exists_check = True
         """Checks that all targets referenced by triggers actually exist"""
         
         solid_target_check = False
@@ -32,6 +32,7 @@ class setting:
 
 
 def validate_trigger_targets(objects: list[ObjectType]):
+    """unfinished, doesnt handle special cases like pulse using 'BG' as group target 1000"""
     if not setting.export.target_exists_check:
         if setting.export.solid_target_check:
             warn("TARGET-EXISTS CHECK is disabled, so SOLID-TARGET CHECK is also effectively disabled.")
@@ -47,7 +48,11 @@ def validate_trigger_targets(objects: list[ObjectType]):
             for g in gs:
                 used[g] = used.get(g, []) + [obj]
         
-        for key in obj:
+        if r := obj.get(obj_prop.Trigger.Spawn.REMAPS):
+            for source, target in r.items():
+                used[target] = used.get(target, []) + [obj]
+                used[source] = used.get(source, []) + [obj]
+        for key in obj.keys():
             if key in TARGET_GROUP_FIELDS:
                 group = cast(int, obj[key])
                 targeted[group] = targeted.get(group, []) + [obj]
