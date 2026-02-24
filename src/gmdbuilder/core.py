@@ -1,7 +1,7 @@
 """Core utilities for working with ObjectType dicts."""
 
 from functools import lru_cache
-from typing import Any, TypeVar, TypeGuard
+from typing import Any, TypeVar, TypeGuard, cast
 from gmdkit.models.object import Object as KitObject
 from gmdkit.models.prop.list import IDList, RemapList
 
@@ -56,6 +56,17 @@ class Object(dict[str, Any]):
         if obj_prop.ID in items:
             self._obj_id = int(items[obj_prop.ID])
         super().update(items)
+    
+    @staticmethod
+    def wrap_object(obj: ObjectType) -> ObjectType:
+        """Wrap an object in ValidatedObject for runtime validation."""
+        if isinstance(obj, Object):
+            return cast(ObjectType, obj)
+        for k, v in obj.items():
+            validate(obj[obj_prop.ID], k, v)
+        wrapped = Object(obj[obj_prop.ID])
+        wrapped.update(obj)
+        return cast(ObjectType, wrapped)
 
 
 

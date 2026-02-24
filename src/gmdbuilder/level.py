@@ -3,7 +3,7 @@
 from collections import deque
 from pathlib import Path
 import time
-from typing import Any, Callable, Iterable, Literal, SupportsIndex, cast, overload
+from typing import Any, Callable, Iterable, Literal, SupportsIndex, overload
 from questionary import confirm
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList
@@ -11,7 +11,7 @@ from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 
 from gmdbuilder.core import Object, to_kit_object, from_kit_object
 from gmdbuilder.mappings import obj_prop
-from gmdbuilder.validation import validate, validate_trigger_targets
+from gmdbuilder.validation import validate_target_exists, get_trigger_targets
 from gmdbuilder.object_types import ObjectType
 
 
@@ -69,17 +69,6 @@ class ObjectList(list[ObjectType]):
         
         return deleted
     
-    @staticmethod
-    def _wrap_object(obj: ObjectType) -> ObjectType:
-        """Wrap an object in ValidatedObject for runtime validation."""
-        if isinstance(obj, Object):
-            return cast(ObjectType, obj)
-        for k, v in obj.items():
-            validate(obj[obj_prop.ID], k, v)
-        wrapped = Object(obj[obj_prop.ID])
-        wrapped.update(obj)
-        return cast(ObjectType, wrapped)
-    
     def __setitem__(self, # type: ignore[override]
         index: SupportsIndex | slice, 
         value: ObjectType | list[ObjectType]):
@@ -89,17 +78,17 @@ class ObjectList(list[ObjectType]):
         if isinstance(index, slice):
             if not isinstance(value, list):
                 raise TypeError(f"can only assign a list (not {type(value).__name__}) to a slice")
-            validated = [self._wrap_object(obj) for obj in value]
+            validated = [Object.wrap_object(obj) for obj in value]
             super().__setitem__(index, validated)
         else:
             if not isinstance(value, dict):
                 raise TypeError(f"can only assign ObjectType dict (not {type(value).__name__})")
-            validated = self._wrap_object(value)
+            validated = Object.wrap_object(value)
             super().__setitem__(index, validated)
     
     def append(self, obj: ObjectType, *, import_mode_backend_only: bool = False):
         """Validate and append an object."""
-        obj = self._wrap_object(obj)
+        obj = Object.wrap_object(obj)
         if not import_mode_backend_only:
             self.added_objects.append(obj)
         super().append(obj)
@@ -108,13 +97,13 @@ class ObjectList(list[ObjectType]):
         """Validate and insert an object at index."""
         if self._live_editor_mode:
             raise RuntimeError("Direct item editing is not allowed in live editor mode")
-        wrapped = self._wrap_object(obj)
+        wrapped = Object.wrap_object(obj)
         super().insert(index, wrapped)
         self.added_objects.append(wrapped)
     
     def extend(self, iterable: Iterable[ObjectType]):
         """Validate and extend with multiple objects."""
-        validated = [self._wrap_object(obj) for obj in iterable]
+        validated = [Object.wrap_object(obj) for obj in iterable]
         super().extend(validated)
         self.added_objects.extend(validated)
     
@@ -361,12 +350,27 @@ def _validate_and_prepare_objects(validated_objects: ObjectList) -> None:
     """Run validation and preparation checks on objects before export."""
     global tag_group
     
-    validate_trigger_targets(validated_objects)
+    targeted, used = get_trigger_targets(validated_objects)
+    validate_target_exists(targeted, used)
     
     for obj in validated_objects.added_objects:
         groups = obj.get(obj_prop.GROUPS, {tag_group})
         groups.add(tag_group)
         obj[obj_prop.GROUPS] = groups
+
+
+def reset_all() -> None:
+    """Reset all global state. Mainly for testing purposes."""
+    global objects, tag_group, _kit_level, _source_file, _live_editor
+    
+    objects = ObjectList(live_editor=False)
+    tag_group = 9999
+    _kit_level = None
+    _source_file = None
+    if _live_editor is not None:
+        _live_editor.close()
+    _live_editor = None
+    new.reset_all()
 
 
 def export_to_file(file_path: str | Path | None = None) -> None:
@@ -399,8 +403,7 @@ def export_to_file(file_path: str | Path | None = None) -> None:
     
     print(f"\nExported level to {export_path} with {len(objects)} objects in {_time_since_last():.3f} seconds.\n")
     
-    new.reset_all()
-    objects.clear()
+    reset_all()
 
 
 def export_to_live_editor(*, batch_size: int = 500) -> None:
@@ -418,9 +421,8 @@ def export_to_live_editor(*, batch_size: int = 500) -> None:
     
     _live_editor.add_objects(kit_objects, batch_size)
     _live_editor.close()
+    _live_editor = None
     
     print(f"\nExported to live editor with {len(objects)} objects in {_time_since_last():.3f} seconds.\n")
     
-    new.reset_all()
-    objects.clear()
-    _live_editor = None
+    reset_all()

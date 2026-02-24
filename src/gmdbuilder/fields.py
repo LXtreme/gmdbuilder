@@ -294,6 +294,16 @@ UNHASHABLE_VALUE_KEYS = {
 }
 
 
+def is_group_id(object_id: int, key: str, id: int) -> bool:
+    match object_id:
+        case obj_id.Trigger.PULSE:
+            if key == obj_prop.Trigger.Pulse.TARGET_ID:
+                return 1 <= id <= 999 or 1015 <= id <= 9999
+        case _:
+            pass
+    return 1 <= id <= 9999
+
+
 hashable_value_key_to_isinstance: dict[str, Callable[[Any], bool]] = {}
 
 
