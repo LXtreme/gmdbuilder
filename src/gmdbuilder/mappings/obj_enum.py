@@ -1,5 +1,6 @@
+from enum import IntEnum
 
-class Easing:
+class Easing(IntEnum):
     NONE = 0
     EASE_IN_OUT = 1
     EASE_IN = 2
@@ -20,25 +21,25 @@ class Easing:
     BACK_IN = 17
     BACK_OUT = 18
 
-class ItemLabel:
+class ItemLabel(IntEnum):
     pass
 
-    class Alignment:
+    class Alignment(IntEnum):
         CENTER = 0
         LEFT = 1
         RIGHT = 2
 
-    class SpecialId:
+    class SpecialId(IntEnum):
         MAINTIME = -1
         POINTS = -2
         ATTEMPTS = -3
 
-class LevelPlayerColor17:
+class LevelPlayerColor17(IntEnum):
     NONE = 0
     PLAYER_1 = 1
     PLAYER_2 = 2
 
-class OldColor:
+class OldColor(IntEnum):
     PLAYER_1 = 1
     PLAYER_2 = 2
     COLOR_1 = 3
@@ -48,57 +49,57 @@ class OldColor:
     COLOR_4 = 7
     LINE_3D = 8
 
-class SingleColorType:
+class SingleColorType(IntEnum):
     DEFAULT = 0
     BASE = 1
     DETAIL = 2
 
-class Trigger:
+class Trigger(IntEnum):
     pass
 
-    class AdvFollow:
+    class AdvFollow(IntEnum):
         pass
 
-        class Init:
+        class Init(IntEnum):
             INIT = 0
             SET = 1
             ADD = 2
 
-        class Mode:
+        class Mode(IntEnum):
             MODE_1 = 0
             MODE_2 = 1
             MODE_3 = 2
 
-    class ArrowDirection:
+    class ArrowDirection(IntEnum):
         NONE = 0
         UP = 1
         DOWN = 2
         LEFT = 3
         RIGHT = 4
 
-    class BpmSpeed:
+    class BpmSpeed(IntEnum):
         NORMAL = 0
         SLOW = 1
         FAST = 2
         VERY_FAST = 3
         SUPER_FAST = 4
 
-    class CameraEdgeDirection:
+    class CameraEdgeDirection(IntEnum):
         NONE = 0
         LEFT = 1
         RIGHT = 2
         UP = 3
         DOWN = 4
 
-    class Effect:
+    class Effect(IntEnum):
         pass
 
-        class EnterOnly:
+        class EnterOnly(IntEnum):
             NONE = 0
             ENTER = 1
             EXIT = 2
 
-        class SpecialCenter:
+        class SpecialCenter(IntEnum):
             P1 = -1
             P2 = -2
             C = -3
@@ -111,15 +112,15 @@ class Trigger:
             CR = -10
             TR = -11
 
-    class EnterOnlyPreset:
+    class EnterOnlyPreset(IntEnum):
         NONE = 0
         ENTER = 1
         EXIT = 2
 
-    class Gradient:
+    class Gradient(IntEnum):
         pass
 
-        class Blending:
+        class Blending(IntEnum):
             NORMAL = 0
             ADDITIVE = 1
             MULTIPLY = 2
@@ -142,21 +143,21 @@ class Trigger:
             UI = 14
             MAX = 15
 
-    class InstantCountMode:
+    class InstantCountMode(IntEnum):
         EQUAL = 0
         LARGER = 1
         SMALLER = 2
 
-    class Item:
+    class Item(IntEnum):
         pass
 
-        class MathOp:
+        class MathOp(IntEnum):
             ADD = 1
             SUBTRACT = 2
             MULTIPLY = 3
             DIVIDE = 4
 
-        class ItemType:
+        class ItemType(IntEnum):
             DEFAULT = 0
             ITEM = 1
             TIMER = 2
@@ -164,68 +165,68 @@ class Trigger:
             MAINTIME = 4
             ATTEMPTS = 5
 
-        class RoundOp:
+        class RoundOp(IntEnum):
             NONE = 0
             ROUND = 1
             FLOOR = 2
             CEILING = 3
 
-        class SignOp:
+        class SignOp(IntEnum):
             NONE = 0
             ABSOLUTE = 1
             NEGATIVE = 2
 
-    class Keyframe:
+    class Keyframe(IntEnum):
         pass
 
-        class SpinDirection:
+        class SpinDirection(IntEnum):
             NONE = 0
             CW = 1
             CCW = 2
 
-        class TimeMode:
+        class TimeMode(IntEnum):
             TIME = 0
             EVEN = 1
             DIST = 2
 
-    class MoveTargetAxis:
+    class MoveTargetAxis(IntEnum):
         NONE = 0
         X = 1
         Y = 2
 
-    class OffsetCameraAxis:
+    class OffsetCameraAxis(IntEnum):
         NONE = 0
         X = 1
         Y = 2
 
-    class OffsetGameplayAxis:
+    class OffsetGameplayAxis(IntEnum):
         NONE = 0
         X = 1
         Y = 2
 
-    class Options:
+    class Options(IntEnum):
         DISABLE = -1
         IGNORE = 0
         ENABLE = 1
 
-    class PickupMode:
+    class PickupMode(IntEnum):
         ADD = 0
         MULTIPLY = 1
         DIVIDE = 2
 
-    class PulseTargetType:
+    class PulseTargetType(IntEnum):
         CHANNEL = False
         GROUP = True
 
-    class SequenceMode:
+    class SequenceMode(IntEnum):
         STOP = 0
         LOOP = 1
         LAST = 2
 
-    class Sfx:
+    class Sfx(IntEnum):
         pass
 
-        class Direction:
+        class Direction(IntEnum):
             CIRCULAR = 0
             HORIZONTAL = 1
             LEFT = 2
@@ -234,7 +235,7 @@ class Trigger:
             DOWN = 5
             UP = 6
 
-        class Reverb:
+        class Reverb(IntEnum):
             GENERIC = 0
             PADDED_CELL = 1
             ROOM = 2
@@ -257,7 +258,7 @@ class Trigger:
             SEWER_PIPE = 19
             UNDER_WATER = 20
 
-    class ShaderLayer:
+    class ShaderLayer(IntEnum):
         BG = 1
         MG = 2
         B5 = 3
@@ -274,7 +275,7 @@ class Trigger:
         UI = 14
         MAX = 15
 
-    class SongDirection:
+    class SongDirection(IntEnum):
         CIRCULAR = 0
         HORIZONTAL = 1
         LEFT = 2
@@ -283,51 +284,51 @@ class Trigger:
         DOWN = 5
         UP = 6
 
-    class StaticCameraAxis:
+    class StaticCameraAxis(IntEnum):
         NONE = 0
         X = 1
         Y = 2
 
-    class StopMode:
+    class StopMode(IntEnum):
         STOP = 0
         PAUSE = 1
         RESUME = 2
 
-    class TeleportGravity:
+    class TeleportGravity(IntEnum):
         NONE = 0
         NORMAL = 1
         FLIPPED = 2
         TOGGLE = 3
 
-    class Touch:
+    class Touch(IntEnum):
         pass
 
-        class Mode:
+        class Mode(IntEnum):
             FLIP = 0
             ON = 1
             OFF = 2
 
-        class OnlyPlayer:
+        class OnlyPlayer(IntEnum):
             NONE = 0
             P1 = 1
             P2 = 2
 
-    class Ui:
+    class Ui(IntEnum):
         pass
 
-        class RefX:
+        class RefX(IntEnum):
             AUTO = 1
             CENTER = 2
             LEFT = 3
             RIGHT = 4
 
-        class RefY:
+        class RefY(IntEnum):
             AUTO = 1
             CENTER = 2
             BOTTOM = 3
             TOP = 4
 
-class ZLayer:
+class ZLayer(IntEnum):
     B5 = -5
     B4 = -3
     B3 = -1
