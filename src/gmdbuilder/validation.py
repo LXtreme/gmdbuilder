@@ -30,14 +30,7 @@ class setting:
 
 
 
-
-def validate_trigger_targets(objects: list[ObjectType]):
-    """unfinished, doesnt handle special cases like pulse using 'BG' as group target 1000"""
-    if not setting.export.target_exists_check:
-        if setting.export.solid_target_check:
-            warn("TARGET-EXISTS CHECK is disabled, so SOLID-TARGET CHECK is also effectively disabled.")
-        return
-    
+def get_trigger_targets(objects: list[ObjectType]):
     targeted: dict[int, list[ObjectType]] = {}
     used: dict[int, list[ObjectType]] = {}
     
@@ -57,6 +50,17 @@ def validate_trigger_targets(objects: list[ObjectType]):
                 group = cast(int, obj[key])
                 targeted[group] = targeted.get(group, []) + [obj]
     
+    return targeted, used
+
+
+def validate_target_exists(
+    targeted: dict[int, list[ObjectType]], 
+    used: dict[int, list[ObjectType]]
+):
+    """Note: Does not check for special cases like Pulse's color IDs (yet)"""
+    if not setting.export.target_exists_check:
+        return
+    
     targeted_groups = set(targeted.keys())
     used_groups = set(used.keys())
     empty_groups = targeted_groups.difference(used_groups)
@@ -71,10 +75,16 @@ def validate_trigger_targets(objects: list[ObjectType]):
             f"Empty groups: \n{sorted(empty_groups)}\n"
             f"Offending triggers:\n{''.join(guilty)}"
         )
-    
-    if setting.export.solid_target_check:
-       raise NotImplementedError 
-    
+
+def validate_solid_targets(
+    targeted: dict[int, list[ObjectType]], 
+    used: dict[int, list[ObjectType]]
+):
+    if not setting.export.solid_target_check:
+        return
+    raise NotImplementedError("Solid target check is not implemented yet.")
+
+
 
 @lru_cache(maxsize=None)
 def _assert_int_in_range(v: Any, min_val: int = 1, max_val: int = 9999):
@@ -90,6 +100,8 @@ def _validate_key_allowed(obj_id: int, key: str):
 
 @lru_cache(maxsize=1024)
 def _validate_key_value(k: str, v: Any):
+    if not value_is_correct_type(k,v):
+        raise ValueError(f"Value {v!r} is not the correct type.")
     match k:
         case (obj_prop.Trigger.Move.TARGET_ID 
             | obj_prop.Trigger.Move.TARGET_CENTER_ID 
@@ -101,8 +113,6 @@ def _validate_key_value(k: str, v: Any):
             | obj_prop.Trigger.CollisionBlock.BLOCK_ID):
             _assert_int_in_range(v)
         case _: pass
-    if not value_is_correct_type(k,v):
-        raise ValueError(f"Value {v!r} is not the correct type.")
     # print(f'placeholder warning: {k!r} : {v!r} is not validated.')
 
 
