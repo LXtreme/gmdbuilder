@@ -1,10 +1,11 @@
 
 from functools import lru_cache
-from typing import Any
+from typing import Any, cast
+from warnings import warn
 
-from gmdbuilder.fields import COMMON_ALLOWED_KEYS, ID_TO_ALLOWED_KEYS, value_is_correct_type
+from gmdbuilder.fields import COMMON_ALLOWED_KEYS, ID_TO_ALLOWED_KEYS, TARGET_GROUP_FIELDS, value_is_correct_type
 from gmdbuilder.mappings import obj_prop
-from gmdbuilder.object_types import ObjectType
+from gmdbuilder.object_types import AllPropsType, ObjectType
 
 class setting:
     class immediate:
@@ -15,10 +16,10 @@ class setting:
         """Checks that all property value types and ranges are correct"""
 
     class export:
-        target_exists_check = True
+        target_exists_check = False
         """Checks that all targets referenced by triggers actually exist"""
         
-        solid_target_check = True
+        solid_target_check = False
         """Checks that visual-related triggers target non-trigger & visible groups/objects"""
         
         spawn_limit_check = True
@@ -28,30 +29,47 @@ class setting:
         """Checks that every group parent is unique (no two parents for 1 ID)"""
 
 
-class ValidationError(Exception):
-    def __init__(self, msg: str, deferred: bool = False):
-        self.deferred = deferred
-        self.context: dict[str, Any] = {}
-        super().__init__(msg)
+
+
+def validate_trigger_targets(objects: list[ObjectType]):
+    if not setting.export.target_exists_check:
+        if setting.export.solid_target_check:
+            warn("TARGET-EXISTS CHECK is disabled, so SOLID-TARGET CHECK is also effectively disabled.")
+        return
     
-    def add_context(self, **kwargs: Any):
-        self.context.update(kwargs)
-        return self
+    targeted: dict[int, list[ObjectType]] = {}
+    used: dict[int, list[ObjectType]] = {}
     
-    def __str__(self) -> str:
-        msg = super().__str__()
-        if self.context:
-            context_str = "\n".join(f"  {k}: {v}" for k, v in self.context.items())
-            return f"{msg}\n{context_str}"
-        return msg
-
-
-# def typeddict_keys(td) -> set[str]:
-#     return set(getattr(td, "__required_keys__", set())) | set(getattr(td, "__optional_keys__", set()))
-
-# DEFAULT_ALLOWED = typeddict_keys(ObjectType)
-# ALLOWED_BY_ID = {k: typeddict_keys(v) for k, v in ID_TO_TYPEDDICT.items()}
-
+    for obj in objects:
+        obj = cast(AllPropsType, obj)
+        
+        if gs := obj.get(obj_prop.GROUPS):
+            for g in gs:
+                used[g] = used.get(g, []) + [obj]
+        
+        for key in obj:
+            if key in TARGET_GROUP_FIELDS:
+                group = cast(int, obj[key])
+                targeted[group] = targeted.get(group, []) + [obj]
+    
+    targeted_groups = set(targeted.keys())
+    used_groups = set(used.keys())
+    empty_groups = targeted_groups.difference(used_groups)
+    
+    if empty_groups:
+        guilty = [f"{o}\n" for g in empty_groups for o in targeted[g]]
+        warn(
+            f"\nTARGET-EXISTS CHECK FAILED:\n"
+            f"To disable this check, set 'setting.export.target_exists_check' to False.\n\n"
+            f"DETAILS:\n"
+            f"Some triggers target groups, which is don't exist:\n"
+            f"Empty groups: \n{sorted(empty_groups)}\n"
+            f"Offending triggers:\n{''.join(guilty)}"
+        )
+    
+    if setting.export.solid_target_check:
+       raise NotImplementedError 
+    
 
 @lru_cache(maxsize=None)
 def _assert_int_in_range(v: Any, min_val: int = 1, max_val: int = 9999):
@@ -77,10 +95,10 @@ def _validate_key_value(k: str, v: Any):
             | obj_prop.COLOR_2
             | obj_prop.Trigger.CollisionBlock.BLOCK_ID):
             _assert_int_in_range(v)
-        case _:
-            if not value_is_correct_type(k,v):
-                 raise ValueError(f"Value {v!r} is not the correct type.")
-            # print(f'placeholder warning: {k!r} : {v!r} is not validated.')
+        case _: pass
+    if not value_is_correct_type(k,v):
+        raise ValueError(f"Value {v!r} is not the correct type.")
+    # print(f'placeholder warning: {k!r} : {v!r} is not validated.')
 
 
 def validate(obj_id: int, key: str, v: Any):
@@ -108,8 +126,3 @@ def validate(obj_id: int, key: str, v: Any):
             case _:
                 ...
                 # print(f"placeholder warning: {key} : {v!r} is not validated.")
-
-
-def export_validation(final_object_list: list[ObjectType]):
-    """to be called in level.export"""
-    pass

@@ -259,6 +259,31 @@ ID_TO_ALLOWED_KEYS = {
 
 COMMON_ALLOWED_KEYS = td.ObjectType.__required_keys__ | td.ObjectType.__optional_keys__
 
+TARGET_GROUP_FIELDS = { "a51", "a71", "a401", "a395", "a76" }
+"""All fields are hashable"""
+
+TARGETS_SOLID_GROUPS = {
+    tid.MOVE,
+    tid.ROTATE,
+    tid.FOLLOW,
+    tid.ADV_FOLLOW,
+    tid.ANIMATE,
+    tid.ANIMATE_KEYFRAME,
+    tid.KEYFRAME,
+    tid.PULSE,
+    tid.Area.MOVE,
+    tid.Area.ROTATE,
+    tid.Area.SCALE,
+    tid.Area.FADE,
+    tid.Area.TINT,
+    tid.Area.EDIT_MOVE,
+    tid.Area.EDIT_ROTATE,
+    tid.Area.EDIT_SCALE,
+    tid.Area.EDIT_FADE,
+    tid.Area.EDIT_TINT,
+}
+"""All triggers that primarily target solid objects, not other triggers"""
+
 UNHASHABLE_VALUE_KEYS = {
     obj_prop.GROUPS,
     obj_prop.PARENT_GROUPS,
