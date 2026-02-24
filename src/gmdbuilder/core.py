@@ -1,11 +1,12 @@
 """Core utilities for working with ObjectType dicts."""
 
 from functools import lru_cache
-from typing import Any, Literal, TypeVar, overload
+from typing import Any, TypeVar, TypeGuard
 from gmdkit.models.object import Object as KitObject
 from gmdkit.models.prop.list import IDList, RemapList
 
 
+from gmdbuilder.fields import ID_TO_TYPEDDICT
 from gmdbuilder.mappings import obj_prop
 from gmdbuilder.validation import validate
 import gmdbuilder.object_types as td
@@ -14,15 +15,17 @@ ObjectType = td.ObjectType
 
 T = TypeVar('T', bound=ObjectType)
 
+def is_obj_type(obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
+    """Type-narrows obj to a specific TypedDict type by matching its ID."""
+    return ID_TO_TYPEDDICT.get(obj.get(obj_prop.ID)) is obj_type
+
+
+def is_obj_id(obj: ObjectType, object_id: int) -> bool:
+    """This basically casts obj to specific ObjectType subclass via type guard"""
+    return obj.get(obj_prop.ID) == object_id
+
 
 class Object(dict[str, Any]):
-    """
-    Note: Not for users to call directly
-    
-    The actual dict implementation hidden behind the ObjectType TypedDict
-    
-    This is to intercept & validate mutations of objects and add new helpers.
-    """
     __slots__ = ("_obj_id",)
 
     def __init__(self, obj_id: int):
@@ -67,12 +70,6 @@ def _to_raw_key_cached(key: str) -> int | str:
     raise ValueError()
 
 def to_kit_object(obj: ObjectType) -> KitObject:
-    """
-    Convert ObjectType to a new gmdkit int-keyed dict for gmdkit or debugging.
-    
-    Example:
-        {'a1': 900, 'a2': 50, 'a57': {2}} → {1: 900, 2: 50, 57: IDList([2])}
-    """
     raw: dict[int|str, Any] = {}
     for k, v in obj.items():
         match k:
@@ -125,11 +122,7 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
     return new # type: ignore
 
 
-@overload
-def from_object_string(obj_string: str) -> ObjectType: ...
-@overload
-def from_object_string(obj_string: str, *, obj_type: type[T]) -> T: ...
-def from_object_string(obj_string: str, *, obj_type: type[ObjectType] | None = None) -> ObjectType:
+def from_object_string(obj_string: str) -> ObjectType:
     """
     Convert GD level object string to ObjectType.
     
@@ -139,15 +132,7 @@ def from_object_string(obj_string: str, *, obj_type: type[ObjectType] | None = N
     return from_kit_object(KitObject.from_string(obj_string)) # type: ignore
 
 
-@overload
-def new_object(object_id: Literal[3016]) -> td.AdvFollowType: ...
-@overload
-def new_object(object_id: Literal[1346]) -> td.RotateType: ...
-@overload
-def new_object(object_id: Literal[901]) -> td.MoveType: ...
-@overload
-def new_object(object_id: int) -> ObjectType: ...
-def new_object(object_id: int) -> ObjectType:
+def new_obj(object_id: int) -> ObjectType:
     """
     Create a new Object with defaults from gmdkit.
         

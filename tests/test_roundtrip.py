@@ -8,7 +8,7 @@ from pathlib import Path
 
 import gmdbuilder.level as _level_module
 from gmdbuilder import level
-from gmdbuilder.core import new_object
+from gmdbuilder.core import new_obj
 from gmdbuilder.mappings import obj_prop
 from gmdbuilder.validation import setting
 
@@ -45,7 +45,7 @@ def test_roundtrip(level_file: Path, tmp_path: Path) -> None:
     initial_count = len(level.objects)
 
     # 2. Create and append a move trigger.
-    obj = new_object(901)
+    obj = new_obj(901)
     obj[obj_prop.X] = 100
     obj[obj_prop.Y] = 100
     obj[obj_prop.Trigger.Move.DURATION] = 1.0
