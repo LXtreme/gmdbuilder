@@ -68,9 +68,15 @@ for obj in obj_list:
 
 obj_list.delete_where(lambda obj: obj[ObjProp.ID] == 1)
 
+from gmdbuilder.core import from_object_string, new_obj
+
+# CountType is a typed_dict, allowing per-field static type checking
 # Translates to { a1: 1611, a2: 50, a3: 45 }
 object = from_object_string("1,1611,2,50,3,45;", obj_type=CountType)
 object[ObjProp.Trigger.Count.ACTIVATE_GROUP] = True
+
+move = new_obj(obj_id.Trigger.MOVE) # casts to MoveType typed_dict automatically
+instant_count = new_obj(1611) # casts to InstantCountType typed_dict
 
 # Export object edits, deletions and additions
 level.export_to_file(file_path="example_updated.gmd")
