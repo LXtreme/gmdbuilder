@@ -16,7 +16,7 @@ class setting:
         """Checks that all property value types and ranges are correct"""
 
     class export:
-        target_exists_check = True
+        target_exists_check = False
         """Checks that all targets referenced by triggers actually exist"""
         
         solid_target_check = False
