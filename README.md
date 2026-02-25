@@ -57,26 +57,39 @@ obj_list = level.objects # mutations are validated
 # Object properties are in the form { "a<key number>": value }
 repr(obj_list[1])
 
-# Enums are Literals:
-from gmdbuilder.mappings import obj_prop # property keys
-from gmdbuilder.mappings import obj_enum # property values
-from gmdbuilder.mappings import obj_id # object IDs
+from gmdbuilder.mappings import obj_prop # property key str Literals
+from gmdbuilder.mappings import obj_enum # property IntEnum values
+from gmdbuilder.mappings import obj_id # object ID int Literals
+
+# Similar to 'next' button in the editor. 
+# Free groups are registered at level load
+a = level.new.group()
+
+from gmdbuilder.core import is_obj_type, is_obj_id, from_object_string, new_obj
+import gmdbuilder.object_types as td # typed dicts
 
 for obj in obj_list:
-    if obj[obj_prop.ID] == obj_id.Trigger.MOVE:
-        obj[obj_prop.GROUPS] = {}
+    # is_obj_id and is_obj_type are both TypeGuards. 
+    # Allows editing generic object lists to be done fully type-safe
+    if is_obj_id(obj, obj_id.Trigger.MOVE):
+        obj[obj_prop.GROUPS] = { a }
+        obj[obj_prop.Trigger.Move.EASING] = obj_enum.Easing.NONE
+    if is_obj_type(obj, td.MoveType):
+        obj[obj_prop.Trigger.Move.USE_SMALL_STEP] = True
 
 obj_list.delete_where(lambda obj: obj[ObjProp.ID] == 1)
 
-from gmdbuilder.core import from_object_string, new_obj
-
 # CountType is a typed_dict, allowing per-field static type checking
 # Translates to { a1: 1611, a2: 50, a3: 45 }
-object = from_object_string("1,1611,2,50,3,45;", obj_type=CountType)
-object[ObjProp.Trigger.Count.ACTIVATE_GROUP] = True
+object = from_object_string("1,1611,2,50,3,45;", obj_type=td.CountType)
+object[obj_prop.Trigger.Count.ACTIVATE_GROUP] = True
+object[obj_prop.Trigger.Count.TARGET_ID] = a
 
 move = new_obj(obj_id.Trigger.MOVE) # casts to MoveType typed_dict automatically
 instant_count = new_obj(1611) # casts to InstantCountType typed_dict
+
+obj_list.append(object)
+obj_list.extend([move, instant_count])
 
 # Export object edits, deletions and additions
 level.export_to_file(file_path="example_updated.gmd")
