@@ -76,6 +76,7 @@ def validate_target_exists(
             f"Offending triggers:\n{''.join(guilty)}"
         )
 
+
 def validate_solid_targets(
     targeted: dict[int, list[ObjectType]], 
     used: dict[int, list[ObjectType]]

@@ -1,5 +1,5 @@
 
-from typing import Any, Callable, Literal, Union, get_args, get_origin, Required
+from typing import Any, Callable, Iterable, Literal, Union, get_args, get_origin, Required
 from gmdbuilder.mappings import obj_id, obj_prop
 from gmdbuilder import object_types as td
 
@@ -210,7 +210,7 @@ ID_TO_TYPEDDICT: dict[int, type[ObjectType]] = {
 """Unfinished mapping of Object IDs to non-common Object TypedDicts"""
 
 
-def _assign_id_types(cls: range, obj_type: type[ObjectType]):
+def _assign_id_types(cls: Iterable[int], obj_type: type[ObjectType]):
     for c in cls: ID_TO_TYPEDDICT[c] = obj_type
 
 _assign_id_types(range(85, 89 + 1), td.SawType)

@@ -1,15 +1,15 @@
 """Core utilities for working with ObjectType dicts."""
 
 from functools import lru_cache
-from typing import Any, TypeVar, TypeGuard, cast
+from typing import Any, TypeGuard, TypeVar, cast
+
 from gmdkit.models.object import Object as KitObject
 from gmdkit.models.prop.list import IDList, RemapList
 
-
+import gmdbuilder.object_types as td
 from gmdbuilder.fields import ID_TO_TYPEDDICT
 from gmdbuilder.mappings import obj_prop
 from gmdbuilder.validation import validate
-import gmdbuilder.object_types as td
 
 ObjectType = td.ObjectType
 
@@ -134,21 +134,9 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
 
 
 def from_object_string(obj_string: str) -> ObjectType:
-    """
-    Convert GD level object string to ObjectType.
-    
-    Example:
-        "1,1,2,50,3,45;" → {'a1': 1, 'a2': 50, 'a3': 45}
-    """
     return from_kit_object(KitObject.from_string(obj_string)) # type: ignore
 
 
 def new_obj(object_id: int) -> ObjectType:
-    """
-    Create a new Object with defaults from gmdkit.
-        
-    Returns:
-        ObjectType dict with default properties (using 'a<num>' keys)
-    """
     # Convert from gmdkit's {1: val, 2: val} to our {'a1': val, 'a2': val}
     return from_kit_object(KitObject.default(object_id)) # type: ignore

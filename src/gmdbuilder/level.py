@@ -1,20 +1,19 @@
 """Level loading and exporting for Geometry Dash."""
 
+import time
 from collections import deque
 from pathlib import Path
-import time
 from typing import Any, Callable, Iterable, Literal, SupportsIndex, overload
-from questionary import confirm
+
+from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList
-from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
+from questionary import confirm
 
-from gmdbuilder.core import Object, to_kit_object, from_kit_object
+from gmdbuilder.core import Object, from_kit_object, to_kit_object
 from gmdbuilder.mappings import obj_prop
-from gmdbuilder.validation import validate_target_exists, get_trigger_targets
 from gmdbuilder.object_types import ObjectType
-
-
+from gmdbuilder.validation import get_trigger_targets, validate_target_exists
 
 ObjectPatternMatch = dict[str, Any] | ObjectType | Callable[[ObjectType], bool]
 
@@ -134,6 +133,21 @@ def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
     return now - a
 
 
+def _load_objects(kit_objects: KitObjectList) -> None:
+    """Load objects from gmdkit ObjectList into the module-level objects list."""
+    global objects, tag_group
+    
+    obj_count = len(kit_objects)
+    
+    for kit_obj in kit_objects:
+        obj = from_kit_object(kit_obj)
+        if tag_group not in obj.get(obj_prop.GROUPS, set()):
+            objects.append(obj, import_mode_backend_only=True)
+    
+    print(f"\nLoaded {obj_count} objects from live editor in {_time_since_last():.3f} seconds.")
+    print(f"\nRemoved {obj_count-len(objects)} objects with tag group {tag_group}, level is now {len(objects)} objects.")
+
+
 def from_file(file_path: str | Path) -> None:
     """Load level from .gmd file into the module-level objects list."""
     global objects, tag_group, _kit_level, _source_file, _live_editor
@@ -147,19 +161,11 @@ def from_file(file_path: str | Path) -> None:
     if not path.exists():
         raise FileNotFoundError(f"Level file not found: {file_path=}")
     
+    objects = ObjectList(live_editor=False)
     _kit_level = KitLevel.from_file(path)
     _source_file = path
-    objects = ObjectList(live_editor=False)
     
-    obj_count = len(_kit_level.objects)
-    
-    for kit_obj in _kit_level.objects:
-        obj = from_kit_object(kit_obj)
-        if tag_group not in obj.get(obj_prop.GROUPS, set()):
-            objects.append(obj, import_mode_backend_only=True)
-    
-    print(f"\nLoaded '{file_path}' with {obj_count} objects in {_time_since_last():.3f} seconds.")
-    print(f"\nRemoved {obj_count-len(objects)} objects with tag group {tag_group}, level is now {len(objects)} objects.")
+    _load_objects(_kit_level.objects)
 
 
 def from_live_editor(url: str = WEBSOCKET_URL) -> None:
@@ -176,16 +182,8 @@ def from_live_editor(url: str = WEBSOCKET_URL) -> None:
     _live_editor.remove_objects(tag_group)
     _, kit_objects = _live_editor.get_level()
     
-    obj_count = len(kit_objects)
-    
-    for kit_obj in kit_objects:
-        obj = from_kit_object(kit_obj)
-        if tag_group not in obj.get(obj_prop.GROUPS, set()):
-            objects.append(obj, import_mode_backend_only=True)
-    
-    print(f"\nLoaded level with {obj_count} objects in {_time_since_last():.3f} seconds.")
-    print(f"\nRemoved {obj_count-len(objects)} objects with tag group {tag_group}, level is now {len(objects)} objects.")
-    
+    _load_objects(kit_objects)
+
 
 class IDAllocator:
     """Singleton class to manage unique ID allocation. Instance is 'new'."""
