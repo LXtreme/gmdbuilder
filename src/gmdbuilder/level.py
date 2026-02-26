@@ -87,8 +87,9 @@ class ObjectList(list[ObjectType]):
     def append(self, obj: ObjectType):
         """Validate and append an object."""
         obj = Object.wrap_object(obj)
+        if not self._live_editor_mode:
+            super().append(obj)
         self.added_objects.append(obj)
-        super().append(obj)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
@@ -214,7 +215,7 @@ class IDAllocator:
         self.used_collision_ids: set[int] = set()
         self.used_control_ids: set[int] = set()
     
-    def reserve_id(self, id_type: str, id_value: int):
+    def reserve_id(self, id_type: IDTypeEnum, id_value: int):
         """Manually reserve an ID (e.g. for objects not in the main list)."""
         if id_type == IDTypeEnum.GROUP:
             self.used_group_ids.add(id_value)

@@ -90,21 +90,19 @@ def validate_solid_targets(
 
 
 @lru_cache(maxsize=1024)
-def _assert_int_in_range(v: Any, min_val: int = 0, max_val: int = 9999):
-    if not (isinstance(v, int) and min_val <= v <= max_val):
-        raise ValueError(f"Key must be an int in range {min_val}-{max_val}, got {v!r}")
+def _int_is_in_range(v: Any, min_val: int = 0, max_val: int = 9999) -> bool:
+    return isinstance(v, int) and min_val <= v <= max_val
 
 
 @lru_cache(maxsize=1024)
-def _validate_key_allowed(obj_id: int, key: str):
-    if key not in COMMON_ALLOWED_KEYS and key not in ID_TO_ALLOWED_KEYS.get(obj_id, {}):
-        raise ValueError(f"Key {key} is not allowed for object ID {obj_id}")
+def _key_is_allowed(obj_id: int, key: str) -> bool:
+    return key in COMMON_ALLOWED_KEYS or key in ID_TO_ALLOWED_KEYS.get(obj_id, {})
 
 
 @lru_cache(maxsize=1024)
-def _validate_key_value(k: str, v: Any):
+def _value_is_allowed(k: str, v: Any) -> bool:
     if not value_is_correct_type(k,v):
-        raise ValueError(f"Value {v!r} is not the correct type.")
+        return False
     match k:
         case (obj_prop.Trigger.Move.TARGET_ID 
             | obj_prop.Trigger.Move.TARGET_CENTER_ID 
@@ -114,40 +112,45 @@ def _validate_key_value(k: str, v: Any):
             | obj_prop.COLOR_1
             | obj_prop.COLOR_2
             | obj_prop.Trigger.CollisionBlock.BLOCK_ID):
-            _assert_int_in_range(v)
+            return _int_is_in_range(v)
         case _:
             pass
             # print(f'placeholder warning: {k!r} : {v!r} is not validated.')
+    return True
 
 
 def validate(key: str, v: Any, obj: dict[str, Any]):
     """immediate validation. to be called by 'level.objects' mutations"""
     obj_id = obj[obj_prop.ID]
     
-    try:
-        if setting.immediate.property_allowed_check:
-            _validate_key_allowed(obj_id, key)
-    except ValueError:
-        raise ValueError(f"Key {key!r} not allowed for object ID {obj_id}.\n{obj=}") from None
+    if setting.immediate.property_allowed_check:
+        if not _key_is_allowed(obj_id, key):
+            raise ValueError(f"Key {key!r} not allowed for object ID {obj_id}:\n{obj=}")
+    
+    if not setting.immediate.property_type_check:
+        return
+    
+    ValueNotAllowed = ValueError(f"Invalid value for {key=}:{v=} on object ID {obj_id}:\n{obj=}")
     
     try:
-        if setting.immediate.property_type_check:
-            _validate_key_value(key, v)
-    except ValueError as e: # from _validate_key_value or _assert_int_in_range
-        raise ValueError(f"Invalid value for key {key!r} on object ID {obj_id}: {v!r}\n{obj=}") from e
+        if not _value_is_allowed(key, v):
+            raise ValueNotAllowed
     except TypeError: # Unhashable value
         match key:
             case obj_prop.GROUPS | obj_prop.PARENT_GROUPS:
                 for group_id in v:
-                    _assert_int_in_range(group_id)
+                    if not _int_is_in_range(group_id):
+                        raise ValueNotAllowed
             case obj_prop.Trigger.Event.EVENTS:
                 for event_id in v:
-                    if not isinstance(event_id, int) or not (0 <= event_id <= 80):
-                        raise ValueError(f"Event IDs must be non-negative integers, got {event_id!r}")
+                    if not _int_is_in_range(event_id, min_val=0, max_val=80):
+                        raise ValueNotAllowed
             case obj_prop.Trigger.Spawn.REMAPS:
                 for source, target in v.items():
-                    _assert_int_in_range(source)
-                    _assert_int_in_range(target)
+                    if not _int_is_in_range(source):
+                        raise ValueNotAllowed
+                    if not _int_is_in_range(target):
+                        raise ValueNotAllowed
             
             # will add gmdkit's hsv dataclass and write validation for that later
             case obj_prop.HSV_1 | obj_prop.HSV_2 | obj_prop.Trigger.Pulse.HSV:

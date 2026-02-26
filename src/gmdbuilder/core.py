@@ -51,10 +51,10 @@ class Object(dict[str, Any]):
         else:
             items = dict(kwargs)
         
-        for k, v in items.items():
-            validate(k, v, self)
         if obj_prop.ID in items:
             raise KeyError("Cannot change object ID after initialization")
+        for k, v in items.items():
+            validate(k, v, self)
         super().update(items)
     
     @staticmethod
