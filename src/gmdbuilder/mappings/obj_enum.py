@@ -1,5 +1,13 @@
 from enum import IntEnum
 
+class PlayerSpeed:
+    SLOW = 0.7 * 5.98000200 * 60
+    NORMAL = 0.9 * 5.77000189 * 60
+    FAST = 1.1 * 5.87000200 * 60
+    VERY_FAST = 1.3 * 5.77000189 * 60
+    SUPER_FAST = 1.6 * 5.77000189 * 60
+
+
 class Easing(IntEnum):
     NONE = 0
     EASE_IN_OUT = 1
@@ -214,7 +222,7 @@ class Trigger(IntEnum):
         MULTIPLY = 1
         DIVIDE = 2
 
-    class PulseTargetType(IntEnum):
+    class PulseTargetType:
         CHANNEL = False
         GROUP = True
 
@@ -313,20 +321,17 @@ class Trigger(IntEnum):
             P1 = 1
             P2 = 2
 
-    class Ui(IntEnum):
-        pass
+    class UiRefX(IntEnum):
+        AUTO = 1
+        CENTER = 2
+        LEFT = 3
+        RIGHT = 4
 
-        class RefX(IntEnum):
-            AUTO = 1
-            CENTER = 2
-            LEFT = 3
-            RIGHT = 4
-
-        class RefY(IntEnum):
-            AUTO = 1
-            CENTER = 2
-            BOTTOM = 3
-            TOP = 4
+    class UiRefY(IntEnum):
+        AUTO = 1
+        CENTER = 2
+        BOTTOM = 3
+        TOP = 4
 
 class ZLayer(IntEnum):
     B5 = -5

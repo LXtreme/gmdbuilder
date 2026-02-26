@@ -1,5 +1,6 @@
 """Level loading and exporting for Geometry Dash."""
 
+from enum import StrEnum
 import time
 from collections import deque
 from pathlib import Path
@@ -8,7 +9,6 @@ from typing import Any, Callable, Iterable, Literal, SupportsIndex, overload
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList
-from questionary import confirm
 
 from gmdbuilder.core import Object, from_kit_object, to_kit_object
 from gmdbuilder.mappings import obj_prop
@@ -27,7 +27,6 @@ class ObjectList(list[ObjectType]):
     - Property edits (objects[i]['a2'] = x): validated by ValidatedObject.__setitem__
     - Addition operators (+, +=): disabled - use extend() instead
     """
-    _MISSING = object()
     
     def __init__(self, *, live_editor: bool):
         super().__init__()
@@ -85,11 +84,10 @@ class ObjectList(list[ObjectType]):
             validated = Object.wrap_object(value)
             super().__setitem__(index, validated)
     
-    def append(self, obj: ObjectType, *, import_mode_backend_only: bool = False):
+    def append(self, obj: ObjectType):
         """Validate and append an object."""
         obj = Object.wrap_object(obj)
-        if not import_mode_backend_only:
-            self.added_objects.append(obj)
+        self.added_objects.append(obj)
         super().append(obj)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
@@ -100,10 +98,15 @@ class ObjectList(list[ObjectType]):
         super().insert(index, wrapped)
         self.added_objects.append(wrapped)
     
+    def _append_without_tracking(self, obj: ObjectType):
+        """For internal use only."""
+        super().append(Object.wrap_object(obj))
+    
     def extend(self, iterable: Iterable[ObjectType]):
         """Validate and extend with multiple objects."""
         validated = [Object.wrap_object(obj) for obj in iterable]
-        super().extend(validated)
+        if not self._live_editor_mode:
+            super().extend(validated)
         self.added_objects.extend(validated)
     
     def __add__(self, other: object) -> "ObjectList":
@@ -133,7 +136,7 @@ def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
     return now - a
 
 
-def _load_objects(kit_objects: KitObjectList) -> None:
+def _load_objects(kit_objects: KitObjectList, filename: str | None = None) -> None:
     """Load objects from gmdkit ObjectList into the module-level objects list."""
     global objects, tag_group
     
@@ -142,9 +145,9 @@ def _load_objects(kit_objects: KitObjectList) -> None:
     for kit_obj in kit_objects:
         obj = from_kit_object(kit_obj)
         if tag_group not in obj.get(obj_prop.GROUPS, set()):
-            objects.append(obj, import_mode_backend_only=True)
+            objects._append_without_tracking(obj)
     
-    print(f"\nLoaded {obj_count} objects from live editor in {_time_since_last():.3f} seconds.")
+    print(f"\nLoaded {obj_count} objects from {filename or 'live editor'} in {_time_since_last():.3f} seconds.")
     print(f"\nRemoved {obj_count-len(objects)} objects with tag group {tag_group}, level is now {len(objects)} objects.")
 
 
@@ -165,7 +168,7 @@ def from_file(file_path: str | Path) -> None:
     _kit_level = KitLevel.from_file(path)
     _source_file = path
     
-    _load_objects(_kit_level.objects)
+    _load_objects(_kit_level.objects, filename=str(path))
 
 
 def from_live_editor(url: str = WEBSOCKET_URL) -> None:
@@ -183,6 +186,14 @@ def from_live_editor(url: str = WEBSOCKET_URL) -> None:
     _, kit_objects = _live_editor.get_level()
     
     _load_objects(kit_objects)
+
+
+class IDTypeEnum(StrEnum):
+    GROUP = "group"
+    ITEM = "item"
+    COLOR = "color"
+    COLLISION = "collision"
+    CONTROL = "control"
 
 
 class IDAllocator:
@@ -205,15 +216,15 @@ class IDAllocator:
     
     def reserve_id(self, id_type: str, id_value: int):
         """Manually reserve an ID (e.g. for objects not in the main list)."""
-        if id_type == "group":
+        if id_type == IDTypeEnum.GROUP:
             self.used_group_ids.add(id_value)
-        elif id_type == "item":
+        elif id_type == IDTypeEnum.ITEM:
             self.used_item_ids.add(id_value)
-        elif id_type == "color":
+        elif id_type == IDTypeEnum.COLOR:
             self.used_color_ids.add(id_value)
-        elif id_type == "collision":
+        elif id_type == IDTypeEnum.COLLISION:
             self.used_collision_ids.add(id_value)
-        elif id_type == "control":
+        elif id_type == IDTypeEnum.CONTROL:
             self.used_control_ids.add(id_value)
         else:
             raise ValueError(f"Unknown ID type: {id_type}")
@@ -237,10 +248,10 @@ class IDAllocator:
                 self.used_control_ids.add(obj[key])
         
         # Build sorted deques of available IDs using set difference (O(n) but very fast)
-        all_ids = set(range(1, 9999))
+        all_ids = set(range(1, 10000))
         self._group_pool = deque(sorted(all_ids - self.used_group_ids))
         self._item_pool = deque(sorted(all_ids - self.used_item_ids))
-        self._color_pool = deque(sorted(all_ids - self.used_color_ids))
+        # self._color_pool = deque(sorted(all_ids - self.used_color_ids))
         self._collision_pool = deque(sorted(all_ids - self.used_collision_ids))
         self._control_pool = deque(sorted(all_ids - self.used_control_ids))
     
@@ -269,8 +280,8 @@ class IDAllocator:
     def group(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free group ID (1-9999)."""
         if count == 1:
-            return self._get_next("group")
-        return tuple(self._get_next("group") for _ in range(count))
+            return self._get_next(IDTypeEnum.GROUP)
+        return tuple(self._get_next(IDTypeEnum.GROUP) for _ in range(count))
     
     @overload
     def item(self) -> int: ...
@@ -283,22 +294,22 @@ class IDAllocator:
     def item(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free item ID (1-9999)."""
         if count == 1:
-            return self._get_next("item")
-        return tuple(self._get_next("item") for _ in range(count))
+            return self._get_next(IDTypeEnum.ITEM)
+        return tuple(self._get_next(IDTypeEnum.ITEM) for _ in range(count))
     
-    @overload
-    def color(self) -> int: ...
-    @overload
-    def color(self, count: Literal[1]) -> int: ... # type: ignore[override]
-    @overload
-    def color(self, count: Literal[2]) -> tuple[int, int]: ...
-    @overload
-    def color(self, count: int) -> tuple[int, ...]: ...
-    def color(self, count: int = 1) -> tuple[int,...] | int:
-        """Get next free color ID (1-9999)."""
-        if count == 1:
-            return self._get_next("color")
-        return tuple(self._get_next("color") for _ in range(count))
+    # @overload
+    # def color(self) -> int: ...
+    # @overload
+    # def color(self, count: Literal[1]) -> int: ... # type: ignore[override]
+    # @overload
+    # def color(self, count: Literal[2]) -> tuple[int, int]: ...
+    # @overload
+    # def color(self, count: int) -> tuple[int, ...]: ...
+    # def color(self, count: int = 1) -> tuple[int,...] | int:
+    #     """Get next free color ID (1-9999)."""
+    #     if count == 1:
+    #         return self._get_next(IDTypeEnum.COLOR)
+    #     return tuple(self._get_next(IDTypeEnum.COLOR) for _ in range(count))
     
     @overload
     def collision(self) -> int: ...
@@ -311,8 +322,8 @@ class IDAllocator:
     def collision(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free collision block ID (1-9999)."""
         if count == 1:
-            return self._get_next("collision")
-        return tuple(self._get_next("collision") for _ in range(count))
+            return self._get_next(IDTypeEnum.COLLISION)
+        return tuple(self._get_next(IDTypeEnum.COLLISION) for _ in range(count))
     
     @overload
     def control(self) -> int: ...
@@ -325,8 +336,8 @@ class IDAllocator:
     def control(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free control ID (1-9999)."""
         if count == 1:
-            return self._get_next("control")
-        return tuple(self._get_next("control") for _ in range(count))
+            return self._get_next(IDTypeEnum.CONTROL)
+        return tuple(self._get_next(IDTypeEnum.CONTROL) for _ in range(count))
     
     def reset_all(self):
         self._initialized = False
@@ -385,7 +396,7 @@ def export_to_file(file_path: str | Path | None = None) -> None:
         if _source_file is None:
             raise RuntimeError("No export path available. Provide file_path argument")
         
-        if confirm("Overwrite the source file?", default=False).ask() is False:
+        if input("Overwrite the source file? [y,N]").lower() != 'y':
             raise RuntimeError("Export cancelled by user")
         export_path = _source_file
     else:

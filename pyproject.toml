@@ -7,11 +7,10 @@ name = "gmdbuilder"
 version = "0.1.0"
 description = "A General-Purpose Geometry Dash framework for safe and easy level editing and scripting"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = {text = "MIT"}
 dependencies = [
-    "gmdkit>=0.4.0",
-    "questionary>=2.1.1"
+    "gmdkit>=0.4.0"
 ]
 
 keywords = ["geometry-dash", "gmd", "levels", "framework", "editor"]

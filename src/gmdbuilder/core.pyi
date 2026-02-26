@@ -12,6 +12,46 @@ def is_obj_type(obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
     """Type-narrows obj to a specific TypedDict type by matching its ID."""
 
 
+class Object(dict[str, Any]):
+    """
+    Note: Not for users to call directly.
+    
+    The actual dict implementation hidden behind the ObjectType TypedDict.
+    
+    This is to intercept & validate mutations of objects and add new helpers.
+    """
+    _obj_id: int
+    __slots__: tuple[str]
+    
+    def __init__(self, obj_id: int) -> None: ...
+    def __setitem__(self, k: str, v: Any) -> None: ...
+    def update(self, *args: Any, **kwargs: Any) -> None: ...
+    
+    @staticmethod
+    def wrap_object(obj: ObjectType | Object) -> ObjectType: ...
+
+
+def _to_raw_key_cached(key: str) -> int | str: ...
+def to_kit_object(obj: ObjectType) -> KitObject:
+    """
+    Convert object typeddict to gmdkit object dict.
+    
+    Example:
+        {a1: 900, a2: 50, a57: {2}} → {1: 900, 2: 50, 57: IDList([2])}
+    """
+
+
+def _from_raw_key_cached(key: object) -> str: ...
+def from_kit_object(obj: dict[int | str, Any]) -> ObjectType:
+    """
+    Convert gmdkit object dict to object typeddict.
+    
+    Example:
+        {1: 900, 2: 50, 57: IDList([2])} → {a1: 900, a2: 50, a57: {2}}
+    """
+
+
+
 @overload
 def is_obj_id(obj: ObjectType, object_id: Literal[10]) -> TypeGuard[td.GamemodePortalType]: ...
 @overload
@@ -1090,28 +1130,6 @@ def is_obj_id(obj: ObjectType, object_id: int) -> bool:
     """Checks if the object has the given object ID. (adds type information)"""
 
 
-class Object(dict[str, Any]):
-    """
-    Note: Not for users to call directly.
-    
-    The actual dict implementation hidden behind the ObjectType TypedDict.
-    
-    This is to intercept & validate mutations of objects and add new helpers.
-    """
-    _obj_id: int
-    __slots__: tuple[str]
-    
-    def __init__(self, obj_id: int) -> None: ...
-    def __setitem__(self, k: str, v: Any) -> None: ...
-    def update(self, *args: Any, **kwargs: Any) -> None: ...
-    
-    @staticmethod
-    def wrap_object(obj: ObjectType) -> ObjectType: ...
-
-def _to_raw_key_cached(key: str) -> int | str: ...
-def to_kit_object(obj: ObjectType) -> KitObject: ...
-def _from_raw_key_cached(key: object) -> str: ...
-def from_kit_object(obj: dict[int | str, Any]) -> ObjectType: ...
 
 @overload
 def from_object_string(obj_string: str) -> ObjectType: ...

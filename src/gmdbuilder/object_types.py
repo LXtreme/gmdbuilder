@@ -1,6 +1,9 @@
 
 from typing import Literal, TypedDict, Required, Any
 
+from gmdkit.models.prop.hsv import HSV
+from gmdkit.models.prop.particle import Particle
+
 EASING = Literal[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
 XY_ONLY = Literal[0,1,2]
 COLOR1P9 = Literal[0,1,2,3,4,5,6,7,8]
@@ -91,13 +94,13 @@ class AllPropsType(TypedDict, total=False):
     a36: bool  # INTERACTIBLE(1)
     a41: bool  # HSV_ENABLED_1(1)
     a42: bool  # HSV_ENABLED_2(1)
-    a43: str  # HSV_1(1)
-    a44: str  # HSV_2(1)
+    a43: HSV  # HSV_1(1)
+    a44: HSV  # HSV_2(1)
     a45: float  # FADE_IN(1)
     a46: float  # HOLD(1)
     a47: float  # FADE_OUT(1)
     a48: bool  # USE_HSV(1)
-    a49: str  # HSV(3)
+    a49: HSV  # HSV(3)
     a50: int  # COPY_ID(2)
     a51: int  # TARGET_ID(20), GROUP_ID(12), SPAWN_ID(3), TRUE_ID(3), GROUP_ID_1(2), BULGE_CENTER_ID(1), GRAY_SCALE_TINT_CHANNEL(1), LENS_CIRCLE_CENTER_ID(1), MOTION_BLUR_CENTER_ID(1), PARTICLE_GROUP(1), PINCH_CENTER_ID(1), RADIAL_BLUR_CENTER_ID(1), SHOCKLINE_CENTER_ID(1), SHOCKWAVE_CENTER_ID(1), STATE_ON(1), TARGET_ITEM_ID(1)
     a52: bool  # TARGET_TYPE(1)
@@ -183,7 +186,7 @@ class AllPropsType(TypedDict, total=False):
     a142: bool  # LOCK_CAMERA_Y(1)
     a143: float  # X_MOD(2), FOLLOW_X_MOD(1)
     a144: float  # Y_MOD(2), FOLLOW_Y_MOD(1)
-    a145: str  # DATA(1)
+    a145: Particle  # DATA(1)
     a146: bool  # USE_OBJ_COLOR(1)
     a147: bool  # UNIFORM_OBJ_COLOR(1)
     a148: float  # VALUE(1)
@@ -617,8 +620,8 @@ class ObjectType(TypedDict, total=False):
     a34: bool  # GROUP_PARENT
     a41: bool  # HSV_ENABLED_1
     a42: bool  # HSV_ENABLED_2
-    a43: str  # HSV_1
-    a44: str  # HSV_2
+    a43: HSV  # HSV_1
+    a44: HSV  # HSV_2
     a57: set[int]  # GROUPS
     a61: int  # EDITOR_L2
     a64: bool  # DONT_FADE
@@ -908,7 +911,7 @@ class ColorType(TriggerType, total=False):
     a17: bool  # BLENDING
     a23: int  # CHANNEL
     a35: float  # OPACITY
-    a49: str  # HSV
+    a49: HSV  # HSV
     a50: int  # COPY_ID
     a60: bool  # COPY_OPACITY
     a210: bool  # DISABLE_LEGACY_HSV
@@ -1005,7 +1008,7 @@ class EditAdvFollowType(TriggerType, total=False):
 
 class EffectType(TriggerType, total=False):
     a10: float  # DURATION
-    a49: str  # HSV
+    a49: HSV  # HSV
     a51: int  # TARGET_ID
     a65: bool  # MAIN_ONLY
     a66: bool  # DETAIL_ONLY
@@ -1322,7 +1325,7 @@ class PulseType(TriggerType, total=False):
     a46: float  # HOLD
     a47: float  # FADE_OUT
     a48: bool  # USE_HSV
-    a49: str  # HSV
+    a49: HSV  # HSV
     a50: int  # COPY_ID
     a51: int  # TARGET_ID
     a52: bool  # TARGET_TYPE

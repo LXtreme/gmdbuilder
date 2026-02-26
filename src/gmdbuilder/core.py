@@ -31,12 +31,12 @@ class Object(dict[str, Any]):
     def __init__(self, obj_id: int):
         super().__init__()
         self._obj_id = int(obj_id)
-        super().__setitem__("a1", self._obj_id)
+        super().__setitem__(obj_prop.ID, self._obj_id)
 
     def __setitem__(self, k: str, v: Any):
-        validate(self._obj_id, k, v)
         if k == obj_prop.ID:
-            self._obj_id = int(v)
+            raise KeyError("Cannot change object ID after initialization")
+        validate(k, v, self)
         super().__setitem__(k, v)
 
     def update(self, *args: Any, **kwargs: Any):
@@ -52,18 +52,16 @@ class Object(dict[str, Any]):
             items = dict(kwargs)
         
         for k, v in items.items():
-            validate(self._obj_id, k, v)
+            validate(k, v, self)
         if obj_prop.ID in items:
-            self._obj_id = int(items[obj_prop.ID])
+            raise KeyError("Cannot change object ID after initialization")
         super().update(items)
     
     @staticmethod
-    def wrap_object(obj: ObjectType) -> ObjectType:
+    def wrap_object(obj: "ObjectType | Object") -> ObjectType:
         """Wrap an object in ValidatedObject for runtime validation."""
         if isinstance(obj, Object):
             return cast(ObjectType, obj)
-        for k, v in obj.items():
-            validate(obj[obj_prop.ID], k, v)
         wrapped = Object(obj[obj_prop.ID])
         wrapped.update(obj)
         return cast(ObjectType, wrapped)
@@ -84,9 +82,7 @@ def to_kit_object(obj: ObjectType) -> KitObject:
     raw: dict[int|str, Any] = {}
     for k, v in obj.items():
         match k:
-            case obj_prop.GROUPS:
-                raw[_to_raw_key_cached(k)] = IDList(v)
-            case obj_prop.PARENT_GROUPS:
+            case obj_prop.GROUPS | obj_prop.PARENT_GROUPS:
                 raw[_to_raw_key_cached(k)] = IDList(v)
             case obj_prop.Trigger.Spawn.REMAPS:
                 raw[_to_raw_key_cached(k)] = RemapList.from_dict(v) # type: ignore
@@ -99,24 +95,19 @@ def to_kit_object(obj: ObjectType) -> KitObject:
 
 
 @lru_cache(maxsize=1024)
-def _from_raw_key_cached(key: object) -> str:
+def _from_raw_key_cached(key: int|str) -> str:
     if isinstance(key, int):
         return f"a{key}"
-    if isinstance(key, str) and (key.startswith("a") or key.startswith("k")):
+    if key.startswith("a") or key.startswith("k"):
         return key
-    raise ValueError()
+    raise ValueError("Unrecognized key format")
 
 
 def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
-    """
-    Convert gmdkit object dict to object typeddict.
-    
-    Example:
-        {1: 900, 2: 50, 57: IDList([2])} → {a1: 900, a2: 50, a57: {2}}
-    """
-    new = {}
+    new = Object(obj[1])
     for k, v in obj.items():
         match k:
+            case 1: pass
             case 57:
                 new[obj_prop.GROUPS] = set(v) if v else set()
             case 274:
@@ -125,15 +116,18 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
                 new[obj_prop.Trigger.Spawn.REMAPS] = v.to_dict()
             case 52:
                 new[obj_prop.Trigger.Pulse.TARGET_TYPE] = bool(v)
+            # case 152:
+                # new[obj_prop.Trigger.AdvRandom.TARGETS] = [(i.key, i.value) for i in v]
             case _:
                 try:
-                    new[_from_raw_key_cached(k)] = v
-                except ValueError as e:
-                    raise ValueError(f"Object has bad/unsupported key {k!r}: \n{obj=}") from e
-    return new # type: ignore
+                    raw_key = _from_raw_key_cached(k)
+                except ValueError:
+                    raise TypeError(f"Object has unsupported key {k=}. Found {k=}:{v=} :: \n{obj=}")
+                new[raw_key] = v
+    return cast(ObjectType, new)
 
 
-def from_object_string(obj_string: str) -> ObjectType:
+def from_object_string(obj_string: str, obj_type: type = ObjectType) -> ObjectType:
     return from_kit_object(KitObject.from_string(obj_string)) # type: ignore
 
 

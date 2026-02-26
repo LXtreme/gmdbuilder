@@ -298,9 +298,22 @@ def is_group_id(object_id: int, key: str, id: int) -> bool:
     match object_id:
         case obj_id.Trigger.PULSE:
             if key == obj_prop.Trigger.Pulse.TARGET_ID:
-                return 1 <= id <= 999 or 1015 <= id <= 9999
+                return 1 <= id <= 999 or 1015 <= id <= 9999 or id == 0
+        case obj_id.Trigger.MOVE:
+            if (key != obj_prop.Trigger.Move.TARGET_ID and
+                key != obj_prop.Trigger.Move.TARGET_CENTER_ID and
+                key != obj_prop.Trigger.Move.TARGET_POS): 
+                return False
+        case obj_id.Trigger.ROTATE:
+            if (key != obj_prop.Trigger.Rotate.TARGET_ID and
+                key != obj_prop.Trigger.Rotate.CENTER_ID and
+                key != obj_prop.Trigger.Rotate.AIM_TARGET_ID):
+                return False
+        case obj_id.Trigger.SPAWN:
+            if key != obj_prop.Trigger.Spawn.TARGET_ID:
+                return False
         case _:
-            pass
+            return False
     return 1 <= id <= 9999
 
 
@@ -363,6 +376,4 @@ def _typeddict_to_isinstance(typeddict: type):
             print(f"Warning: Skipping key {key!r} with type {typ}: {e}")
 
 
-_typeddict_to_isinstance(td.ObjectType)
-for tyd in ID_TO_TYPEDDICT.values():
-    _typeddict_to_isinstance(tyd)
+_typeddict_to_isinstance(td.AllPropsType)

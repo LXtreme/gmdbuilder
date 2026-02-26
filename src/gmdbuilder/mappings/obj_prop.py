@@ -864,7 +864,7 @@ class Trigger:
         PLAYER_2 = "a200"
         FOLLOW_MODE = "a394"
         DYNAMIC_MODE = "a397"
-        AIM_TARGET = "a401"
+        AIM_TARGET_ID = "a401"
         AIM_OFFSET = "a402"
         AIM_EASING = "a403"
         MIN_X_ID = "a516"
@@ -1159,7 +1159,7 @@ class Trigger:
         M_599 = "a599"
 
     class Spawn:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
         DELAY = "a63"
         DISABLE_PREVIEW = "a102"
         ORDERED = "a441"
