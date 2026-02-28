@@ -35,7 +35,7 @@ ITEM_TRIGGER_TYPE = Literal[0,1,2,3,4,5]
 ITEM_TRIGGER_OP = Literal[0,1,2,3,4]
 ITEM_TRIGGER_ABS_NEG = Literal[0,1,2]
 ITEM_TRIGGER_ROUNDING = Literal[0,1,2,3]
-ITEM_TRIGGER_COMPARE_OP = Literal[0,1,2,3,4]
+ITEM_TRIGGER_COMPARE_OP = Literal[0,1,2,3,4,5]
 SEQUENCE_MODE = Literal[0,1,2]
 ARROW_DIR = Literal[1,2,3,4]
 LABEL_ALIGN = Literal[0,1,2]
@@ -479,7 +479,7 @@ class AllPropsType(TypedDict, total=False):
     a479: float  # MOD(1), MOD_1(1)
     a480: ITEM_TRIGGER_OP  # ITEM_OP_1(2)
     a481: ITEM_TRIGGER_OP  # ITEM_OP_2(2)
-    a482: ITEM_TRIGGER_OP|ITEM_TRIGGER_COMPARE_OP  # ITEM_OP_3(2)
+    a482: ITEM_TRIGGER_COMPARE_OP  # ITEM_OP_3(2)
     a483: float  # MOD_2(1)
     a484: float  # TOLERANCE(1)
     a485: ITEM_TRIGGER_ROUNDING  # ROUND_OP_1(2)
@@ -940,6 +940,7 @@ class ChangeMgType(TriggerType, total=False):
 class CheckpointType(TriggerType, total=False):
     a51: int  # SPAWN_ID
     a71: int  # TARGET_POS
+    a107: float  # ANIMATION_SPEED
     a138: bool  # PLAYER_POS
     a448: int  # RESPAWN_ID
 
@@ -1257,7 +1258,7 @@ class ItemEditType(TriggerType, total=False):
     a479: float  # MOD
     a480: ITEM_TRIGGER_OP  # ITEM_OP_1
     a481: ITEM_TRIGGER_OP  # ITEM_OP_2
-    a482: ITEM_TRIGGER_OP  # ITEM_OP_3
+    a482: ITEM_TRIGGER_COMPARE_OP  # ITEM_OP_3
     a485: ITEM_TRIGGER_ROUNDING  # ROUND_OP_1
     a486: ITEM_TRIGGER_ROUNDING  # ROUND_OP_2
     a578: ITEM_TRIGGER_ABS_NEG  # SIGN_OP_1
