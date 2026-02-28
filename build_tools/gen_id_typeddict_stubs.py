@@ -40,11 +40,12 @@ def generate_overloads() -> str:
         
         typeddict_name = get_typeddict_name(typeddict_type)
         lines.append("@overload")
-        lines.append(f"def new_object(object_id: Literal[{obj_id}]) -> td.{typeddict_name}: ...")
+        lines.append(f"def is_obj_id(obj: ObjectType, object_id: Literal[{obj_id}]) -> TypeGuard[td.{typeddict_name}]: ...")
     
     return "\n".join(lines)
 
 
+# def is_obj_id(obj: ObjectType, object_id: Literal[4539]) -> TypeGuard[td.CollectibleType]: ...
 def main():
     overloads = generate_overloads()
     

@@ -10,7 +10,7 @@ from gmdbuilder.mappings import obj_id
 
 from gmdbuilder import level
 from gmdbuilder.validation import setting
-from gmdbuilder.core import from_object_string, new_obj, is_obj_type
+from gmdbuilder.core import from_object_string, is_obj_id, new_obj, is_obj_type
 
 
 # 2 methods to load the level:
@@ -53,6 +53,8 @@ all_objects.append(b)
 
 for obj in all_objects:
     if is_obj_type(obj, SpawnType):
+        obj[obj_prop.Trigger.Spawn.DELAY] = 0.1
+    if is_obj_id(obj, obj_id.Trigger.SPAWN):
         obj[obj_prop.Trigger.Spawn.DELAY] = 0.1
 
 # Choose 

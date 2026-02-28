@@ -8,7 +8,7 @@ EASING = Literal[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
 XY_ONLY = Literal[0,1,2]
 COLOR1P9 = Literal[0,1,2,3,4,5,6,7,8]
 SINGLE_COLOR_TYPE = Literal[0,1,2]
-TRIGGER_LAYER = Literal[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+TRIGGER_LAYER = Literal[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 SOUND_DIRS = Literal[0,1,2,3,4,5,6]
 KEYFRAME_ROT_DIR = Literal[0,1,2]
 KEYFRAME_MODE = Literal[0,1,2]
@@ -596,6 +596,40 @@ class AllPropsType(TypedDict, total=False):
     a597: int  # M_597(1), PITCH_RAND(1)
     a598: float  # M_598(1), VOLUME_RAND(1)
     a599: bool  # M_599(1), PITCH_STEPS(1)
+    kA2: Any
+    kA3: Any
+    kA4: Any
+    kA8: Any
+    kA9: Any
+    kA10: Any
+    kA11: Any
+    kA19: bool # TARGET_ORDER
+    kA20: bool # REVERSE_MODE
+    kA21: bool # DISABLE
+    kA22: bool # PLATFORMER_MODE
+    kA23: bool # M_kA23
+    kA24: bool # M_kA24
+    kA25: int # M_kA25
+    kA26: int # TARGET_CHANNEL
+    kA27: bool # ALLOW_MULTI_ROTATE
+    kA28: bool # MIRROR_MODE
+    kA29: bool # ROTATE_MODE
+    kA31: bool # ENABLE_PLAYER_SQUEEZE
+    kA32: bool # FIX_GRAVITY_BUG
+    kA33: bool # FIX_NEGATIVE_SCALE
+    kA34: bool # FIX_ROBOT_JUMP
+    kA35: bool # RESET_CAMERA
+    kA36: int # M_kA36
+    kA37: bool # DYNAMIC_HEIGHT
+    kA38: bool # SORT_GROUPS
+    kA39: bool # FIX_RADIUS_COLLISION
+    kA40: bool # ENABLE_2_2_CHANGES
+    kA41: bool # ALLOW_STATIC_OBJECT_ROTATE
+    kA42: bool # REVERSE_SYNC
+    kA43: bool # DISABLE_TIME_POINT_PENALTY
+    kA44: int # M_kA44
+    kA45: bool # DECREASE_BOOST_SLIDE
+    kA46: bool # SONG_DONT_RESET
 
 class ObjectType(TypedDict, total=False):
     """
@@ -657,6 +691,43 @@ class ObjectType(TypedDict, total=False):
     a507: bool  # NO_PARTICLE
     a509: bool  # DONT_BOOST_X
     a511: bool  # EXTENDED_COLLISION
+
+class StartposType(ObjectType, total=False):
+    a36: bool  # INTERACTIBLE
+    kA2: Any
+    kA3: Any
+    kA4: Any
+    kA8: Any
+    kA9: Any
+    kA10: Any
+    kA11: Any
+    kA19: bool # TARGET_ORDER
+    kA20: bool # REVERSE_MODE
+    kA21: bool # DISABLE
+    kA22: bool # PLATFORMER_MODE
+    kA23: bool # M_kA23
+    kA24: bool # M_kA24
+    kA25: int # M_kA25
+    kA26: int # TARGET_CHANNEL
+    kA27: bool # ALLOW_MULTI_ROTATE
+    kA28: bool # MIRROR_MODE
+    kA29: bool # ROTATE_MODE
+    kA31: bool # ENABLE_PLAYER_SQUEEZE
+    kA32: bool # FIX_GRAVITY_BUG
+    kA33: bool # FIX_NEGATIVE_SCALE
+    kA34: bool # FIX_ROBOT_JUMP
+    kA35: bool # RESET_CAMERA
+    kA36: int # M_kA36
+    kA37: bool # DYNAMIC_HEIGHT
+    kA38: bool # SORT_GROUPS
+    kA39: bool # FIX_RADIUS_COLLISION
+    kA40: bool # ENABLE_2_2_CHANGES
+    kA41: bool # ALLOW_STATIC_OBJECT_ROTATE
+    kA42: bool # REVERSE_SYNC
+    kA43: bool # DISABLE_TIME_POINT_PENALTY
+    kA44: int # M_kA44
+    kA45: bool # DECREASE_BOOST_SLIDE
+    kA46: bool # SONG_DONT_RESET
 
 class AnimatedType(ObjectType, total=False):
     a36: bool  # INTERACTIBLE
@@ -1591,9 +1662,6 @@ class TeleportType(TriggerType, total=False):
     a510: bool  # SNAP_GROUND
     a591: bool  # REDIRECT_DASH
 
-class ExitPortalType(TeleportType, total=False):
-    a350: float  # M_350
-
 class PortalType(TeleportType, total=False):
     a54: float  # DISTANCE
 
@@ -1605,6 +1673,7 @@ class TimeType(TriggerType, total=False):
     a469: bool  # IGNORE_TIMEWARP
     a470: float  # MOD
     a471: bool  # START_PAUSED
+    a473: float  # STOP_TIME
     a474: bool  # STOP
 
 class TimeControlType(TriggerType, total=False):
