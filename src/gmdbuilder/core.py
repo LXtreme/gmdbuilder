@@ -4,10 +4,9 @@ from functools import lru_cache
 from typing import Any, TypeGuard, TypeVar, cast
 
 from gmdkit.models.object import Object as KitObject
-from gmdkit.models.prop.list import IDList, RemapList
 
 import gmdbuilder.object_types as td
-from gmdbuilder.fields import ID_TO_TYPEDDICT
+from gmdbuilder.fields import ID_TO_TYPEDDICT, SPECIAL_KEYS
 from gmdbuilder.mappings import obj_prop
 from gmdbuilder.validation import validate
 
@@ -81,16 +80,13 @@ def _to_raw_key_cached(key: str) -> int | str:
 def to_kit_object(obj: ObjectType) -> KitObject:
     raw: dict[int|str, Any] = {}
     for k, v in obj.items():
-        match k:
-            case obj_prop.GROUPS | obj_prop.PARENT_GROUPS:
-                raw[_to_raw_key_cached(k)] = IDList(v)
-            case obj_prop.Trigger.Spawn.REMAPS:
-                raw[_to_raw_key_cached(k)] = RemapList.from_dict(v) # type: ignore
-            case _:
-                try:
-                    raw[_to_raw_key_cached(k)] = v
-                except ValueError as e:
-                    raise ValueError(f"Object has bad/unsupported key {k!r}:\n{obj=}") from e
+        if s := SPECIAL_KEYS.get(k):
+            raw[_to_raw_key_cached(k)] = s.to_kit(v)
+        else:
+            try:
+                raw[_to_raw_key_cached(k)] = v
+            except ValueError as e:
+                raise ValueError(f"Object has unsupported key {k!r}:\n{obj=}") from e
     return KitObject(raw)
 
 
@@ -106,24 +102,16 @@ def _from_raw_key_cached(key: int|str) -> str:
 def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
     new = Object(obj[1])
     for k, v in obj.items():
-        match k:
-            case 1: pass
-            case 57:
-                new[obj_prop.GROUPS] = set(v) if v else set()
-            case 274:
-                new[obj_prop.PARENT_GROUPS] = set(v) if v else set()
-            case 442:
-                new[obj_prop.Trigger.Spawn.REMAPS] = v.to_dict()
-            case 52:
-                new[obj_prop.Trigger.Pulse.TARGET_TYPE] = bool(v)
-            # case 152:
-                # new[obj_prop.Trigger.AdvRandom.TARGETS] = [(i.key, i.value) for i in v]
-            case _:
-                try:
-                    raw_key = _from_raw_key_cached(k)
-                except ValueError:
-                    raise TypeError(f"Object has unsupported key {k=}. Found {k=}:{v=} :: \n{obj=}")
-                new[raw_key] = v
+        if k == 1: continue
+        try:
+            key = _from_raw_key_cached(k)
+        except ValueError:
+            raise TypeError(f"Object has unsupported key {k=}. Found {k=}:{v=} :: \n{obj=}")
+        
+        if s := SPECIAL_KEYS.get(key):
+            new[key] = s.from_kit(v)
+        else:
+            new[key] = v
     return cast(ObjectType, new)
 
 

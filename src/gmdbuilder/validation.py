@@ -3,7 +3,7 @@ from functools import lru_cache
 from typing import Any, cast
 from warnings import warn
 
-from gmdbuilder.fields import COMMON_ALLOWED_KEYS, ID_TO_ALLOWED_KEYS, TARGET_GROUP_FIELDS, value_is_correct_type
+from gmdbuilder.fields import SPECIAL_KEYS, TARGET_GROUP_FIELDS, value_is_correct_type, key_is_allowed, int_is_in_range
 from gmdbuilder.mappings import obj_prop
 from gmdbuilder.object_types import AllPropsType, ObjectType
 
@@ -89,17 +89,7 @@ def validate_solid_targets(
 
 
 
-@lru_cache(maxsize=1024)
-def _int_is_in_range(v: Any, min_val: int = 0, max_val: int = 9999) -> bool:
-    return isinstance(v, int) and min_val <= v <= max_val
-
-
-@lru_cache(maxsize=1024)
-def _key_is_allowed(obj_id: int, key: str) -> bool:
-    return key in COMMON_ALLOWED_KEYS or key in ID_TO_ALLOWED_KEYS.get(obj_id, {})
-
-
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=2048)
 def _value_is_allowed(k: str, v: Any) -> bool:
     if not value_is_correct_type(k,v):
         return False
@@ -112,7 +102,7 @@ def _value_is_allowed(k: str, v: Any) -> bool:
             | obj_prop.COLOR_1
             | obj_prop.COLOR_2
             | obj_prop.Trigger.CollisionBlock.BLOCK_ID):
-            return _int_is_in_range(v)
+            return int_is_in_range(v)
         case _:
             pass
             # print(f'placeholder warning: {k!r} : {v!r} is not validated.')
@@ -124,7 +114,7 @@ def validate(key: str, v: Any, obj: dict[str, Any]):
     obj_id = obj[obj_prop.ID]
     
     if setting.immediate.property_allowed_check:
-        if not _key_is_allowed(obj_id, key):
+        if not key_is_allowed(obj_id, key):
             raise ValueError(f"Key {key!r} not allowed for object ID {obj_id}:\n{obj=}")
     
     if not setting.immediate.property_type_check:
@@ -136,29 +126,9 @@ def validate(key: str, v: Any, obj: dict[str, Any]):
         if not _value_is_allowed(key, v):
             raise ValueNotAllowed
     except TypeError: # Unhashable value
-        match key:
-            case obj_prop.GROUPS | obj_prop.PARENT_GROUPS:
-                for group_id in v:
-                    if not _int_is_in_range(group_id):
-                        raise ValueNotAllowed
-            case obj_prop.Trigger.Event.EVENTS:
-                for event_id in v:
-                    if not _int_is_in_range(event_id, min_val=0, max_val=80):
-                        raise ValueNotAllowed
-            case obj_prop.Trigger.Spawn.REMAPS:
-                for source, target in v.items():
-                    if not _int_is_in_range(source):
-                        raise ValueNotAllowed
-                    if not _int_is_in_range(target):
-                        raise ValueNotAllowed
-            
-            # will add gmdkit's hsv dataclass and write validation for that later
-            case obj_prop.HSV_1 | obj_prop.HSV_2 | obj_prop.Trigger.Pulse.HSV:
-                pass
-            case obj_prop.Particle.DATA:
-                pass
-            case obj_prop.Trigger.AdvRandom.TARGETS:
-                # for source, target in v:
-                    pass
-            case _:
-                print(f"placeholder warning: {key} : {v!r} is unhashable and not validated.")
+        if s := SPECIAL_KEYS.get(key):
+            if not s.is_valid_val(v):
+                raise ValueNotAllowed
+        else:
+            pass
+            print(f"placeholder warning: {key} : {v!r} is unhashable and not validated.")

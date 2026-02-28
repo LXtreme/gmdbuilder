@@ -1,7 +1,10 @@
 
+from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any, Callable, Iterable, Literal, Union, get_args, get_origin, Required
 from gmdbuilder.mappings import obj_id, obj_prop
 from gmdbuilder import object_types as td
+from gmdkit.models.prop.list import IDList, IntPair, IntPairList, RemapList
 
 ObjectType = td.ObjectType
 tid = obj_id.Trigger
@@ -293,6 +296,79 @@ UNHASHABLE_VALUE_KEYS = {
     obj_prop.Trigger.Event.EVENTS,
     obj_prop.Trigger.Sequence.SEQUENCE
 }
+
+
+@lru_cache(maxsize=1024)
+def int_is_in_range(v: Any, min_val: int = 0, max_val: int = 9999) -> bool:
+    return isinstance(v, int) and min_val <= v <= max_val
+
+
+@lru_cache(maxsize=1024)
+def key_is_allowed(obj_id: int, key: str) -> bool:
+    return key in COMMON_ALLOWED_KEYS or key in ID_TO_ALLOWED_KEYS.get(obj_id, {})
+
+
+@dataclass(frozen=True, slots=True)
+class SpecialKey:
+    from_kit:     Callable[[Any], Any]
+    to_kit:       Callable[[Any], Any]
+    is_valid_val: Callable[[Any], bool]
+
+_group_list_methods = SpecialKey(
+    from_kit=lambda v: set(v) if v else {},
+    to_kit=lambda v: IDList(v) if v else IDList(),
+    is_valid_val=lambda v: all(int_is_in_range(group_id) for group_id in v)
+)
+
+_placeholder_methods = SpecialKey( # TODO: replace w/ actual impl for v1.0
+    from_kit=lambda v: v,
+    to_kit=lambda v: v,
+    is_valid_val=lambda v: True
+)
+
+def _sequence_to_kit(v: list[tuple[int, int]]) -> IntPairList:
+    """for prop a435 for sequence trigger"""
+    # result = IntPairList()
+    # for key, value in v:
+        # result.append(IntPair(key, value))
+    # return result
+    return v
+
+def _sequence_from_kit(v: IntPairList) -> list[tuple[int, int]]:
+    # return [(i.key, i.value) for i in v]
+    return v
+
+
+SPECIAL_KEYS: dict[str, SpecialKey] = {
+    obj_prop.GROUPS: _group_list_methods,
+    obj_prop.PARENT_GROUPS: _group_list_methods,
+    obj_prop.Trigger.Spawn.REMAPS: SpecialKey(
+        from_kit=lambda v: v.to_dict(),
+        to_kit=lambda v: RemapList.from_dict(v), # type: ignore
+        is_valid_val=lambda v: all(
+            int_is_in_range(src) and int_is_in_range(target) 
+            for src, target in v.items()
+        )
+    ),
+    obj_prop.Trigger.Pulse.TARGET_TYPE: SpecialKey(
+        from_kit=lambda v: bool(v),
+        to_kit=lambda v: bool(v),
+        is_valid_val=lambda v: isinstance(v, bool)
+    ),
+    # IntPairList([IntPair(key=3959, value=1), IntPair(key=3960, value=1)])
+    obj_prop.Trigger.Sequence.SEQUENCE: SpecialKey(
+        from_kit=lambda v: _sequence_from_kit,
+        to_kit=lambda v: _sequence_to_kit,
+        is_valid_val=lambda v: True # TODO: implement validation
+    ),
+    obj_prop.Trigger.AdvRandom.TARGETS: _placeholder_methods,
+    obj_prop.HSV_1: _placeholder_methods,
+    obj_prop.HSV_2: _placeholder_methods,
+    obj_prop.Trigger.Pulse.HSV: _placeholder_methods,
+    obj_prop.Particle.DATA: _placeholder_methods,
+    obj_prop.Trigger.Event.EVENTS: _placeholder_methods,
+}
+"""For keys that require special handling/validation outside of normal type checks and conversions."""
 
 
 def is_group_id(object_id: int, key: str, id: int) -> bool:
