@@ -12,7 +12,7 @@ from gmdbuilder.core import new_obj
 from gmdbuilder.mappings import obj_prop
 from gmdbuilder.validation import setting
 
-setting.export.spawn_limit_check = False
+setting.spawn_limit_check = False
 
 LEVELS_DIR = Path(__file__).parent / "levels"
 LEVEL_FILES = sorted(LEVELS_DIR.glob("*.gmd"))

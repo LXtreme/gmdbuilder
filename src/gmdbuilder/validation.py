@@ -8,27 +8,24 @@ from gmdbuilder.mappings import obj_prop
 from gmdbuilder.object_types import AllPropsType, ObjectType
 
 
-
 class setting:
-    class immediate:
-        property_allowed_check = True
-        """Checks that all property keys are allowed on the given object ID."""
-        
-        property_type_check = True
-        """Checks that all property value types and ranges are correct"""
+    property_allowed_check = True
+    """Checks that all property keys are allowed on the given object ID."""
+    
+    property_type_check = True
+    """Checks that all property value types and ranges are correct"""
 
-    class export:
-        target_exists_check = False
-        """Checks that all targets referenced by triggers actually exist"""
-        
-        solid_target_check = False
-        """Checks that visual-related triggers target non-trigger & visible groups/objects"""
-        
-        spawn_limit_check = True
-        """Checks for any spawn-limit occurrance within trigger execution chains"""
-        
-        group_parent_check = True
-        """Checks that every group parent is unique (no two parents for 1 ID)"""
+    target_exists_check = False
+    """Checks that all targets referenced by triggers actually exist"""
+    
+    solid_target_check = False
+    """Checks that visual-related triggers target non-trigger & visible groups/objects"""
+    
+    spawn_limit_check = False
+    """Checks for any spawn-limit occurrance within trigger execution chains"""
+    
+    group_parent_check = True
+    """Checks that every group parent is unique (no two parents for 1 ID)"""
 
 
 
@@ -60,7 +57,7 @@ def validate_target_exists(
     used: dict[int, list[ObjectType]]
 ):
     """Note: Does not check for special cases like Pulse's color IDs (yet)"""
-    if not setting.export.target_exists_check:
+    if not setting.target_exists_check:
         return
     
     targeted_groups = set(targeted.keys())
@@ -83,7 +80,7 @@ def validate_solid_targets(
     targeted: dict[int, list[ObjectType]], 
     used: dict[int, list[ObjectType]]
 ):
-    if not setting.export.solid_target_check:
+    if not setting.solid_target_check:
         return
     raise NotImplementedError("Solid target check is not implemented yet.")
 
@@ -113,22 +110,22 @@ def validate(key: str, v: Any, obj: dict[str, Any]):
     """immediate validation. to be called by 'level.objects' mutations"""
     obj_id = obj[obj_prop.ID]
     
-    if setting.immediate.property_allowed_check:
+    if setting.property_allowed_check:
         if not key_is_allowed(obj_id, key):
             raise ValueError(f"Key {key!r} not allowed for object ID {obj_id}:\n{obj=}")
     
-    if not setting.immediate.property_type_check:
+    if not setting.property_type_check:
         return
     
     ValueNotAllowed = ValueError(f"Invalid value for {key=}:{v=} on object ID {obj_id}:\n{obj=}")
+    
+    if s := SPECIAL_KEYS.get(key):
+        if not s.is_valid_val(v):
+            raise ValueNotAllowed
+        return
     
     try:
         if not _value_is_allowed(key, v):
             raise ValueNotAllowed
     except TypeError: # Unhashable value
-        if s := SPECIAL_KEYS.get(key):
-            if not s.is_valid_val(v):
-                raise ValueNotAllowed
-        else:
-            pass
-            print(f"placeholder warning: {key} : {v!r} is unhashable and not validated.")
+        print(f"placeholder warning: {key} : {v!r} is unhashable and not validated.")

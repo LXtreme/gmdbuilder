@@ -331,7 +331,6 @@ def _sequence_to_kit(v: list[tuple[int, int]]) -> IntPairList:
     # result = IntPairList()
     # for key, value in v:
         # result.append(IntPair(key, value))
-    # return result
     return v
 
 def _sequence_from_kit(v: IntPairList) -> list[tuple[int, int]]:
@@ -357,8 +356,8 @@ SPECIAL_KEYS: dict[str, SpecialKey] = {
     ),
     # IntPairList([IntPair(key=3959, value=1), IntPair(key=3960, value=1)])
     obj_prop.Trigger.Sequence.SEQUENCE: SpecialKey(
-        from_kit=lambda v: _sequence_from_kit,
-        to_kit=lambda v: _sequence_to_kit,
+        from_kit=_sequence_from_kit,
+        to_kit=_sequence_to_kit,
         is_valid_val=lambda v: True # TODO: implement validation
     ),
     obj_prop.Trigger.AdvRandom.TARGETS: _placeholder_methods,
@@ -398,10 +397,9 @@ hashable_value_key_to_isinstance: dict[str, Callable[[Any], bool]] = {}
 
 
 # ACTUAL FUNCTION WE CARE ABOUT
+@lru_cache(maxsize=2048)
 def value_is_correct_type(key: str, v: Any) -> bool:
     """Check if value v is of the correct type for key."""
-    if key in UNHASHABLE_VALUE_KEYS:
-        raise ValueError(f"Key {key} has unhashable value, cannot be type checked.")
     if key not in hashable_value_key_to_isinstance:
         raise ValueError(f"No type information available for key {key!r} : {v!r}")
     return hashable_value_key_to_isinstance[key](v)
