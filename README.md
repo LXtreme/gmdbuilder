@@ -57,15 +57,15 @@ obj_list = level.objects # mutations are validated
 # Object properties are in the form { "a<key number>": value }
 repr(obj_list[1])
 
-from gmdbuilder.mappings import obj_prop # property key str Literals
-from gmdbuilder.mappings import obj_enum # property IntEnum values
-from gmdbuilder.mappings import obj_id # object ID int Literals
+from gmdbuilder import obj_prop   # property key str Literals
+from gmdbuilder import enum       # enum values for object properties
+from gmdbuilder import obj_id     # object ID int Literals
 
 # Similar to 'next' button in the editor. 
 # Free groups are registered at level load
 a = level.new.group()
 
-from gmdbuilder.core import is_obj_type, is_obj_id, from_object_string, new_obj
+from gmdbuilder import is_obj_type, is_obj_id, from_object_string, new_obj
 import gmdbuilder.object_types as td # typed dicts
 
 for obj in obj_list:
@@ -85,8 +85,8 @@ object = from_object_string("1,1611,2,50,3,45;", obj_type=td.CountType)
 object[obj_prop.Trigger.Count.ACTIVATE_GROUP] = True
 object[obj_prop.Trigger.Count.TARGET_ID] = a
 
-move = new_obj(obj_id.Trigger.MOVE) # casts to MoveType typed_dict automatically
-instant_count = new_obj(1611) # casts to InstantCountType typed_dict
+move = new_obj(obj_id.Trigger.MOVE)   # casts to MoveType typed_dict automatically
+instant_count = new_obj(1611)         # casts to InstantCountType typed_dict
 
 obj_list.append(object)
 obj_list.extend([move, instant_count])
