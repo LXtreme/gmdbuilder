@@ -328,14 +328,10 @@ _placeholder_methods = SpecialKey( # TODO: replace w/ actual impl for v1.0
 
 def _sequence_to_kit(v: list[tuple[int, int]]) -> IntPairList:
     """for prop a435 for sequence trigger"""
-    # result = IntPairList()
-    # for key, value in v:
-        # result.append(IntPair(key, value))
-    return v
-
-def _sequence_from_kit(v: IntPairList) -> list[tuple[int, int]]:
-    # return [(i.key, i.value) for i in v]
-    return v
+    result = IntPairList()
+    for key, value in v:
+        result.append(IntPair(key, value))
+    return result
 
 
 SPECIAL_KEYS: dict[str, SpecialKey] = {
@@ -343,7 +339,7 @@ SPECIAL_KEYS: dict[str, SpecialKey] = {
     obj_prop.PARENT_GROUPS: _group_list_methods,
     obj_prop.Trigger.Spawn.REMAPS: SpecialKey(
         from_kit=lambda v: v.to_dict(),
-        to_kit=lambda v: RemapList.from_dict(v), # type: ignore
+        to_kit=lambda v: RemapList.from_dict(v),
         is_valid_val=lambda v: all(
             int_is_in_range(src) and int_is_in_range(target) 
             for src, target in v.items()
@@ -356,18 +352,23 @@ SPECIAL_KEYS: dict[str, SpecialKey] = {
     ),
     # IntPairList([IntPair(key=3959, value=1), IntPair(key=3960, value=1)])
     obj_prop.Trigger.Sequence.SEQUENCE: SpecialKey(
-        from_kit=_sequence_from_kit,
+        from_kit=lambda v: [(i.key, i.value) for i in v],
         to_kit=_sequence_to_kit,
-        is_valid_val=lambda v: True # TODO: implement validation
+        is_valid_val=lambda v: all(
+            int_is_in_range(a) and isinstance(b, int) for a, b in v
+        )
     ),
     obj_prop.Trigger.AdvRandom.TARGETS: _placeholder_methods,
     obj_prop.HSV_1: _placeholder_methods,
     obj_prop.HSV_2: _placeholder_methods,
     obj_prop.Trigger.Pulse.HSV: _placeholder_methods,
     obj_prop.Particle.DATA: _placeholder_methods,
-    obj_prop.Trigger.Event.EVENTS: _placeholder_methods,
+    obj_prop.Trigger.Event.EVENTS: SpecialKey(
+        from_kit=lambda v: v,
+        to_kit=lambda v: v,
+        is_valid_val=lambda v: isinstance(v, list) and all(int_is_in_range(i) for i in v)
+    ),
 }
-"""For keys that require special handling/validation outside of normal type checks and conversions."""
 
 
 def is_group_id(object_id: int, key: str, id: int) -> bool:

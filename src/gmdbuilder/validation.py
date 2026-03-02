@@ -14,7 +14,7 @@ class setting:
     
     property_type_check = True
     """Checks that all property value types and ranges are correct"""
-
+    
     target_exists_check = False
     """Checks that all targets referenced by triggers actually exist"""
     
@@ -24,7 +24,7 @@ class setting:
     spawn_limit_check = False
     """Checks for any spawn-limit occurrance within trigger execution chains"""
     
-    group_parent_check = True
+    group_parent_check = False
     """Checks that every group parent is unique (no two parents for 1 ID)"""
 
 
