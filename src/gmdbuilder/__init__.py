@@ -5,8 +5,7 @@ Public API surface:
 
   Loading a level
   ---------------
-  Level                 - factory: Level.from_file(...) / Level.from_live_editor(...)
-  LevelInstance         - the loaded level instance (Level.from_...() returns this)
+  Level                 - Level.from_file(...) / Level.from_live_editor(...)
   ObjectList            - the list of objects on a level (level.objects)
 
   Creating / inspecting objects
@@ -20,7 +19,6 @@ Public API surface:
   ID allocation
   -------------
   IDAllocator           - allocate unique group / item / color / collision / control IDs
-  IDTypeEnum            - string enum of ID type names used by IDAllocator
 
   Validation settings
   -------------------
@@ -38,7 +36,6 @@ Public API surface:
 
 from gmdbuilder.level import (
     Level,
-    LevelInstance,
     ObjectList,
 )
 
@@ -69,7 +66,6 @@ from gmdbuilder.mappings import obj_enum as enum
 __all__ = [
     # Level lifecycle
     "Level",
-    "LevelInstance",
     "ObjectList",
     # Core helpers
     "Object",

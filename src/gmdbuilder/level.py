@@ -1,6 +1,5 @@
 """Level loading and exporting for Geometry Dash."""
 
-from enum import StrEnum
 import time
 from collections import deque
 from pathlib import Path
@@ -72,7 +71,7 @@ class ObjectList(list[ObjectType]):
         value: ObjectType | list[ObjectType]):
         """Validate when setting an item by index."""
         if self._live_editor_mode:
-            raise RuntimeError("Direct object editing is not supported in live editor mode")
+            raise RuntimeError("Direct object editing is not supported in live editor mode yet")
         if isinstance(index, slice):
             if not isinstance(value, list):
                 raise TypeError(f"can only assign a list (not {type(value).__name__}) to a slice")
@@ -94,7 +93,7 @@ class ObjectList(list[ObjectType]):
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
         if self._live_editor_mode:
-            raise RuntimeError("Direct item editing is not allowed in live editor mode")
+            raise RuntimeError("Direct item editing is not allowed in live editor mode yet")
         wrapped = Object.wrap_object(obj)
         super().insert(index, wrapped)
         self.added_objects.append(wrapped)
@@ -119,17 +118,6 @@ class ObjectList(list[ObjectType]):
         raise NotImplementedError("Use .extend() instead of += operator")
 
 
-objects = ObjectList(live_editor=False)
-"""List of level's objects."""
-
-tag_group = 9999
-"""Deletes all objects with this group and adds this group to new added objects"""
-
-_kit_level: KitLevel | None = None
-_source_file: Path | None = None
-_live_editor: LiveEditor | None = None
-
-
 def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
     now = time.perf_counter()
     a = _state[0]
@@ -137,71 +125,143 @@ def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
     return now - a
 
 
-def _load_objects(kit_objects: KitObjectList, filename: str | None = None) -> None:
-    """Load objects from gmdkit ObjectList into the module-level objects list."""
-    global objects, tag_group
-    
-    obj_count = len(kit_objects)
-    
-    for kit_obj in kit_objects:
-        obj = from_kit_object(kit_obj)
-        if tag_group not in obj.get(obj_prop.GROUPS, set()):
-            objects._append_without_tracking(obj)
-    
-    print(f"\nLoaded {obj_count} objects from {filename or 'live editor'} in {_time_since_last():.3f} seconds.")
-    print(f"\nRemoved {obj_count-len(objects)} objects with tag group {tag_group}, level is now {len(objects)} objects.")
+class Level:
+    """Manages level state, loading, and exporting. Use from_file() or from_live_editor() to create an instance."""
+
+    def __init__(self, *, live_editor: bool = False, tag_group: int = 9999):
+        self.objects = ObjectList(live_editor=live_editor)
+        """List of level's objects."""
+
+        self.tag_group = tag_group
+        """Deletes all objects with this group and adds this group to new added objects"""
+
+        self._kit_level: KitLevel | None = None
+        self._source_file: Path | None = None
+        self._live_editor: LiveEditor | None = None
+
+        self.new = IDAllocator(self.objects)
+
+    @classmethod
+    def from_file(cls, file_path: str | Path, tag_group: int = 9999) -> "Level":
+        """Load a new Level from a .gmd file."""
+        level = cls(live_editor=False, tag_group=tag_group)
+        level._load_from_file(file_path)
+        return level
+
+    @classmethod
+    def from_live_editor(cls, url: str = WEBSOCKET_URL, tag_group: int = 9999) -> "Level":
+        """Load a new Level from the live editor."""
+        level = cls(live_editor=True, tag_group=tag_group)
+        level._load_from_live_editor(url)
+        return level
+
+    def _load_objects(self, kit_objects: KitObjectList, filename: str | None = None) -> None:
+        """Load objects from gmdkit ObjectList into the objects list."""
+        obj_count = len(kit_objects)
+
+        for kit_obj in kit_objects:
+            obj = from_kit_object(kit_obj)
+            if self.tag_group not in obj.get(obj_prop.GROUPS, set()):
+                self.objects._append_without_tracking(obj)
+
+        print(f"\nLoaded {obj_count} objects from {filename or 'live editor'} in {_time_since_last():.3f} seconds.")
+        print(f"\nRemoved {obj_count-len(self.objects)} objects with tag group {self.tag_group}, level is now {len(self.objects)} objects.")
+
+    def _load_from_file(self, file_path: str | Path) -> None:
+        """Internal: populate state from a .gmd file."""
+        _time_since_last()
+
+        path = Path(file_path)
+        if not path.exists():
+            raise FileNotFoundError(f"Level file not found: {file_path=}")
+
+        self.objects = ObjectList(live_editor=False)
+        self.new = IDAllocator(self.objects)
+        self._kit_level = KitLevel.from_file(path)
+        self._source_file = path
+
+        self._load_objects(self._kit_level.objects, filename=str(path))
+
+    def _load_from_live_editor(self, url: str = WEBSOCKET_URL) -> None:
+        """Internal: populate state from the live editor."""
+        _time_since_last()
+
+        self.objects = ObjectList(live_editor=True)
+        self.new = IDAllocator(self.objects)
+        self._live_editor = LiveEditor(url)
+        self._live_editor.connect()
+        self._live_editor.remove_objects(self.tag_group)
+        _, kit_objects = self._live_editor.get_level()
+
+        self._load_objects(kit_objects)
+
+    def _validate_and_prepare_objects(self, validated_objects: ObjectList) -> None:
+        """Run validation and preparation checks on objects before export."""
+
+        targeted, used = get_trigger_targets(validated_objects)
+        validate_target_exists(targeted, used)
+
+        for obj in validated_objects.added_objects:
+            groups = obj.get(obj_prop.GROUPS, {self.tag_group})
+            groups.add(self.tag_group)
+            obj[obj_prop.GROUPS] = groups
+
+    def export_to_file(self, file_path: str | Path | None = None) -> None:
+        """Export level to .gmd file."""
+
+        print(f"\ngmdbuilder took {_time_since_last():.4f} seconds to prepare for export.")
+
+        if self._kit_level is None:
+            raise RuntimeError("No level loaded. Use Level.from_file() first")
+
+        # Determine export path
+        if file_path is None:
+            if self._source_file is None:
+                raise RuntimeError("No export path available. Provide file_path argument")
+
+            if input("Overwrite the source file? [y,N]").lower() != 'y':
+                raise RuntimeError("Export cancelled by user")
+            export_path = self._source_file
+        else:
+            export_path = Path(file_path)
+
+        self._validate_and_prepare_objects(self.objects)
+
+        kit_objects = self._kit_level.objects
+        kit_objects.clear()
+        kit_objects.extend(to_kit_object(obj) for obj in self.objects)
+
+        self._kit_level.to_file(str(export_path))
+
+        print(f"\nExported level to {export_path} with {len(self.objects)} objects in {_time_since_last():.3f} seconds.\n")
+
+    def export_to_live_editor(self, *, batch_size: int = 500) -> None:
+        """Export level to live editor."""
+
+        if self._live_editor is None:
+            raise RuntimeError("No live editor connection. Use Level.from_live_editor() first")
+
+        self._validate_and_prepare_objects(self.objects)
+
+        # Convert to gmdkit ObjectList
+        kit_objects = KitObjectList()
+        kit_objects.extend(to_kit_object(obj) for obj in self.objects.added_objects)
+
+        self._live_editor.add_objects(kit_objects, batch_size)
+        self._live_editor.close()
+        self._live_editor = None
+
+        print(f"\nExported to live editor with {len(self.objects)} objects in {_time_since_last():.3f} seconds.\n")
 
 
-def from_file(file_path: str | Path) -> None:
-    """Load level from .gmd file into the module-level objects list."""
-    global objects, tag_group, _kit_level, _source_file, _live_editor
-    
-    if _source_file is not None or _live_editor is not None:
-        raise RuntimeError("FORBIDDEN: Level file is loaded! Loading multiple levels at once overrides global state")
-    
-    _time_since_last()
-    
-    path = Path(file_path)
-    if not path.exists():
-        raise FileNotFoundError(f"Level file not found: {file_path=}")
-    
-    objects = ObjectList(live_editor=False)
-    _kit_level = KitLevel.from_file(path)
-    _source_file = path
-    
-    _load_objects(_kit_level.objects, filename=str(path))
-
-
-def from_live_editor(url: str = WEBSOCKET_URL) -> None:
-    global objects, tag_group, _kit_level, _live_editor, _source_file
-    
-    if _source_file is not None or _live_editor is not None:
-        raise RuntimeError("FORBIDDEN: Level file is loaded! Loading multiple levels at once overrides global state")
-    
-    _time_since_last()
-    
-    objects = ObjectList(live_editor=True)
-    _live_editor = LiveEditor(url)
-    _live_editor.connect()
-    _live_editor.remove_objects(tag_group)
-    _, kit_objects = _live_editor.get_level()
-    
-    _load_objects(kit_objects)
-
-
-class IDTypeEnum(StrEnum):
-    GROUP = "group"
-    ITEM = "item"
-    COLOR = "color"
-    COLLISION = "collision"
-    CONTROL = "control"
-
+IDTypes = Literal["group", "item", "color", "collision", "control"]
 
 class IDAllocator:
     """Singleton class to manage unique ID allocation. Instance is 'new'."""
     
-    def __init__(self):
+    def __init__(self, objects: list[ObjectType]):
         self._initialized = False
+        self._object_list = objects
         
         self._group_pool: deque[int] = deque()
         self._item_pool: deque[int] = deque()
@@ -215,17 +275,17 @@ class IDAllocator:
         self.used_collision_ids: set[int] = set()
         self.used_control_ids: set[int] = set()
     
-    def reserve_id(self, id_type: IDTypeEnum, id_value: int):
+    def reserve_id(self, id_type: IDTypes, id_value: int):
         """Manually reserve an ID (e.g. for objects not in the main list)."""
-        if id_type == IDTypeEnum.GROUP:
+        if id_type == "group":
             self.used_group_ids.add(id_value)
-        elif id_type == IDTypeEnum.ITEM:
+        elif id_type == "item":
             self.used_item_ids.add(id_value)
-        elif id_type == IDTypeEnum.COLOR:
+        elif id_type == "color":
             self.used_color_ids.add(id_value)
-        elif id_type == IDTypeEnum.COLLISION:
+        elif id_type == "collision":
             self.used_collision_ids.add(id_value)
-        elif id_type == IDTypeEnum.CONTROL:
+        elif id_type == "control":
             self.used_control_ids.add(id_value)
         else:
             raise ValueError(f"Unknown ID type: {id_type}")
@@ -233,12 +293,11 @@ class IDAllocator:
     def _register_free_ids(self):
         """Runs automatically at first new ID call."""
         self._initialized = True
-        global objects
         
-        if len(objects) == 0:
+        if len(self._object_list) == 0:
             raise RuntimeError("Objects not found. Load a level first with from_file() or from_live_editor()")
         
-        for obj in objects:
+        for obj in self._object_list:
             if (key := obj_prop.GROUPS) in obj:
                 self.used_group_ids.update(obj[key])
             if (key := obj_prop.Trigger.Count.ITEM_ID) in obj:
@@ -256,7 +315,7 @@ class IDAllocator:
         self._collision_pool = deque(sorted(all_ids - self.used_collision_ids))
         self._control_pool = deque(sorted(all_ids - self.used_control_ids))
     
-    def _get_next(self, pool_name: str) -> int:
+    def _get_next(self, pool_name: IDTypes) -> int:
         """Get next free ID from pool. O(1) operation."""
         if not self._initialized:
             self._register_free_ids()
@@ -281,8 +340,8 @@ class IDAllocator:
     def group(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free group ID (1-9999)."""
         if count == 1:
-            return self._get_next(IDTypeEnum.GROUP)
-        return tuple(self._get_next(IDTypeEnum.GROUP) for _ in range(count))
+            return self._get_next("group")
+        return tuple(self._get_next("group") for _ in range(count))
     
     @overload
     def item(self) -> int: ...
@@ -295,8 +354,8 @@ class IDAllocator:
     def item(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free item ID (1-9999)."""
         if count == 1:
-            return self._get_next(IDTypeEnum.ITEM)
-        return tuple(self._get_next(IDTypeEnum.ITEM) for _ in range(count))
+            return self._get_next("item")
+        return tuple(self._get_next("item") for _ in range(count))
     
     # @overload
     # def color(self) -> int: ...
@@ -323,8 +382,8 @@ class IDAllocator:
     def collision(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free collision block ID (1-9999)."""
         if count == 1:
-            return self._get_next(IDTypeEnum.COLLISION)
-        return tuple(self._get_next(IDTypeEnum.COLLISION) for _ in range(count))
+            return self._get_next("collision")
+        return tuple(self._get_next("collision") for _ in range(count))
     
     @overload
     def control(self) -> int: ...
@@ -337,8 +396,8 @@ class IDAllocator:
     def control(self, count: int = 1) -> tuple[int,...] | int:
         """Get next free control ID (1-9999)."""
         if count == 1:
-            return self._get_next(IDTypeEnum.CONTROL)
-        return tuple(self._get_next(IDTypeEnum.CONTROL) for _ in range(count))
+            return self._get_next("control")
+        return tuple(self._get_next("control") for _ in range(count))
     
     def reset_all(self):
         self._initialized = False
@@ -353,86 +412,3 @@ class IDAllocator:
         self.used_collision_ids.clear()
         self.used_control_ids.clear()
 
-new = IDAllocator()
-"""Allocate free IDs for level objects."""
-
-def _validate_and_prepare_objects(validated_objects: ObjectList) -> None:
-    """Run validation and preparation checks on objects before export."""
-    global tag_group
-    
-    targeted, used = get_trigger_targets(validated_objects)
-    validate_target_exists(targeted, used)
-    
-    for obj in validated_objects.added_objects:
-        groups = obj.get(obj_prop.GROUPS, {tag_group})
-        groups.add(tag_group)
-        obj[obj_prop.GROUPS] = groups
-
-
-def reset_all() -> None:
-    """Reset all global state. Mainly for testing purposes."""
-    global objects, tag_group, _kit_level, _source_file, _live_editor
-    
-    objects = ObjectList(live_editor=False)
-    tag_group = 9999
-    _kit_level = None
-    _source_file = None
-    if _live_editor is not None:
-        _live_editor.close()
-    _live_editor = None
-    new.reset_all()
-
-
-def export_to_file(file_path: str | Path | None = None) -> None:
-    """Export level to .gmd file."""
-    global objects, _kit_level, _source_file
-    
-    print(f"\ngmdbuilder took {_time_since_last():.4f} seconds to prepare for export.")
-    
-    if _kit_level is None:
-        raise RuntimeError("No level loaded. Use level.from_file() first")
-    
-    # Determine export path
-    if file_path is None:
-        if _source_file is None:
-            raise RuntimeError("No export path available. Provide file_path argument")
-        
-        if input("Overwrite the source file? [y,N]").lower() != 'y':
-            raise RuntimeError("Export cancelled by user")
-        export_path = _source_file
-    else:
-        export_path = Path(file_path)
-    
-    _validate_and_prepare_objects(objects)
-    
-    kit_objects = _kit_level.objects
-    kit_objects.clear()
-    kit_objects.extend(to_kit_object(obj) for obj in objects)
-
-    _kit_level.to_file(str(export_path))
-    
-    print(f"\nExported level to {export_path} with {len(objects)} objects in {_time_since_last():.3f} seconds.\n")
-    
-    reset_all()
-
-
-def export_to_live_editor(*, batch_size: int = 500) -> None:
-    """Export level to live editor."""
-    global objects, _live_editor
-    
-    if _live_editor is None:
-        raise RuntimeError("No live editor connection. Use level.from_live_editor() first")
-    
-    _validate_and_prepare_objects(objects)
-    
-    # Convert to gmdkit ObjectList
-    kit_objects = KitObjectList()
-    kit_objects.extend(to_kit_object(obj) for obj in objects.added_objects)
-    
-    _live_editor.add_objects(kit_objects, batch_size)
-    _live_editor.close()
-    _live_editor = None
-    
-    print(f"\nExported to live editor with {len(objects)} objects in {_time_since_last():.3f} seconds.\n")
-    
-    reset_all()

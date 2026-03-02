@@ -31,7 +31,6 @@ class Object(dict[str, Any]):
     def wrap_object(obj: ObjectType | Object) -> ObjectType: ...
 
 
-def _to_raw_key_cached(key: str) -> int | str: ...
 def to_kit_object(obj: ObjectType) -> KitObject:
     """
     Convert object typeddict to gmdkit object dict.
@@ -41,7 +40,6 @@ def to_kit_object(obj: ObjectType) -> KitObject:
     """
 
 
-def _from_raw_key_cached(key: object) -> str: ...
 def from_kit_object(obj: dict[int | str, Any]) -> ObjectType:
     """
     Convert gmdkit object dict to object typeddict.

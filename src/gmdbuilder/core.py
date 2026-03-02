@@ -50,9 +50,9 @@ class Object(dict[str, Any]):
         else:
             items = dict(kwargs)
         
-        if obj_prop.ID in items:
-            raise KeyError("Cannot change object ID after initialization")
         for k, v in items.items():
+            if k == obj_prop.ID:
+                raise KeyError("Cannot change object ID after initialization")
             validate(k, v, self)
         super().update(items)
     
@@ -106,7 +106,7 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
         try:
             key = _from_raw_key_cached(k)
         except ValueError:
-            raise TypeError(f"Object has unsupported key {k=}. Found {k=}:{v=} :: \n{obj=}")
+            raise ValueError(f"Object has unsupported key {k=}. Found {k=}:{v=} :: \n{obj=}")
         
         if s := SPECIAL_KEYS.get(key):
             new[key] = s.from_kit(v)
