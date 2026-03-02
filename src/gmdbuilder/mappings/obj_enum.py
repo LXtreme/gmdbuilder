@@ -49,9 +49,7 @@ class Easing(IntEnum):
     BACK_IN = 17
     BACK_OUT = 18
 
-class ItemLabel(IntEnum):
-    pass
-
+class ItemLabel:
     class Alignment(IntEnum):
         CENTER = 0
         LEFT = 1
@@ -82,12 +80,8 @@ class SingleColorType(IntEnum):
     BASE = 1
     DETAIL = 2
 
-class Trigger(IntEnum):
-    pass
-
-    class AdvFollow(IntEnum):
-        pass
-
+class Trigger:
+    class AdvFollow:
         class Init(IntEnum):
             INIT = 0
             SET = 1
@@ -119,9 +113,7 @@ class Trigger(IntEnum):
         UP = 3
         DOWN = 4
 
-    class Effect(IntEnum):
-        pass
-
+    class Effect:
         class EnterOnly(IntEnum):
             NONE = 0
             ENTER = 1
@@ -145,9 +137,7 @@ class Trigger(IntEnum):
         ENTER = 1
         EXIT = 2
 
-    class Gradient(IntEnum):
-        pass
-
+    class Gradient:
         class Blending(IntEnum):
             NORMAL = 0
             ADDITIVE = 1
@@ -176,9 +166,7 @@ class Trigger(IntEnum):
         LARGER = 1
         SMALLER = 2
 
-    class Item(IntEnum):
-        pass
-
+    class Item:
         class MathOp(IntEnum):
             ADD = 1
             SUBTRACT = 2
@@ -204,9 +192,7 @@ class Trigger(IntEnum):
             ABSOLUTE = 1
             NEGATIVE = 2
 
-    class Keyframe(IntEnum):
-        pass
-
+    class Keyframe:
         class SpinDirection(IntEnum):
             NONE = 0
             CW = 1
@@ -251,9 +237,7 @@ class Trigger(IntEnum):
         LOOP = 1
         LAST = 2
 
-    class Sfx(IntEnum):
-        pass
-
+    class Sfx:
         class Direction(IntEnum):
             CIRCULAR = 0
             HORIZONTAL = 1
@@ -328,9 +312,7 @@ class Trigger(IntEnum):
         FLIPPED = 2
         TOGGLE = 3
 
-    class Touch(IntEnum):
-        pass
-
+    class Touch:
         class Mode(IntEnum):
             FLIP = 0
             ON = 1
