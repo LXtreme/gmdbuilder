@@ -116,9 +116,9 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
 
 
 def from_object_string(obj_string: str, obj_type: type = ObjectType) -> ObjectType:
-    return from_kit_object(KitObject.from_string(obj_string)) # type: ignore
+    return from_kit_object(KitObject.from_string(obj_string))
 
 
 def new_obj(object_id: int) -> ObjectType:
     # Convert from gmdkit's {1: val, 2: val} to our {'a1': val, 'a2': val}
-    return from_kit_object(KitObject.default(object_id)) # type: ignore
+    return from_kit_object(KitObject.default(object_id))

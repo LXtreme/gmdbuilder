@@ -5,26 +5,31 @@ This demonstrates the clean user-facing API without any gmdkit knowledge.
 """
 
 from gmdbuilder.object_types import CountType, MoveType, SpawnType
-from gmdbuilder.mappings import obj_prop
-from gmdbuilder.mappings import obj_id
+from gmdbuilder import (
+    Level,
+    from_object_string,
+    is_obj_id,
+    is_obj_type,
+    new_obj,
+    obj_id,
+    obj_prop,
+    setting
+)
 
-from gmdbuilder import level
-from gmdbuilder.validation import setting
-from gmdbuilder.core import from_object_string, is_obj_id, new_obj, is_obj_type
-
-
-# 2 methods to load the level:
-level.tag_group = 9999 # default is 9999 anyway
-# level.from_file("tests/levels/skeletal.gmd")
-level.from_live_editor()
 
 # set default tag group for new objects
 # new objects get the group at export. to disable that feature, set tag_group to None.
+level.tag_group = 9999 # default is 9999 anyway
+
+# 2 methods to load the level:
+level = Level.from_file("tests/levels/skeletal.gmd")
+# level = Level.from_live_editor()
+
 
 # globally sets all validations to True. users will prob barely touch these ever so its a project global
-setting.export.spawn_limit_check = False # disable check
-# setting.immediate.property_type_check = False # disable check
-# setting.immediate.property_allowed_check = False # disable check
+setting.spawn_limit_check = False # disable check
+# setting.property_type_check = False # disable check
+# setting.property_allowed_check = False # disable check
 
 all_objects = level.objects # can be mutated any way, but changes are intercepted and validated first
 
@@ -38,7 +43,7 @@ all_objects.delete_where(lambda obj: obj[obj_prop.ID] == obj_id.Trigger.MOVE) # 
 obj = from_object_string("1,1611,2,50,3,45;", obj_type=CountType) # translates to { a1:1611, a2:50, a3:45 }
 obj[obj_prop.X] = 0
 obj[obj_prop.Y] = 0
-obj[obj_prop.GROUPS] = { 67 }
+obj[obj_prop.GROUPS] = { 67, level.new.group() }
 obj[obj_prop.Trigger.Count.ACTIVATE_GROUP] = True
 # Add a block
 movetrig: MoveType = new_obj(901) # 'a<int>' dicts, returns ObjectType. new_object returns default props of obj_id 1
@@ -58,6 +63,6 @@ for obj in all_objects:
         obj[obj_prop.Trigger.Spawn.DELAY] = 0.1
 
 # Choose 
-# level.export_to_file(file_path="example_updated.gmd") # adds all objects from level.objects. If not given and in file mode, ask to overwrite the file taken from the 'from_file' call
-level.export_to_live_editor() # for live_editor, adds all object in queue and clears queue.
+level.export_to_file(file_path="example_updated.gmd") # adds all objects from level.objects. If not given and in file mode, ask to overwrite the file taken from the 'from_file' call
+# level.export_to_live_editor() # for live_editor, adds all object in queue and clears queue.
 
