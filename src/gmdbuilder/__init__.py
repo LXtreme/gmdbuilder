@@ -14,7 +14,6 @@ Public API surface:
   from_object_string    - parse a raw GD object string into an ObjectType dict
   is_obj_type           - TypeGuard: narrow an object to a specific TypedDict subclass
   is_obj_id             - check whether an object has a given integer ID
-  Object                - the underlying validated dict class (subclass of dict)
 
   ID allocation
   -------------
@@ -40,11 +39,8 @@ from gmdbuilder.level import (
 )
 
 from gmdbuilder.core import (
-    Object,
     new_obj,
     from_object_string,
-    from_kit_object,
-    to_kit_object,
     is_obj_type,
     is_obj_id,
 )
@@ -68,11 +64,8 @@ __all__ = [
     "Level",
     "ObjectList",
     # Core helpers
-    "Object",
     "new_obj",
     "from_object_string",
-    "from_kit_object",
-    "to_kit_object",
     "is_obj_type",
     "is_obj_id",
     # Validation
