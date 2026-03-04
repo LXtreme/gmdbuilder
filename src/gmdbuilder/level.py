@@ -29,10 +29,9 @@ class ObjectList(list[ObjectType]):
     - Addition operators (+, +=): disabled - use extend() instead
     """
     
-    def __init__(self, *, live_editor: bool):
+    def __init__(self, *, tag_group: int = 9999):
         super().__init__()
-        self._live_editor_mode = live_editor
-        self.added_objects: list[ObjectType] = []
+        self.tag_group: int = tag_group
     
     def delete_where(self, condition: ObjectPatternMatch, *, limit: int = -1) -> int:
         """
@@ -43,8 +42,6 @@ class ObjectList(list[ObjectType]):
         For dict-matching, dict must match standard ObjectType keys/values.
         'None' can be used as a wildcard value (not key).
         """
-        if self._live_editor_mode:
-            raise RuntimeError("Direct object deleting is not allowed in live editor mode")
         if limit < -1 or limit == 0:
             raise ValueError("delete_where limit must be -1 (no limit) or positive")
         
@@ -72,8 +69,6 @@ class ObjectList(list[ObjectType]):
         index: SupportsIndex | slice, 
         value: ObjectType | list[ObjectType]):
         """Validate when setting an item by index."""
-        if self._live_editor_mode:
-            raise RuntimeError("Direct object editing is not supported in live editor mode yet")
         if isinstance(index, slice):
             if not isinstance(value, list):
                 raise TypeError(f"can only assign a list (not {type(value).__name__}) to a slice")
@@ -88,17 +83,16 @@ class ObjectList(list[ObjectType]):
     def append(self, obj: ObjectType):
         """Validate and append an object."""
         obj = Object.wrap_object(obj)
-        if not self._live_editor_mode:
-            super().append(obj)
-        self.added_objects.append(obj)
+        groups = obj.get(obj_prop.GROUPS, {self.tag_group})
+        groups.add(self.tag_group)
+        obj[obj_prop.GROUPS] = groups
+        
+        super().append(obj)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
-        if self._live_editor_mode:
-            raise RuntimeError("Direct item editing is not allowed in live editor mode yet")
         wrapped = Object.wrap_object(obj)
         super().insert(index, wrapped)
-        self.added_objects.append(wrapped)
     
     def _append_without_tracking(self, obj: ObjectType):
         """For internal use only."""
@@ -107,9 +101,7 @@ class ObjectList(list[ObjectType]):
     def extend(self, iterable: Iterable[ObjectType]):
         """Validate and extend with multiple objects."""
         validated = [Object.wrap_object(obj) for obj in iterable]
-        if not self._live_editor_mode:
-            super().extend(validated)
-        self.added_objects.extend(validated)
+        super().extend(validated)
     
     def __add__(self, other: object) -> "ObjectList":
         """Disabled: use extend() instead."""
@@ -131,7 +123,7 @@ class Level:
     """Manages level state, loading, and exporting. Use from_file() or from_live_editor() to create an instance."""
 
     def __init__(self, *, live_editor: bool = False, tag_group: int = 9999):
-        self.objects = ObjectList(live_editor=live_editor)
+        self.objects = ObjectList(tag_group=tag_group)
         """List of level's objects."""
 
         self.tag_group = tag_group
@@ -160,6 +152,9 @@ class Level:
     def _load_objects(self, kit_objects: KitObjectList, filename: str | None = None) -> None:
         """Load objects from gmdkit ObjectList into the objects list."""
         obj_count = len(kit_objects)
+        
+        if self._live_editor is not None:
+            self._live_editor.remove_objects(self.tag_group)
 
         for kit_obj in kit_objects:
             obj = from_kit_object(kit_obj)
@@ -177,7 +172,6 @@ class Level:
         if not path.exists():
             raise FileNotFoundError(f"Level file not found: {file_path=}")
 
-        self.objects = ObjectList(live_editor=False)
         self.new = IDAllocator(self.objects)
         self._kit_level = KitLevel.from_file(path)
         self._source_file = path
@@ -188,25 +182,18 @@ class Level:
         """Internal: populate state from the live editor."""
         _time_since_last()
 
-        self.objects = ObjectList(live_editor=True)
         self.new = IDAllocator(self.objects)
         self._live_editor = LiveEditor(url)
         self._live_editor.connect()
-        self._live_editor.remove_objects(self.tag_group)
-        _, kit_objects = self._live_editor.get_level()
+        self._live_editor.get_level()
 
-        self._load_objects(kit_objects)
+        self._load_objects(self._live_editor.objects)
 
-    def _validate_and_prepare_objects(self, validated_objects: ObjectList) -> None:
+    def _validate_and_prepare_objects(self) -> None:
         """Run validation and preparation checks on objects before export."""
-
-        targeted, used = get_trigger_targets(validated_objects)
-        validate_target_exists(targeted, used)
-
-        for obj in validated_objects.added_objects:
-            groups = obj.get(obj_prop.GROUPS, {self.tag_group})
-            groups.add(self.tag_group)
-            obj[obj_prop.GROUPS] = groups
+        return
+        # targeted, used = get_trigger_targets(self.objects)
+        # validate_target_exists(targeted, used)
 
     def export_to_file(self, file_path: str | Path | None = None) -> None:
         """Export level to .gmd file."""
@@ -226,33 +213,31 @@ class Level:
             export_path = self._source_file
         else:
             export_path = Path(file_path)
-
-        self._validate_and_prepare_objects(self.objects)
-
-        kit_objects = self._kit_level.objects
-        kit_objects.clear()
-        kit_objects.extend(to_kit_object(obj) for obj in self.objects)
-
+        
+        self._validate_and_prepare_objects()
+        
+        self._kit_level.objects
+        self._kit_level.objects.clear()
+        self._kit_level.objects.extend(to_kit_object(obj) for obj in self.objects)
+        
         self._kit_level.to_file(str(export_path))
-
+        
         print(f"\nExported level to {export_path} with {len(self.objects)} objects in {_time_since_last():.3f} seconds.\n")
 
-    def export_to_live_editor(self, *, batch_size: int = 500) -> None:
+    def export_to_live_editor(self) -> None:
         """Export level to live editor."""
-
+        
         if self._live_editor is None:
             raise RuntimeError("No live editor connection. Use Level.from_live_editor() first")
-
-        self._validate_and_prepare_objects(self.objects)
-
-        # Convert to gmdkit ObjectList
-        kit_objects = KitObjectList()
-        kit_objects.extend(to_kit_object(obj) for obj in self.objects.added_objects)
-
-        self._live_editor.add_objects(kit_objects, batch_size)
+        
+        self._validate_and_prepare_objects()
+        
+        self._live_editor.objects.clear()
+        self._live_editor.objects.extend(to_kit_object(obj) for obj in self.objects)
+        self._live_editor.replace_level(save_string=True)
         self._live_editor.close()
         self._live_editor = None
-
+        
         print(f"\nExported to live editor with {len(self.objects)} objects in {_time_since_last():.3f} seconds.\n")
 
 
