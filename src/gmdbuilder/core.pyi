@@ -12,25 +12,6 @@ def is_obj_type(obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
     """Type-narrows obj to a specific TypedDict type by matching its ID."""
 
 
-class Object(dict[str, Any]):
-    """
-    Note: Not for users to call directly.
-    
-    The actual dict implementation hidden behind the ObjectType TypedDict.
-    
-    This is to intercept & validate mutations of objects and add new helpers.
-    """
-    _obj_id: int
-    __slots__: tuple[str]
-    
-    def __init__(self, obj_id: int) -> None: ...
-    def __setitem__(self, k: str, v: Any) -> None: ...
-    def update(self, *args: Any, **kwargs: Any) -> None: ...
-    
-    @staticmethod
-    def wrap_object(obj: ObjectType | Object) -> ObjectType: ...
-
-
 def to_kit_object(obj: ObjectType) -> KitObject:
     """
     Convert object typeddict to gmdkit object dict.

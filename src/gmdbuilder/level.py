@@ -1,115 +1,18 @@
 """Level loading and exporting for Geometry Dash."""
 
-from enum import IntEnum
 import time
 
 from pathlib import Path
-from typing import Any, Callable, Iterable, Literal, SupportsIndex, overload
 
-from gmdbuilder.fields import obj_id
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 from gmdkit.models.level import Level as KitLevel
-from gmdkit.models.object import ObjectList as KitObjectList
+from gmdkit.models.object import ObjectList as KitObjectList, Object as KitObject
+from gmdkit.models.prop.color import Color as KitColor, ColorList as KitColorList
 
-from gmdbuilder.core import Object, from_kit_object, to_kit_object
+from gmdbuilder.core import from_kit_object, to_kit_object
+from gmdbuilder.id import IDAllocator
 from gmdbuilder.mappings import obj_prop
-from gmdbuilder.object_types import ObjectType
-from gmdbuilder.validation import get_trigger_targets, validate_target_exists
-
-ObjectPatternMatch = dict[str, Any] | ObjectType | Callable[[ObjectType], bool]
-
-class ObjectList(list[ObjectType]):
-    """
-    A list that validates ObjectType mutations.
-    Only additions are allowed in live editor mode
-    
-    - append/insert/extend: wraps objects in ValidatedObject for runtime validation
-    - Direct indexing (objects[i]): read-only access
-    - Property edits (objects[i]['a2'] = x): validated by ValidatedObject.__setitem__
-    - Addition operators (+, +=): disabled - use extend() instead
-    """
-    
-    def __init__(self, *, tag_group: int = 9999):
-        super().__init__()
-        self.tag_group: int = tag_group
-    
-    def delete_where(self, condition: ObjectPatternMatch, *, limit: int = -1) -> int:
-        """
-        Delete objects matching a condition (dict or predicate)
-        
-        Returns number of deleted objects.
-        
-        For dict-matching, dict must match standard ObjectType keys/values.
-        'None' can be used as a wildcard value (not key).
-        """
-        if limit < -1 or limit == 0:
-            raise ValueError("delete_where limit must be -1 (no limit) or positive")
-        
-        predicate: Callable[[ObjectType], bool]
-        if callable(condition):
-            predicate = condition
-        else:
-            predicate = lambda obj: all(
-                k in obj and (obj.get(k) == v or v is None)
-                for k, v in condition.items()
-            )
-        
-        deleted = 0
-        
-        for i in range(len(self) - 1, -1, -1):
-            if predicate(self[i]):
-                del self[i]
-                deleted += 1
-                if limit != -1 and deleted >= limit:
-                    break
-        
-        return deleted
-    
-    def __setitem__(self, # type: ignore[override]
-        index: SupportsIndex | slice, 
-        value: ObjectType | list[ObjectType]):
-        """Validate when setting an item by index."""
-        if isinstance(index, slice):
-            if not isinstance(value, list):
-                raise TypeError(f"can only assign a list (not {type(value).__name__}) to a slice")
-            validated = [Object.wrap_object(obj) for obj in value]
-            super().__setitem__(index, validated)
-        else:
-            if not isinstance(value, dict):
-                raise TypeError(f"can only assign ObjectType dict (not {type(value).__name__})")
-            validated = Object.wrap_object(value)
-            super().__setitem__(index, validated)
-    
-    def append(self, obj: ObjectType):
-        """Validate and append an object."""
-        obj = Object.wrap_object(obj)
-        groups = obj.get(obj_prop.GROUPS, {self.tag_group})
-        groups.add(self.tag_group)
-        obj[obj_prop.GROUPS] = groups
-        
-        super().append(obj)
-    
-    def insert(self, index: SupportsIndex, obj: ObjectType):
-        """Validate and insert an object at index."""
-        wrapped = Object.wrap_object(obj)
-        super().insert(index, wrapped)
-    
-    def _append_without_tracking(self, obj: ObjectType):
-        """For internal use only."""
-        super().append(Object.wrap_object(obj))
-    
-    def extend(self, iterable: Iterable[ObjectType]):
-        """Validate and extend with multiple objects."""
-        validated = [Object.wrap_object(obj) for obj in iterable]
-        super().extend(validated)
-    
-    def __add__(self, other: object) -> "ObjectList":
-        """Disabled: use extend() instead."""
-        raise NotImplementedError("Use .extend() instead of + operator")
-    
-    def __iadd__(self, other: object) -> "ObjectList": 
-        """Disabled: use extend() instead."""
-        raise NotImplementedError("Use .extend() instead of += operator")
+from gmdbuilder.object import ObjectList
 
 
 def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
@@ -117,6 +20,23 @@ def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
     a = _state[0]
     _state[0] = now
     return now - a
+
+
+class ColorRegistry:
+    """Manages level color channel mutations and reads."""
+    
+    def __init__(self, start_object: KitObject) -> None:
+        """For internal Level class to call on load."""
+        self.color_list: KitColorList = start_object[obj_prop.Level.COLORS]
+        self.map: dict[int, KitColor] = {c.channel: c for c in self.color_list}
+    
+    def get(self, channel: int) -> KitColor:
+        """Get a color by channel ID."""
+        return self.map[channel]
+    
+    def set(self, channel: int, color: KitColor) -> None:
+        """Set a color by channel ID."""
+        self.map[channel] = color
 
 
 class Level:
@@ -132,68 +52,63 @@ class Level:
         self._kit_level: KitLevel | None = None
         self._source_file: Path | None = None
         self._live_editor: LiveEditor | None = None
+        self.color: ColorRegistry | None = None
 
         self.new = IDAllocator(self.objects)
+
+    def _load_objects(self, 
+        kit_objects: KitObjectList, 
+        obj_count: int, 
+        filename: str | None = None
+    ) -> None:
+        """Load objects from gmdkit ObjectList into the objects list."""
+
+        for kit_obj in kit_objects:
+            obj = from_kit_object(kit_obj)
+            if self.tag_group not in obj.get(obj_prop.GROUPS, set()):
+                list.append(self.objects, obj) # type: ignore
+
+        print(f"\nLoaded {obj_count} objects from {filename or 'WSLiveEditor'} in {_time_since_last():.3f} seconds.")
+        print(f"\nRemoved {obj_count-len(self.objects)} objects with tag group {self.tag_group}, level is now {len(self.objects)} objects.")
 
     @classmethod
     def from_file(cls, file_path: str | Path, tag_group: int = 9999) -> "Level":
         """Load a new Level from a .gmd file."""
         level = cls(live_editor=False, tag_group=tag_group)
-        level._load_from_file(file_path)
+        
+        _time_since_last()
+
+        path = Path(file_path)
+        if not path.exists():
+            raise FileNotFoundError(f"Level file not found: {file_path=}")
+        
+        level._kit_level = KitLevel.from_file(path)
+        level._source_file = path
+        
+        # URGENT ! ! ! FINISH COLOR REGISTRY
+        
+        obj_count = len(level._kit_level.objects)
+        level._load_objects(level._kit_level.objects, obj_count, filename=str(path))
         return level
 
     @classmethod
     def from_live_editor(cls, url: str = WEBSOCKET_URL, tag_group: int = 9999) -> "Level":
         """Load a new Level from the live editor."""
         level = cls(live_editor=True, tag_group=tag_group)
-        level._load_from_live_editor(url)
+        
+        _time_since_last()
+        
+        level._live_editor = LiveEditor(url)
+        level._live_editor.connect()
+        start, objects = level._live_editor.get_level()
+        obj_count = len(objects)
+        
+        level._live_editor.remove_objects(level.tag_group)
+        level.color = ColorRegistry(start)
+
+        level._load_objects(level._live_editor.objects, obj_count)
         return level
 
-    def _load_objects(self, kit_objects: KitObjectList, filename: str | None = None) -> None:
-        """Load objects from gmdkit ObjectList into the objects list."""
-        obj_count = len(kit_objects)
-        
-        if self._live_editor is not None:
-            self._live_editor.remove_objects(self.tag_group)
-
-        for kit_obj in kit_objects:
-            obj = from_kit_object(kit_obj)
-            if self.tag_group not in obj.get(obj_prop.GROUPS, set()):
-                self.objects._append_without_tracking(obj)
-
-        print(f"\nLoaded {obj_count} objects from {filename or 'live editor'} in {_time_since_last():.3f} seconds.")
-        print(f"\nRemoved {obj_count-len(self.objects)} objects with tag group {self.tag_group}, level is now {len(self.objects)} objects.")
-
-    def _load_from_file(self, file_path: str | Path) -> None:
-        """Internal: populate state from a .gmd file."""
-        _time_since_last()
-
-        path = Path(file_path)
-        if not path.exists():
-            raise FileNotFoundError(f"Level file not found: {file_path=}")
-
-        self.new = IDAllocator(self.objects)
-        self._kit_level = KitLevel.from_file(path)
-        self._source_file = path
-
-        self._load_objects(self._kit_level.objects, filename=str(path))
-
-    def _load_from_live_editor(self, url: str = WEBSOCKET_URL) -> None:
-        """Internal: populate state from the live editor."""
-        _time_since_last()
-
-        self.new = IDAllocator(self.objects)
-        self._live_editor = LiveEditor(url)
-        self._live_editor.connect()
-        self._live_editor.get_level()
-
-        self._load_objects(self._live_editor.objects)
-
-    def _validate_and_prepare_objects(self) -> None:
-        """Run validation and preparation checks on objects before export."""
-        return
-        # targeted, used = get_trigger_targets(self.objects)
-        # validate_target_exists(targeted, used)
 
     def export_to_file(self, file_path: str | Path | None = None) -> None:
         """Export level to .gmd file."""
@@ -214,9 +129,6 @@ class Level:
         else:
             export_path = Path(file_path)
         
-        self._validate_and_prepare_objects()
-        
-        self._kit_level.objects
         self._kit_level.objects.clear()
         self._kit_level.objects.extend(to_kit_object(obj) for obj in self.objects)
         
@@ -230,8 +142,6 @@ class Level:
         if self._live_editor is None:
             raise RuntimeError("No live editor connection. Use Level.from_live_editor() first")
         
-        self._validate_and_prepare_objects()
-        
         self._live_editor.objects.clear()
         self._live_editor.objects.extend(to_kit_object(obj) for obj in self.objects)
         self._live_editor.replace_level(save_string=True)
@@ -239,170 +149,4 @@ class Level:
         self._live_editor = None
         
         print(f"\nExported to live editor with {len(self.objects)} objects in {_time_since_last():.3f} seconds.\n")
-
-
-IDTypes = Literal["group", "item", "color", "collision", "control"]
-
-class IDAllocator:
-    """Singleton class to manage unique ID allocation. Instance is 'new'."""
-    
-    def __init__(self, objects: list[ObjectType]):
-        self._initialized = False
-        self._object_list = objects
-        
-        self.used_group_ids: set[int] = set()
-        self.used_item_ids: set[int] = set()
-        self.used_color_ids: set[int] = set()
-        self.used_collision_ids: set[int] = set()
-        self.used_control_ids: set[int] = set()
-        
-        self._group_counter: int = 0
-        self._item_counter: int = 0
-        self._color_counter: int = 0
-        self._collision_counter: int = 0
-        self._control_counter: int = 0
-        
-        # Track the next candidate to check for each type (frontier optimization)
-        self._group_frontier: int = 1
-        self._item_frontier: int = 1
-        self._color_frontier: int = 1
-        self._collision_frontier: int = 1
-        self._control_frontier: int = 1
-    
-    def reserve_id(self, id_type: IDTypes, id_values: int|tuple[int,...]):
-        """Manually reserve IDs to exclude them from allocation."""
-        
-        ids = {id_values} if isinstance(id_values, int) else set(id_values)
-        
-        if id_type == "group":
-            self.used_group_ids.update(ids)
-        elif id_type == "item":
-            self.used_item_ids.update(ids)
-        elif id_type == "color":
-            self.used_color_ids.update(ids)
-        elif id_type == "collision":
-            self.used_collision_ids.update(ids)
-        elif id_type == "control":
-            self.used_control_ids.update(ids)
-        else:
-            raise ValueError(f"Unknown ID type: {id_type}")
-    
-    def _register_free_ids(self):
-        """Runs automatically at first new ID call."""
-        self._initialized = True
-        
-        if len(self._object_list) == 0:
-            raise RuntimeError("Objects not found. Load a level first with from_file() or from_live_editor()")
-        
-        for obj in self._object_list:
-            id = obj[obj_prop.ID]
-            if (key := obj_prop.GROUPS) in obj:
-                self.used_group_ids.update(obj[key])
-
-            if (key := obj_prop.COLOR_1) in obj:
-                self.used_color_ids.add(obj[key])
-            if (key := obj_prop.COLOR_2) in obj:
-                self.used_color_ids.add(obj[key])
-            if (key := obj_prop.Trigger.Color.COPY_ID) in obj:
-                self.used_color_ids.add(obj[key])
-            
-            if id in (
-                obj_id.Trigger.PICKUP, obj_id.Trigger.COUNT, obj_id.Trigger.INSTANT_COUNT
-            ):
-                if (key := obj_prop.Trigger.Count.ITEM_ID) in obj:
-                    self.used_item_ids.add(obj[key])
-            
-            if id in (
-                obj_id.Trigger.COLLISION, obj_id.Trigger.COLLISION_BLOCK
-            ):
-                if (key := obj_prop.Trigger.Collision.BLOCK_A) in obj:
-                    self.used_collision_ids.add(obj[key])
-                if (key := obj_prop.Trigger.Collision.BLOCK_B) in obj:
-                    self.used_collision_ids.add(obj[key])
-            
-    
-    def _get_next(self, pool_name: IDTypes) -> IntEnum:
-        """Get next free ID by scanning forward from frontier. O(k) where k = skipped reserved IDs."""
-        if not self._initialized:
-            self._register_free_ids()
-        
-        used_set: set[int] = getattr(self, f"used_{pool_name}_ids")
-        frontier: int = getattr(self, f"_{pool_name}_frontier")
-        
-        # Scan forward from frontier to find the next ID not already in use
-        candidate = frontier
-        while candidate <= 9999:
-            if candidate not in used_set:
-                break
-            candidate += 1
-        else:
-            raise RuntimeError(f"No free {pool_name} IDs available (1-9999 range exhausted)")
-        
-        used_set.add(candidate)
-        # Update frontier to next candidate for next call
-        setattr(self, f"_{pool_name}_frontier", candidate + 1)
-        
-        counter: int = getattr(self, f"_{pool_name}_counter") + 1
-        setattr(self, f"_{pool_name}_counter", counter)
-        
-        enum_cls = IntEnum(f"new_{pool_name}_{counter}", {f"ID_{candidate}": candidate})
-        return enum_cls[f"ID_{candidate}"]  # type: ignore[return-value]
-    
-    
-    @overload
-    def group(self) -> IntEnum: ...
-    @overload
-    def group(self, count: Literal[1]) -> IntEnum: ... # type: ignore[override]
-    @overload
-    def group(self, count: Literal[2]) -> tuple[IntEnum, IntEnum]: ...
-    @overload
-    def group(self, count: int) -> tuple[IntEnum, ...]: ...
-    def group(self, count: int = 1) -> tuple[IntEnum,...] | IntEnum:
-        """Get next free group ID (1-9999)."""
-        if count == 1:
-            return self._get_next("group")
-        return tuple(self._get_next("group") for _ in range(count))
-    
-    @overload
-    def item(self) -> IntEnum: ...
-    @overload
-    def item(self, count: Literal[1]) -> IntEnum: ... # type: ignore[override]
-    @overload
-    def item(self, count: Literal[2]) -> tuple[IntEnum, IntEnum]: ...
-    @overload
-    def item(self, count: int) -> tuple[IntEnum, ...]: ...
-    def item(self, count: int = 1) -> tuple[IntEnum,...] | IntEnum:
-        """Get next free item ID (1-9999)."""
-        if count == 1:
-            return self._get_next("item")
-        return tuple(self._get_next("item") for _ in range(count))
-    
-    @overload
-    def color(self) -> IntEnum: ...
-    @overload
-    def color(self, count: Literal[1]) -> IntEnum: ... # type: ignore[override]
-    @overload
-    def color(self, count: Literal[2]) -> tuple[IntEnum, IntEnum]: ...
-    @overload
-    def color(self, count: int) -> tuple[IntEnum, ...]: ...
-    def color(self, count: int = 1) -> tuple[IntEnum,...] | IntEnum:
-        """Get next free color ID (1-9999)."""
-        if count == 1:
-            return self._get_next("color")
-        return tuple(self._get_next("color") for _ in range(count))
-    
-    
-    @overload
-    def collision(self) -> IntEnum: ...
-    @overload
-    def collision(self, count: Literal[1]) -> IntEnum: ... # type: ignore[override]
-    @overload
-    def collision(self, count: Literal[2]) -> tuple[IntEnum, IntEnum]: ...
-    @overload
-    def collision(self, count: int) -> tuple[IntEnum, ...]: ...
-    def collision(self, count: int = 1) -> tuple[IntEnum,...] | IntEnum:
-        """Get next free collision block ID (1-9999)."""
-        if count == 1:
-            return self._get_next("collision")
-        return tuple(self._get_next("collision") for _ in range(count))
 
