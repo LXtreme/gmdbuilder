@@ -22,23 +22,6 @@ def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
     return now - a
 
 
-class ColorRegistry:
-    """Manages level color channel mutations and reads."""
-    
-    def __init__(self, start_object: KitObject) -> None:
-        """For internal Level class to call on load."""
-        self.color_list: KitColorList = start_object[obj_prop.Level.COLORS]
-        self.map: dict[int, KitColor] = {c.channel: c for c in self.color_list}
-    
-    def get(self, channel: int) -> KitColor:
-        """Get a color by channel ID."""
-        return self.map[channel]
-    
-    def set(self, channel: int, color: KitColor) -> None:
-        """Set a color by channel ID."""
-        self.map[channel] = color
-
-
 class Level:
     """Manages level state, loading, and exporting. Use from_file() or from_live_editor() to create an instance."""
 
@@ -52,10 +35,16 @@ class Level:
         self._kit_level: KitLevel | None = None
         self._source_file: Path | None = None
         self._live_editor: LiveEditor | None = None
-        self.color: ColorRegistry | None = None
+        self.color: dict[int, KitColor] = {}
 
         self.new = IDAllocator(self.objects)
-
+    
+    def _load_colors(self, start_object: KitObject) -> None:
+        self._color_list: KitColorList = start_object[obj_prop.Level.COLORS]
+        for c in self._color_list:
+            self.color[c.channel] = c
+            self.new.used_color_ids.add(c.channel)
+    
     def _load_objects(self, 
         kit_objects: KitObjectList, 
         obj_count: int, 
@@ -85,7 +74,7 @@ class Level:
         level._kit_level = KitLevel.from_file(path)
         level._source_file = path
         
-        # URGENT ! ! ! FINISH COLOR REGISTRY
+        level._load_colors(level._kit_level.start)
         
         obj_count = len(level._kit_level.objects)
         level._load_objects(level._kit_level.objects, obj_count, filename=str(path))
@@ -104,9 +93,9 @@ class Level:
         obj_count = len(objects)
         
         level._live_editor.remove_objects(level.tag_group)
-        level.color = ColorRegistry(start)
+        level._load_colors(start)
 
-        level._load_objects(level._live_editor.objects, obj_count)
+        level._load_objects(objects, obj_count)
         return level
 
 

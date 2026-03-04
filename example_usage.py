@@ -18,8 +18,8 @@ from gmdbuilder import (
 
 
 # 2 methods to load the level:
-# level = Level.from_file("tests/levels/skeletal.gmd")
-level = Level.from_live_editor()
+level = Level.from_file("tests/levels/skeletal.gmd")
+# level = Level.from_live_editor()
 
 
 # globally sets all validations to True. users will prob barely touch these ever so its a project global
@@ -58,7 +58,13 @@ for obj in all_objects:
     if is_obj_id(obj, obj_id.Trigger.SPAWN):
         obj[obj_prop.Trigger.Spawn.DELAY] = 0.1
 
+
+col = level.new.color()
+c = level.color[col]
+
+print(c)
+
 # Choose 
-# level.export_to_file(file_path="example_updated.gmd") # adds all objects from level.objects. If not given and in file mode, ask to overwrite the file taken from the 'from_file' call
-level.export_to_live_editor() # for live_editor, adds all object in queue and clears queue.
+level.export_to_file(file_path="example_updated.gmd") # adds all objects from level.objects. If not given and in file mode, ask to overwrite the file taken from the 'from_file' call
+# level.export_to_live_editor() # for live_editor, adds all object in queue and clears queue.
 
