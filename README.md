@@ -43,9 +43,6 @@ pip install git+https://github.com/LXtreme/gmdbuilder.git
 ```python
 from gmdbuilder import level
 
-# This group gets deleted at level-load and automatically added to new objects at level-export
-level.tag_group = 9999 # Set to 9999 by default
-
 # From .gmd file, supports full object editing/deleting
 level.from_file("example.gmd")
 
@@ -77,7 +74,14 @@ for obj in obj_list:
     if is_obj_type(obj, td.MoveType):
         obj[obj_prop.Trigger.Move.USE_SMALL_STEP] = True
 
+
+filter = {
+    obj_prop.ID: obj_id.Trigger.COUNT
+    obj_prop.GROUPS: { 15 }
+}
+obj_list.delete_where(filter)
 obj_list.delete_where(lambda obj: obj[ObjProp.ID] == 1)
+
 
 # CountType is a typed_dict, allowing per-field static type checking
 # Translates to { a1: 1611, a2: 50, a3: 45 }
