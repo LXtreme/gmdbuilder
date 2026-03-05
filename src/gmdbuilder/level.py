@@ -60,7 +60,7 @@ class Level:
             if channel in self._color_dict:
                 color.map_to_kit_color(self._color_dict[channel])
             else:
-                kit_col = color.to_kit_color()
+                kit_col = color.to_kit_color(channel)
                 self._color_dict[channel] = kit_col
                 self._color_list.append(kit_col)
     

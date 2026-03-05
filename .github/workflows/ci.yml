@@ -27,7 +27,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install gmdkit from pinned commit
-        run:  pip install git+https://github.com/UHDanke/gmdkit.git@e2e6d071087a79acaf207456cd30f9574b06f217
+        run:  pip install gmdkit
 
       - name: Install package and dev dependencies
         run: pip install -e ".[dev]"

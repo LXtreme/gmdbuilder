@@ -346,8 +346,8 @@ SPECIAL_KEYS: dict[str, SpecialKey] = {
         )
     ),
     obj_prop.Trigger.Pulse.TARGET_TYPE: SpecialKey(
-        from_kit=lambda v: bool(v),
-        to_kit=lambda v: bool(v),
+        from_kit=lambda v: bool(v) if v == 1 or v == 0 else None,
+        to_kit=lambda v: int(v),
         is_valid_val=lambda v: isinstance(v, bool)
     ),
     # IntPairList([IntPair(key=3959, value=1), IntPair(key=3960, value=1)])
