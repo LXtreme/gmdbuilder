@@ -105,7 +105,7 @@ class AllPropsType(TypedDict, total=False):
     a49: HSV  # HSV(3)
     a50: int  # COPY_ID(2)
     a51: int  # TARGET_ID(20), GROUP_ID(12), SPAWN_ID(3), TRUE_ID(3), GROUP_ID_1(2), BULGE_CENTER_ID(1), GRAY_SCALE_TINT_CHANNEL(1), LENS_CIRCLE_CENTER_ID(1), MOTION_BLUR_CENTER_ID(1), PARTICLE_GROUP(1), PINCH_CENTER_ID(1), RADIAL_BLUR_CENTER_ID(1), SHOCKLINE_CENTER_ID(1), SHOCKWAVE_CENTER_ID(1), STATE_ON(1), TARGET_ITEM_ID(1)
-    a52: bool  # TARGET_TYPE(1)
+    a52: BoolLike  # TARGET_TYPE(1)
     a54: float  # DISTANCE(1)
     a55: bool  # SMOOTH_EASE(1)
     a56: bool  # ACTIVATE_GROUP(6), m_56(1)
@@ -1402,7 +1402,7 @@ class PulseType(TriggerType, total=False):
     a49: HSV  # HSV
     a50: int  # COPY_ID
     a51: int  # TARGET_ID
-    a52: bool  # TARGET_TYPE
+    a52: BoolLike  # TARGET_TYPE
     a65: bool  # MAIN_ONLY
     a66: bool  # DETAIL_ONLY
     a86: bool  # EXCLUSIVE

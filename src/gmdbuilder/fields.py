@@ -320,6 +320,12 @@ _group_list_methods = SpecialKey(
     is_valid_val=lambda v: all(int_is_in_range(group_id) for group_id in v)
 )
 
+_bool_like_methods = SpecialKey(
+    from_kit=lambda v: bool(v),
+    to_kit=lambda v: int(v),
+    is_valid_val=lambda v: isinstance(v, bool)
+)
+
 _placeholder_methods = SpecialKey( # TODO: replace w/ actual impl for v1.0
     from_kit=lambda v: v,
     to_kit=lambda v: v,
@@ -345,11 +351,8 @@ SPECIAL_KEYS: dict[str, SpecialKey] = {
             for src, target in v.items()
         )
     ),
-    obj_prop.Trigger.Pulse.TARGET_TYPE: SpecialKey(
-        from_kit=lambda v: bool(v) if v == 1 or v == 0 else None,
-        to_kit=lambda v: int(v),
-        is_valid_val=lambda v: isinstance(v, bool)
-    ),
+    obj_prop.Trigger.Pulse.USE_HSV: _bool_like_methods,
+    obj_prop.Trigger.Pulse.TARGET_TYPE: _bool_like_methods,
     # IntPairList([IntPair(key=3959, value=1), IntPair(key=3960, value=1)])
     obj_prop.Trigger.Sequence.SEQUENCE: SpecialKey(
         from_kit=lambda v: [(i.key, i.value) for i in v],
