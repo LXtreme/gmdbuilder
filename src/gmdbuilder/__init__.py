@@ -15,19 +15,15 @@ Public API surface:
   is_obj_type           - TypeGuard: narrow an object to a specific TypedDict subclass
   is_obj_id             - check whether an object has a given integer ID
 
-  ID allocation
-  -------------
-  IDAllocator           - allocate unique group / item / color / collision / control IDs
-
   Validation settings
   -------------------
   setting               - module-level validation toggle flags
 
   Mapping namespaces (string/int constants for object properties and IDs)
   -----------------------------------------------------------------------
-  prop           object property keys      (gmdbuilder.mappings.obj_prop)
-  obj            object integer IDs        (gmdbuilder.mappings.obj_id)
-  color          color channel IDs         (gmdbuilder.mappings.color_id)
+  obj_prop       object property keys      (gmdbuilder.mappings.obj_prop)
+  obj_id         object integer IDs        (gmdbuilder.mappings.obj_id)
+  color_id       color channel IDs         (gmdbuilder.mappings.color_id)
   color_prop     color property keys       (gmdbuilder.mappings.color_prop)
   lvl_prop       level property keys       (gmdbuilder.mappings.lvl_prop)
   enum           object property values    (gmdbuilder.mappings.obj_enum)
@@ -47,11 +43,15 @@ from gmdbuilder.core import (
 
 from gmdbuilder.validation import setting
 
+import gmdbuilder.object_types as td
 from gmdbuilder.object_types import AllPropsType, ObjectType
+
+from gmdbuilder.color import Color
 
 from gmdbuilder.mappings import obj_prop
 from gmdbuilder.mappings import obj_id
 from gmdbuilder.mappings import color_prop
+from gmdbuilder.mappings import color_id
 from gmdbuilder.mappings import lvl_prop
 from gmdbuilder.mappings import obj_enum as enum
 
@@ -70,14 +70,17 @@ __all__ = [
     "is_obj_id",
     # Validation
     "setting",
+    # Color
+    "Color",
     # TypedDicts
+    "td",
     "AllPropsType",
     "ObjectType",
     # Mapping namespaces
     "obj_prop",
     "obj_id",
+    "color_id",
     "color_prop",
     "lvl_prop",
-    # Enums
     "enum",
 ]

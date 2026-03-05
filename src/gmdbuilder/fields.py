@@ -452,4 +452,6 @@ def _typeddict_to_isinstance(typeddict: type):
             print(f"Warning: Skipping key {key!r} with type {typ}: {e}")
 
 
-_typeddict_to_isinstance(td.AllPropsType)
+_typeddict_to_isinstance(td.ObjectType)
+for typeddict in ID_TO_TYPEDDICT.values():
+    _typeddict_to_isinstance(typeddict)

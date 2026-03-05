@@ -60,10 +60,8 @@ class ObjectList(list[ObjectType]):
     """
     A list that validates ObjectType mutations.
     
-    - append/insert/extend: wraps objects in ValidatedObject for runtime validation
-    - Direct indexing (objects[i]): read-only access
+    - append/extend: adds tag_group
     - Property edits (objects[i]['a2'] = x): validated by ValidatedObject.__setitem__
-    - Addition operators (+, +=): disabled - use extend() instead
     """
     
     def __init__(self, *, tag_group: int = 9999):
@@ -74,10 +72,10 @@ class ObjectList(list[ObjectType]):
         """
         Delete objects matching a condition (dict or predicate)
         
-        Returns number of deleted objects.
-        
         For dict-matching, dict must match standard ObjectType keys/values.
         'None' can be used as a wildcard value (not key).
+        
+        Returns number of deleted objects.
         """
         if limit < -1 or limit == 0:
             raise ValueError("delete_where limit must be -1 (no limit) or positive")
@@ -117,21 +115,19 @@ class ObjectList(list[ObjectType]):
             validated = Object.wrap_object(value)
             super().__setitem__(index, validated)
     
-    def _add_tag(self, obj: ObjectType):
-        groups = set(obj.get(obj_prop.GROUPS, set()))
-        groups.add(self.tag_group)
-        obj[obj_prop.GROUPS] = groups
-    
     def append(self, obj: ObjectType):
         """Validate and append an object."""
         obj = Object.wrap_object(obj)
-        self._add_tag(obj)    
+        
+        groups = set(obj.get(obj_prop.GROUPS, set()))
+        groups.add(self.tag_group)
+        obj[obj_prop.GROUPS] = groups
+        
         super().append(obj)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
         obj = Object.wrap_object(obj)
-        self._add_tag(obj)
         super().insert(index, obj)
     
     def extend(self, iterable: Iterable[ObjectType]):

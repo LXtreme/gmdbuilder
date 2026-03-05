@@ -1,7 +1,7 @@
 
 
 from enum import IntEnum
-from typing import Literal, overload
+from typing import Iterable, Literal, overload
 from gmdbuilder.mappings import obj_id, obj_prop
 from gmdbuilder.object_types import ObjectType
 
@@ -9,7 +9,7 @@ from gmdbuilder.object_types import ObjectType
 IDTypes = Literal["group", "item", "color", "collision"]
 
 class IDAllocator:
-    """Singleton class to manage unique ID allocation. Instance is 'new'."""
+    """Class to manage unique ID allocation. Instance is 'new'."""
     
     def __init__(self, objects: list[ObjectType]):
         self._initialized = False
@@ -30,7 +30,7 @@ class IDAllocator:
         self._color_frontier: int = 1
         self._collision_frontier: int = 1
     
-    def reserve_id(self, id_type: IDTypes, id_values: int|tuple[int,...]):
+    def reserve_id(self, id_type: IDTypes, id_values: int|Iterable[int]):
         """Manually reserve IDs to exclude them from allocation."""
         
         ids = {id_values} if isinstance(id_values, int) else set(id_values)
@@ -56,6 +56,13 @@ class IDAllocator:
         for obj in self._object_list:
             id = obj[obj_prop.ID]
             tid = obj_id.Trigger
+            
+            if (key := obj_prop.COLOR_1) in obj:
+                self.used_color_ids.add(obj[key])
+            if (key := obj_prop.COLOR_2) in obj:
+                self.used_color_ids.add(obj[key])
+            if (key := obj_prop.Trigger.Color.COPY_ID) in obj:
+                self.used_color_ids.add(obj[key])
             
             if (key := obj_prop.GROUPS) in obj:
                 self.used_group_ids.update(obj[key])

@@ -4,10 +4,11 @@ import time
 
 from pathlib import Path
 
+from gmdbuilder.color import Color, KitColor
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList, Object as KitObject
-from gmdkit.models.prop.color import Color as KitColor, ColorList as KitColorList
+from gmdkit.models.prop.color import ColorList as KitColorList
 
 from gmdbuilder.core import from_kit_object, to_kit_object
 from gmdbuilder.id import IDAllocator
@@ -35,30 +36,49 @@ class Level:
         self._kit_level: KitLevel | None = None
         self._source_file: Path | None = None
         self._live_editor: LiveEditor | None = None
-        self.color: dict[int, KitColor] = {}
+        self._color_dict: dict[int, KitColor] = {}
+        self._color_list = KitColorList()
+        
+        self.color: dict[int, Color] = {}
+        """
+        Mapping of Color channel ID to Color dataclass.
+        Modifying these colors will update the level's colors on export.
+        """
 
         self.new = IDAllocator(self.objects)
+        """Get 'next free' group/item/color/collision IDs"""
     
     def _load_colors(self, start_object: KitObject) -> None:
-        self._color_list: KitColorList = start_object[obj_prop.Level.COLORS]
+        self._color_list = start_object[obj_prop.Level.COLORS]
         for c in self._color_list:
-            self.color[c.channel] = c
+            self.color[c.channel] = Color.from_kit_color(c)
+            self._color_dict[c.channel] = c
             self.new.used_color_ids.add(c.channel)
+    
+    def _export_colors(self) -> None:
+        for channel, color in self.color.items():
+            if channel in self._color_dict:
+                color.map_to_kit_color(self._color_dict[channel])
+            else:
+                kit_col = color.to_kit_color()
+                self._color_dict[channel] = kit_col
+                self._color_list.append(kit_col)
     
     def _load_objects(self, 
         kit_objects: KitObjectList, 
         obj_count: int, 
         filename: str | None = None
     ) -> None:
-        """Load objects from gmdkit ObjectList into the objects list."""
 
         for kit_obj in kit_objects:
             obj = from_kit_object(kit_obj)
             if self.tag_group not in obj.get(obj_prop.GROUPS, set()):
                 list.append(self.objects, obj) # type: ignore
 
-        print(f"\nLoaded {obj_count} objects from {filename or 'WSLiveEditor'} in {_time_since_last():.3f} seconds.")
-        print(f"\nRemoved {obj_count-len(self.objects)} objects with tag group {self.tag_group}, level is now {len(self.objects)} objects.")
+        print(f"\nLoaded {obj_count} objects from {filename or 'WSLiveEditor'} " 
+              f"in {_time_since_last():.3f} seconds."
+              f"\n\nRemoved {obj_count-len(self.objects)} objects with "
+              f"tag group {self.tag_group}, level is now {len(self.objects)} objects.")
 
     @classmethod
     def from_file(cls, file_path: str | Path, tag_group: int = 9999) -> "Level":
@@ -98,7 +118,6 @@ class Level:
         level._load_objects(objects, obj_count)
         return level
 
-
     def export_to_file(self, file_path: str | Path | None = None) -> None:
         """Export level to .gmd file."""
 
@@ -120,6 +139,7 @@ class Level:
         
         self._kit_level.objects.clear()
         self._kit_level.objects.extend(to_kit_object(obj) for obj in self.objects)
+        self._export_colors()
         
         self._kit_level.to_file(str(export_path))
         
@@ -133,6 +153,8 @@ class Level:
         
         self._live_editor.objects.clear()
         self._live_editor.objects.extend(to_kit_object(obj) for obj in self.objects)
+        self._export_colors()
+        
         self._live_editor.replace_level(save_string=True)
         self._live_editor.close()
         self._live_editor = None
