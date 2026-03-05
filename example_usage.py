@@ -7,6 +7,7 @@ This demonstrates the clean user-facing API without any gmdkit knowledge.
 from gmdbuilder.object_types import CountType, MoveType, SpawnType
 from gmdbuilder import (
     Level,
+    Color,
     from_object_string,
     is_obj_id,
     is_obj_type,
@@ -18,7 +19,7 @@ from gmdbuilder import (
 
 
 # 2 methods to load the level:
-level = Level.from_file("tests/levels/skeletal.gmd")
+level = Level.from_file("example_updated.gmd")
 # level = Level.from_live_editor()
 
 
@@ -60,9 +61,9 @@ for obj in all_objects:
 
 
 col = level.new.color()
-c = level.color[col]
+level.color[col] = Color(red=23, green=102, blue=104)
 
-print(c)
+print(level.color[col])
 
 # Choose 
 level.export_to_file(file_path="example_updated.gmd") # adds all objects from level.objects. If not given and in file mode, ask to overwrite the file taken from the 'from_file' call

@@ -757,7 +757,7 @@ class ParticleType(ObjectType, total=False):
     # trial props, not verified
     a107: float  # ANIMATION_SPEED
     a123: bool  # ANIMATE_ON_TRIGGER
-    a145: str  # DATA
+    a145: Particle  # DATA
     a146: bool  # USE_OBJ_COLOR
     a147: bool  # UNIFORM_OBJ_COLOR
     a211: bool  # QUICK_START
@@ -831,8 +831,8 @@ class AdvFollowType(TriggerType, total=False):
     a325: float  # SPEED_RANGE_HIGH_RAND
     a326: float  # BREAK_FORCE
     a327: float  # BREAK_FORCE_RAND
-    a328: int  # BREAK_ANGLE
-    a329: int  # BREAK_ANGLE_RAND
+    a328: float  # BREAK_ANGLE
+    a329: float  # BREAK_ANGLE_RAND
     a330: float  # BREAK_STEER
     a331: float  # BREAK_STEER_RAND
     a332: float  # BREAK_STEER_SPEED_LIMIT
@@ -867,7 +867,7 @@ class AdvFollowType(TriggerType, total=False):
     a572: ADVANCED_FOLLOW_MODE  # INIT
 
 class AdvRandomType(TriggerType, total=False):
-    a56: bool  # m_56
+    a56: bool  # M_56
     a152: list[tuple[int,int]]  # TARGETS
 
 class AlphaType(TriggerType, total=False):
@@ -960,7 +960,7 @@ class CoinType(CollectibleType, total=False):
     a12: int  # COIN_ID
 
 class CollisionType(TriggerType, total=False):
-    a10: float  # m_10
+    a10: float  # M_10
     a51: int  # TARGET_ID
     a56: bool  # ACTIVATE_GROUP
     a80: int  # BLOCK_A
@@ -1039,8 +1039,8 @@ class EditAdvFollowType(TriggerType, total=False):
     a325: float  # M_325
     a326: float  # M_326
     a327: float  # M_327
-    a328: int  # M_328
-    a329: int  # M_329
+    a328: float  # M_328
+    a329: float  # M_329
     a330: float  # M_330
     a331: float  # M_331
     a332: float  # M_332
@@ -1087,9 +1087,9 @@ class EffectType(TriggerType, total=False):
     a65: bool  # MAIN_ONLY
     a66: bool  # DETAIL_ONLY
     a71: int  # CENTER_ID
-    a138: bool  # m_138
-    a200: bool  # m_200
-    a201: bool  # m_201
+    a138: bool  # M_138
+    a200: bool  # M_200
+    a201: bool  # M_201
     a217: ENTER_EXIT_ONLY  # ENTER_ONLY
     a218: int  # MOVE_DIST
     a219: int  # MOVE_DIST_RAND
@@ -1097,7 +1097,7 @@ class EffectType(TriggerType, total=False):
     a221: int  # OFFSET_RAND
     a222: int  # LENGTH
     a223: int  # LENGTH_RAND
-    a224: Any  # m_224
+    a224: Any  # M_224
     a225: int  # EFFECT_ID
     a231: int  # MOVE_ANGLE
     a232: int  # MOVE_ANGLE_RAND
@@ -1381,10 +1381,10 @@ class PickupType(TriggerType, total=False):
     a449: float  # MOD
 
 class PlayerControlType(TriggerType, total=False):
-    a58: bool  # m_58
-    a59: bool  # m_59
+    a58: bool  # M_58
+    a59: bool  # M_59
     a138: bool  # PLAYER_1
-    a141: bool  # m_141
+    a141: bool  # M_141
     a200: bool  # PLAYER_2
     a540: bool  # STOP_JUMP
     a541: bool  # STOP_MOVE
@@ -1398,7 +1398,7 @@ class PulseType(TriggerType, total=False):
     a45: float  # FADE_IN
     a46: float  # HOLD
     a47: float  # FADE_OUT
-    a48: bool  # USE_HSV
+    a48: BoolLike  # USE_HSV
     a49: HSV  # HSV
     a50: int  # COPY_ID
     a51: int  # TARGET_ID
@@ -1430,7 +1430,7 @@ class RotateType(TriggerType, total=False):
     a200: bool  # PLAYER_2
     a394: bool  # FOLLOW_MODE
     a397: bool  # DYNAMIC_MODE
-    a401: int  # AIM_TARGET
+    a401: int  # AIM_TARGET_ID
     a402: float  # AIM_OFFSET
     a403: int  # AIM_EASING
     a516: int  # MIN_X_ID
@@ -1465,7 +1465,7 @@ class SequenceType(TriggerType, total=False):
     a436: SEQUENCE_MODE  # MODE
     a437: float  # MIN_INTERVAL
     a438: float  # RESET_TIME
-    a439: bool  # RESET_TYPE
+    a439: BoolLike  # RESET_TYPE
     a505: bool  # UNIQUE_REMAP
 
 class SfxType(TriggerType, total=False):
@@ -1604,7 +1604,7 @@ class SongType(TriggerType, total=False):
     a599: bool  # M_599
 
 class SpawnType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
     a63: float  # DELAY
     a102: bool  # DISABLE_PREVIEW
     a441: bool  # ORDERED
@@ -1681,7 +1681,7 @@ class TimeType(TriggerType, total=False):
 
 class TimeControlType(TriggerType, total=False):
     a80: int  # ITEM_ID
-    a472: bool  # STOP
+    a472: BoolLike  # STOP
 
 class TimeEventType(TriggerType, total=False):
     a51: int  # TARGET_ID

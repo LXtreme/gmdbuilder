@@ -38,6 +38,9 @@ def test_roundtrip(level_file: Path, tmp_path: Path) -> None:
     assert len(level.objects) == initial_count + 1, (
         "Object count should increase by exactly 1 after append"
     )
+    
+    level.new.color()
+    level.new.group()
 
     # 3. Save into a new file (never touches the original).
     out_file = tmp_path / level_file.name
