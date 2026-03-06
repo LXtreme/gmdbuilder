@@ -4,17 +4,22 @@
 ![Level Editor](https://img.shields.io/badge/Level%20Editor-424242?style=for-the-badge)
 
 # gmdbuilder
-A type-safe general-purpose Python framework for pragmatic Geometry Dash level editing and scripting.
+A type-safe general-purpose Python framework for Geometry Dash level editing and scripting.
 
 gmdbuilder lets you:
 - Read & write GD levels
 - Autoscan to protect against bugs (property types/ranges, spawn limit, no empty triggers, etc.)
 - Work directly with triggers, groups, and objects - and choose your own abstractions
 - Use pre-built systems and templates to accelerate development
+- Know exactly what's happening in your scripts
 
 **gmdbuilder** is developed in collaboration with HDanke, the creator of [gmdkit](https://github.com/UHDanke/gmdkit) (a dependency of this framework) and his unofficial [GD Editor Docs](https://github.com/UHDanke/gd_docs).
 
+
+## [Documentation (WIP)](https://lxtreme.github.io/gmdbuilder)
+
 *(No overengineered language was made in the making of this project)*
+
 
 ## Why Python?
 

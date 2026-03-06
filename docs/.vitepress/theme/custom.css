@@ -1,0 +1,254 @@
+/* ── Brand palette ──────────────────────────────────────────────────────────
+   Pulled from GD's UI: deep purple bg, bright yellow-gold accent,
+   with a lighter teal used for secondary highlights.
+   ──────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --vp-c-brand-1:       #f5c542;   /* GD gold  */
+  --vp-c-brand-2:       #d4a820;   /* gold dimmed */
+  --vp-c-brand-3:       #b88c10;   /* gold dark */
+  --vp-c-brand-soft:    rgba(245, 197, 66, 0.12);
+
+  --vp-c-accent:        #50c8f0;   /* GD sky-blue */
+  --vp-c-accent-soft:   rgba(80, 200, 240, 0.10);
+}
+
+.dark {
+  --vp-c-bg:            #12101a;
+  --vp-c-bg-soft:       #1c1928;
+  --vp-c-bg-mute:       #24203a;
+
+  --vp-c-divider:       #2e2a45;
+
+  --vp-c-text-1:        #e8e2ff;
+  --vp-c-text-2:        #a89fc8;
+  --vp-c-text-3:        #6e6690;
+}
+
+/* ── Home hero ──────────────────────────────────────────────────────────── */
+
+.VPHero .name {
+  background: linear-gradient(135deg, #f5c542 0%, #50c8f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.VPHero .tagline {
+  font-size: 1.15rem;
+  opacity: 0.85;
+}
+
+/* ── Feature cards ──────────────────────────────────────────────────────── */
+
+.VPFeature {
+  border: 1px solid var(--vp-c-divider);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.VPFeature:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 0 0 1px var(--vp-c-brand-soft),
+              0 4px 24px rgba(245, 197, 66, 0.08);
+}
+
+/* ── Nav ────────────────────────────────────────────────────────────────── */
+
+.VPNavBar {
+  border-bottom: 1px solid var(--vp-c-divider);
+  backdrop-filter: blur(12px);
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────────────── */
+
+.VPSidebarItem.is-active > .item .link .text {
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+
+/* ── Code blocks ────────────────────────────────────────────────────────── */
+
+/* container */
+div[class*='language-'] {
+  border-radius: 10px;
+  border: 1px solid var(--vp-c-divider);
+}
+
+/* line numbers column */
+.dark div[class*='language-'] .line-numbers-wrapper {
+  border-right: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-text-3);
+}
+
+/* highlighted lines */
+.dark div[class*='language-'] .highlighted {
+  background-color: rgba(245, 197, 66, 0.08);
+  border-left: 2px solid var(--vp-c-brand-1);
+}
+
+/* inline code */
+:not(pre) > code {
+  background-color: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.88em;
+}
+
+.dark :not(pre) > code {
+  background-color: rgba(245, 197, 66, 0.10);
+}
+
+/* ── Custom containers ──────────────────────────────────────────────────── */
+
+.custom-block.tip {
+  border-color: var(--vp-c-brand-1);
+  background-color: var(--vp-c-brand-soft);
+}
+
+.custom-block.tip .custom-block-title {
+  color: var(--vp-c-brand-2);
+}
+
+.custom-block.info {
+  border-color: var(--vp-c-accent);
+  background-color: var(--vp-c-accent-soft);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+
+.VPButton.brand {
+  background-color: var(--vp-c-brand-1);
+  color: #12101a;
+  font-weight: 700;
+  border: none;
+  transition: background-color 0.2s, transform 0.15s;
+}
+
+.VPButton.brand:hover {
+  background-color: var(--vp-c-brand-2);
+  transform: translateY(-1px);
+}
+
+.VPButton.alt {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.VPButton.alt:hover {
+  background-color: var(--vp-c-brand-soft);
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+
+.vp-doc table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.vp-doc th {
+  background-color: var(--vp-c-bg-soft);
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.6em 1em;
+}
+
+.vp-doc td {
+  padding: 0.5em 1em;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.vp-doc tr:hover td {
+  background-color: var(--vp-c-bg-soft);
+}
+
+/* ── Property search page ───────────────────────────────────────────────── */
+
+.prop-search-input {
+  width: 100%;
+  padding: 0.6em 1em;
+  border-radius: 8px;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 1.2rem;
+}
+
+.prop-search-input:focus {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 0 0 2px var(--vp-c-brand-soft);
+}
+
+.prop-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.prop-table th {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+  padding: 0.55em 0.9em;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.prop-table td {
+  padding: 0.45em 0.9em;
+  border-top: 1px solid var(--vp-c-divider);
+  vertical-align: top;
+}
+
+.prop-table tr:hover td {
+  background: var(--vp-c-bg-soft);
+}
+
+.prop-key {
+  font-family: var(--vp-font-family-mono);
+  color: var(--vp-c-accent);
+  font-weight: 500;
+}
+
+.prop-type {
+  font-family: var(--vp-font-family-mono);
+  color: var(--vp-c-brand-1);
+  font-size: 0.82rem;
+}
+
+.prop-names {
+  color: var(--vp-c-text-2);
+  font-size: 0.85rem;
+}
+
+.prop-no-results {
+  text-align: center;
+  color: var(--vp-c-text-3);
+  padding: 2rem;
+}
+
+/* ── Scrollbar (webkit) ─────────────────────────────────────────────────── */
+
+.dark ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: var(--vp-c-bg);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--vp-c-divider);
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--vp-c-text-3);
+}
