@@ -58,21 +58,22 @@ from gmdbuilder import obj_prop   # property key str Literals
 from gmdbuilder import enum       # enum values for object properties
 from gmdbuilder import obj_id     # object ID int Literals
 
-# Similar to 'next' button in the editor. 
-# Free groups are registered at level load
+# Similar to 'next' button in the editor.
 a = level.new.group()
 
 from gmdbuilder import is_obj_type, is_obj_id, from_object_string, new_obj
-import gmdbuilder.object_types as td # typed dicts
+import gmdbuilder.object_types as td # TypedDict dictionaries
+
+ppt = obj_prop.Trigger
 
 for obj in obj_list:
     # is_obj_id and is_obj_type are both TypeGuards. 
     # Allows editing generic object lists to be done fully type-safe
     if is_obj_id(obj, obj_id.Trigger.MOVE):
         obj[obj_prop.GROUPS] = { a }
-        obj[obj_prop.Trigger.Move.EASING] = obj_enum.Easing.NONE
+        obj[ppt.Move.EASING] = obj_enum.Easing.NONE
     if is_obj_type(obj, td.MoveType):
-        obj[obj_prop.Trigger.Move.USE_SMALL_STEP] = True
+        obj[ppt.Move.USE_SMALL_STEP] = True
 
 
 filter = {
@@ -86,8 +87,9 @@ obj_list.delete_where(lambda obj: obj[ObjProp.ID] == 1)
 # CountType is a typed_dict, allowing per-field static type checking
 # Translates to { a1: 1611, a2: 50, a3: 45 }
 object = from_object_string("1,1611,2,50,3,45;", obj_type=td.CountType)
-object[obj_prop.Trigger.Count.ACTIVATE_GROUP] = True
-object[obj_prop.Trigger.Count.TARGET_ID] = a
+object[ppt.Count.ACTIVATE_GROUP] = True
+object[ppt.Count.TARGET_ID] = a
+object["a2"] = 50 # also validated and provides type info
 
 move = new_obj(obj_id.Trigger.MOVE)   # casts to MoveType typed_dict automatically
 instant_count = new_obj(1611)         # casts to InstantCountType typed_dict
@@ -96,8 +98,7 @@ obj_list.append(object)
 obj_list.extend([move, instant_count])
 
 # Export object edits, deletions and additions
+# Added objects recieve the tag_group
 level.export_to_file(file_path="example_updated.gmd")
-
-# Export added objects to WSLiveEditor
 level.export_to_live_editor()
 ```

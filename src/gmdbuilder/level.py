@@ -74,7 +74,9 @@ class Level:
             obj = from_kit_object(kit_obj)
             if self.tag_group not in obj.get(obj_prop.GROUPS, set()):
                 list.append(self.objects, obj) # type: ignore
-
+        
+        self.new.register_free_ids_for_level(self.objects)
+        
         print(f"\nLoaded {obj_count} objects from {filename or 'WSLiveEditor'} " 
               f"in {_time_since_last():.3f} seconds."
               f"\n\nRemoved {obj_count-len(self.objects)} objects with "

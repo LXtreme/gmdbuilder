@@ -13,7 +13,6 @@ class IDAllocator:
     
     def __init__(self, objects: list[ObjectType]):
         self._initialized = False
-        self._object_list = objects
         
         self.used_group_ids: set[int] = set()
         self.used_item_ids: set[int] = set()
@@ -46,14 +45,16 @@ class IDAllocator:
         else:
             raise ValueError(f"Unknown ID type: {id_type}")
     
-    def _register_free_ids(self):
-        """Runs automatically at first new ID call."""
+    def register_free_ids_for_level(self, object_list: list[ObjectType]) -> None:
+        """Runs automatically at level load."""
+        if self._initialized:
+            raise RuntimeError("IDAllocator is already initialized. register_free_ids_for_level() should only be called once at level load.")
         self._initialized = True
         
-        if len(self._object_list) == 0:
+        if len(object_list) == 0:
             raise RuntimeError("Objects not found. Load a level first with from_file() or from_live_editor()")
         
-        for obj in self._object_list:
+        for obj in object_list:
             id = obj[obj_prop.ID]
             tid = obj_id.Trigger
             
@@ -79,8 +80,6 @@ class IDAllocator:
     
     def _get_next(self, pool_name: IDTypes) -> IntEnum:
         """Get next free ID by scanning forward from frontier. O(k) where k = skipped reserved IDs."""
-        if not self._initialized:
-            self._register_free_ids()
         
         used_set: set[int] = getattr(self, f"used_{pool_name}_ids")
         frontier: int = getattr(self, f"_{pool_name}_frontier")
