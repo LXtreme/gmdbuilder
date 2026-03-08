@@ -8,7 +8,6 @@ from gmdkit.models.prop.hsv import HSV
 
 @dataclass
 class Color:
-    channel: int
     red: int = 0
     green: int = 0
     blue: int = 0  
@@ -27,7 +26,6 @@ class Color:
             green=kit_color.green,
             blue=kit_color.blue, 
             opacity=kit_color.opacity,
-            channel=kit_color.channel,
             blending=kit_color.blending,
             copy_id=kit_color.copy_id,
             hsv=kit_color.hsv,

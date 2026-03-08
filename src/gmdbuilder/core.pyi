@@ -3,8 +3,9 @@
 from typing import Any, Literal, TypeVar, TypeGuard, overload
 
 from gmdkit.models.object import Object as KitObject
-from gmdbuilder.object_types import ObjectType
 import gmdbuilder.object_types as td
+
+ObjectType = td.ObjectType
 
 T = TypeVar("T", bound=ObjectType)
 
@@ -1106,7 +1107,7 @@ def is_obj_id(obj: ObjectType, object_id: Literal[4538]) -> TypeGuard[td.Collect
 @overload
 def is_obj_id(obj: ObjectType, object_id: Literal[4539]) -> TypeGuard[td.CollectibleType]: ...
 @overload
-def is_obj_id(obj: ObjectType, object_id: int) -> bool:
+def is_obj_id(obj: ObjectType, object_id: int) -> TypeGuard[ObjectType]:
     """Checks if the object has the given object ID. (adds type information)"""
 
 

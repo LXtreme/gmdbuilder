@@ -40,7 +40,7 @@ def test_roundtrip(level_file: Path, tmp_path: Path) -> None:
     )
 
     c = level.new.color()
-    level.color[c] = Color(c, red=255, green=128, blue=64, opacity=0.5, blending=True)
+    level.color[c] = Color(red=255, green=128, blue=64, opacity=0.5, blending=True)
 
     g = level.new.group()
     level.objects[0][obj_prop.GROUPS] = {int(g)}
