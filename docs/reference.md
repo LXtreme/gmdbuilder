@@ -68,5 +68,4 @@ function copyKey(key) {
 
 <p style="margin-top: 1rem; font-size: 0.82rem; color: var(--vp-c-text-3)">
   Showing {{ results.length }} of {{ propData.length }} properties.
-  Data sourced from <a href="https://github.com/UHDanke/gd_docs" target="_blank">UHDanke/gd_docs</a>.
 </p>

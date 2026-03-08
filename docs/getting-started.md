@@ -18,37 +18,24 @@ Python 3.12 or newer is required.
 
 ## IDE setup
 
-gmdbuilder is designed to be used with a type checker. Without one, you lose most of the value of the typed object system.
+gmdbuilder is designed to be used with a type checker. Without one, you lose out on much of the value of the type system.
 
-The recommended setup is **VS Code** with the [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) extension (bundled with the Python extension), or any editor running [basedpyright](https://github.com/DetachHead/basedpyright). Both understand TypedDicts, overloads, and TypeGuards — all of which gmdbuilder uses heavily.
+I heavily recommend [Zed](https://zed.dev/). It is a high-performance feature rich IDE made in rust. More importantly it comes with [basedpyright](https://docs.basedpyright.com/latest/) by default. I personally consider Zed to be a true 'VS Code killer'. However any IDE with good type checking and LSP support will suffice. In VS Code, make sure to have the [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) extension.
 
-Once configured, you'll get:
-- Autocomplete on `obj_prop`, `obj_id`, and `obj_enum` namespaces
-- Inline type errors when you assign a wrong type to an object property
-- Narrowed types when you use `is_obj_type()` or `is_obj_id()` as guards
-
-::: tip
-If you're using VS Code, set `"python.analysis.typeCheckingMode": "basic"` in your settings to enable inline diagnostics without being too strict on your own code.
-:::
+A good python LSP setup will give all the static type checking for properties
 
 ## Loading a level
 
-There are two ways to load a level.
+There are two ways to load a level instance.
 
-### From a .gmd file
+### From a .gmd file (GDShare)
 
-This is the standard mode. You get full read/write access to all objects in the level.
+Provide the file path:
 
 ```python
 from gmdbuilder import Level
 
 level = Level.from_file("my_level.gmd")
-```
-
-Pass a `tag_group` to control which group is used internally to track objects added by your script. The default is `9999`. On load, any object already carrying that group is filtered out (cleaning up from a previous script run). On export, every object your script appends gets that group added automatically so the next run can clean it up again.
-
-```python
-level = Level.from_file("my_level.gmd", tag_group=9999)
 ```
 
 ### From the live editor
@@ -59,27 +46,19 @@ This connects to the [WSLiveEditor](https://github.com/maxnut/GDMegaOverlay) run
 level = Level.from_live_editor()
 ```
 
-## The object list
+## Objects
 
 Once a level is loaded, `level.objects` gives you the full list of objects as a Python list you can iterate, slice, and filter normally:
 
 ```python
 all_objects = level.objects
-
-print(len(all_objects))         # number of objects
-print(all_objects[0])           # first object as a dict
-
-for obj in all_objects:
-    print(obj)
 ```
 
-## What objects look like
-
-Every GD object is a plain Python `dict` with string keys in the form `"a<number>"`, corresponding to GD's internal property numbering:
+Every GD object is represented as a `Typeddict` with string keys in the form `"a<property-int>"`. This unifiies all property keys (including special level keys `"kA<int>"`), and is also a workaround since Python doesnt support Typeddicts for integer keys.
 
 ```python
 repr(all_objects[0])
-# {"a1": 1, "a2": 105.0, "a3": 195.0, "a57": {3, 7}, ...}
+# Object({"a1": 1, "a2": 105.0, "a3": 195.0, "a57": {3, 7}, ...})
 ```
 
 You work with these using the `obj_prop` namespace, which gives every key a readable name:
@@ -115,16 +94,6 @@ Validation checks that:
 - The key is allowed on this object type
 - The value is the correct Python type
 - Numeric values are within GD's accepted range
-
-You can tune validation behaviour globally via the `setting` class:
-
-```python
-from gmdbuilder import setting
-
-setting.property_type_check    = True   # on by default
-setting.property_allowed_check = True   # on by default
-setting.target_exists_check    = False  # off by default
-```
 
 ## Exporting
 
