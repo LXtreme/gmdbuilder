@@ -6,14 +6,28 @@ In GD, objects (after parsing from an object string) are expressed as dict pairs
 
 In gmdbuilder, every object is represented as a `dict[str, Any]` with GD's integer keys converted to `"a<property-int>"`. 
 
-This unifiies all property keys (including special level keys `"kA<int>"`). Most importantly, typeddicts grants static type information for each property field, as well as defining which properties are allowed on the given object type.
+This unifiies all property keys (including special level keys `"kA<int>"`). This allows us to define TypedDicts for our object types. Most importantly, typeddicts grants static type information for each property field, as well as defining which properties are allowed on the given object type.
 
 ```python
 repr(all_objects[0])
 # Object({"a1": 1, "a2": 105.0, "a3": 195.0, "a57": {3, 7}, ...})
 ```
+::: info
+The `Object` class you see here is a class that simply intercepts mutations for validation. It is automatically applied and type casted.
+:::
 
-In GD's object strings, many special property values are represented as custom formatted strings. To make them easier to work with, they are converted to more usable forms. 
+Object types follow an inheritance structure. For example, a Move trigger inherits:
+
+```
+ObjectType -> TriggerType -> MoveType
+```
+
+Inheritance only defines what property keys an object type can have and nothing more.
+
+### Values
+
+In GD's object strings, many special property values are represented as custom formatted strings. To make them easier to work with, some are converted to more usable forms.
+
 Here are some examples:
 | Property | Name | GD type | gmdbuilder type |
 | --- | --- | --- | --- |
@@ -44,6 +58,20 @@ from gmdbuilder import from_object_string
 obj = from_object_string("1,1611,2,50,3,45;")
 ```
 
+You can specify the object string's type:
+
+```python
+from gmdbuilder import from_object_string, object_types as td
+
+# casted to CountType typeddict
+obj = from_object_string("1,1611,2,50,3,45;", obj_type=td.CountType)
+```
+
+
+::: tip
+It is not recommended to declare objects as raw dictionaries, since it won't have validation without the `Object` wrapper class.
+:::
+
 ## Setting properties
 
 Assign properties using keys from the `obj_prop` namespace. Every assignment is validated immediately:
@@ -60,19 +88,22 @@ trigger[obj_prop.Trigger.Move.EASING] = enum.Easing.EASE_IN_OUT
 trigger[obj_prop.Trigger.SPAWN_TRIGGERED] = True
 ```
 
-
-`enum` provides named constants for properties that take a fixed set of integer values — easing types, pulse modes, and so on. The values are plain `int` subclasses and work anywhere an integer is accepted.
+`enum` provides named constants for certain properties — easing types, pulse modes, etc. 
 
 ## Adding objects to a level
 
-Use `append()` for a single object or `extend()` for multiple:
+Use `append()` or `extend()`:
 
 ```python
 level.objects.append(trigger)
 level.objects.extend([move_a, move_b, spawn])
 ```
 
-Every appended object automatically receives the level's `tag_group` in its `GROUPS` set. This is how gmdbuilder tracks which objects belong to the current script run. On the next load, those objects are stripped and the level starts clean. The `tag_group` is configured when the level is loaded:
+Every appended object automatically receives the level's `tag_group` in its `GROUPS` set. 
+This is how gmdbuilder tracks which objects belong to the current script run. 
+On the next load, those objects are stripped and the level starts clean. 
+
+The `tag_group` is configured when the level is loaded:
 ```python
 level = Level.from_file("my_level.gmd", tag_group=9999) # default is 9999
 level = Level.from_live_editor(tag_group=9000)
@@ -97,13 +128,15 @@ level.objects.delete_where({obj_prop.ID: obj_id.Trigger.MOVE}, limit=3)
 
 ## Type narrowing
 
-When iterating a mixed object list, use the TypeGuard helpers to narrow to a specific type:
+When iterating a mixed object list, you may use the TypeGuard helpers to narrow to a specific type:
 
 `is_obj_id()` checks the integer ID:
 
 ```python
 from gmdbuilder import is_obj_id, obj_id, obj_prop
 
+# The key is not allowed on all objects, 
+# so `is_obj_id` tells the type checker this operation is allowed
 for obj in level.objects:
     if is_obj_id(obj, obj_id.Trigger.MOVE):
         obj[obj_prop.Trigger.Move.TARGET_ID] = 5
@@ -114,7 +147,28 @@ for obj in level.objects:
 ```python
 from gmdbuilder import is_obj_type, object_types as td
 
-for obj in level.objects:
-    if is_obj_type(obj, td.SpawnType):
-        obj[obj_prop.Trigger.Spawn.DELAY] = 0.1
+if is_obj_type(obj, td.SpawnType):
+    obj[obj_prop.Trigger.Spawn.DELAY] = 0.1
 ```
+
+## Annotating your own functions
+
+The TypedDicts are most valuable when you write helper functions that operate on a specific trigger type. Annotating the parameter lets the type checker verify callers pass the right object and that the body only accesses valid property keys:
+
+```python
+import gmdbuilder.object_types as td
+    from gmdbuilder import obj_prop, obj_id, new_obj, enum
+
+def configure_move(trigger: td.MoveType, target: int, duration: float) -> None:
+    ppt = obj_prop.Trigger
+    trigger[ppt.Move.TARGET_ID] = target
+    trigger[ppt.Move.DURATION] = duration
+    trigger[ppt.Move.EASING] = enum.Easing.EASE_IN_OUT
+    trigger[ppt.SPAWN_TRIGGERED] = True
+    trigger[ppt.MULTI_TRIGGERED] = True
+
+move = new_obj(obj_id.Trigger.MOVE)  # auto-detected statically as MoveType
+configure_move(move, target=10, duration=1.5)
+```
+
+Passing a `SpawnType` or any other type to `configure_move` would raise a static type error.

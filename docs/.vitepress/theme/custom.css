@@ -27,21 +27,38 @@
 
 /* ── Home hero ──────────────────────────────────────────────────────────── */
 
+.VPHero {
+  padding-top: 7rem !important;
+  padding-bottom: 10px !important;
+}
+
 .VPHero .name {
   background: linear-gradient(135deg, #f5c542 0%, #50c8f0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  /*font-size: 4rem;*/
+  font-size: 5rem !important;
+  /* padding-bottom prevents the gradient clip from cutting off descenders */
+  padding-bottom: 0.15em;
+  line-height: 1.15 !important;
 }
 
-/*.VPHero .text {
-    font-size: 2.5rem;
-}*/
+.VPHero .text {
+  font-size: 2.5rem !important;
+  line-height: 1.3 !important;
+  max-width: 60rem;
+  /*font-weight: 500 !important;*/
+}
 
 .VPHero .tagline {
   font-size: 1.2rem;
   opacity: 0.85;
+}
+
+/* Tighten the gap between hero and feature cards */
+.VPFeatures {
+  padding-top: 20px !important;
+  padding-bottom: 40px !important;
 }
 
 /* ── Feature cards ──────────────────────────────────────────────────────── */
@@ -62,6 +79,17 @@
 .VPNavBar {
   border-bottom: 1px solid var(--vp-c-divider);
   backdrop-filter: blur(12px);
+}
+
+/* Widen the local search button in the navbar */
+.VPNavBarSearch button {
+  min-width: 200px !important;
+  width: 40rem !important;
+  justify-content: flex-start !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--vp-c-divider) !important;
+  background-color: var(--vp-c-bg-soft) !important;
 }
 
 /* ── Sidebar ────────────────────────────────────────────────────────────── */

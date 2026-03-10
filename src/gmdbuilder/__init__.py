@@ -29,10 +29,7 @@ Public API surface:
   enum           object property values    (gmdbuilder.mappings.obj_enum)
 """
 
-from gmdbuilder.level import (
-    Level,
-    ObjectList,
-)
+from gmdbuilder.level import Level
 
 from gmdbuilder.core import (
     new_obj,
@@ -45,6 +42,8 @@ from gmdbuilder.validation import setting
 
 import gmdbuilder.object_types as td
 from gmdbuilder.object_types import AllPropsType, ObjectType
+
+from gmdbuilder.object import Object, ObjectList
 
 from gmdbuilder.color import Color
 
@@ -60,8 +59,9 @@ from gmdbuilder.mappings import obj_enum as enum
 # ---------------------------------------------------------------------------
 
 __all__ = [
-    # Level lifecycle
     "Level",
+    # Object
+    "Object",
     "ObjectList",
     # Core helpers
     "new_obj",

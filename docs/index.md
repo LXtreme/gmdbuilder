@@ -9,15 +9,19 @@ hero:
     - theme: brand
       text: Get Started
       link: /getting-started
+    
+    - theme: alt
+      text: Source Code
+      link: 'https://github.com/LXtreme/gmdbuilder'
 
 features:
-  - icon: 🔒
+  - icon: ✔️
     title: Type-safe by default
     details: Every object property is validated at assignment time. Wrong types, out-of-range values, and invalid keys raise immediately.
 
   - icon: ⚡
     title: Full IDE support
-    details: Objects are fully typed such that an LSP give you autocomplete and inline type errors across your whole script.
+    details: Objects are fully typed such that an LSP give you autocomplete and inline type errors across your whole project.
 
   - icon: 
       src: /live_editor.png
