@@ -28,10 +28,7 @@ class Level:
 
     def __init__(self, *, live_editor: bool = False, tag_group: int = 9999):
         self.objects = ObjectList(tag_group=tag_group)
-        """List of level's objects."""
-
-        self.tag_group = tag_group
-        """Deletes all objects with this group and adds this group to new added objects"""
+        """List of level's objects. Newly appended objects are stamped with tag_group."""
 
         self._kit_level: KitLevel | None = None
         self._source_file: Path | None = None
@@ -69,10 +66,12 @@ class Level:
         obj_count: int, 
         filename: str | None = None
     ) -> None:
+        tag_group = self.objects.tag_group
 
         for kit_obj in kit_objects:
             obj = from_kit_object(kit_obj)
-            if self.tag_group not in obj.get(obj_prop.GROUPS, set()):
+            groups = obj.get(obj_prop.GROUPS, {})
+            if tag_group not in groups:
                 list.append(self.objects, obj) # type: ignore
         
         self.new.register_free_ids_for_level(self.objects)
@@ -80,7 +79,7 @@ class Level:
         print(f"\nLoaded {obj_count} objects from {filename or 'WSLiveEditor'} " 
               f"in {_time_since_last():.3f} seconds."
               f"\n\nRemoved {obj_count-len(self.objects)} objects with "
-              f"tag group {self.tag_group}, level is now {len(self.objects)} objects.")
+              f"tag group {tag_group}, level is now {len(self.objects)} objects.")
 
     @classmethod
     def from_file(cls, file_path: str | Path, tag_group: int = 9999) -> "Level":
@@ -114,13 +113,13 @@ class Level:
         start, objects = level._live_editor.get_level()
         obj_count = len(objects)
         
-        level._live_editor.remove_objects(level.tag_group)
+        level._live_editor.remove_objects(level.objects.tag_group)
         level._load_colors(start)
 
         level._load_objects(objects, obj_count)
         return level
 
-    def export_to_file(self, file_path: str | Path | None = None) -> None:
+    def export_to_file(self, file_path: str | Path | None = None):
         """Export level to .gmd file."""
 
         print(f"\ngmdbuilder took {_time_since_last():.4f} seconds to prepare for export.")
@@ -147,8 +146,8 @@ class Level:
         
         print(f"\nExported level to {export_path} with {len(self.objects)} objects in {_time_since_last():.3f} seconds.\n")
 
-    def export_to_live_editor(self) -> None:
-        """Export level to live editor."""
+    def export_to_live_editor(self):
+        """Export level to live editor. Level must be open."""
         
         if self._live_editor is None:
             raise RuntimeError("No live editor connection. Use Level.from_live_editor() first")

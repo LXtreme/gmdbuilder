@@ -15,7 +15,7 @@ export default defineConfig({
     siteTitle: 'gmdbuilder',
 
     nav: [
-      { text: 'Guide', link: '/introduction' },
+      { text: 'Guide', link: '/getting-started' },
       { text: 'Reference', link: '/reference' },
       {
         text: 'Links',
@@ -23,6 +23,7 @@ export default defineConfig({
           { text: 'PyPI', link: 'https://pypi.org/project/gmdbuilder/' },
           { text: 'gmdkit', link: 'https://github.com/UHDanke/gmdkit' },
           { text: 'GD Editor Docs', link: 'https://github.com/UHDanke/gd_docs' },
+          { text: 'Flowvix GD Info Explorer', link: 'https://flowvix.github.io/gd-info-explorer/' },
         ]
       }
     ],
@@ -31,12 +32,13 @@ export default defineConfig({
       {
         text: 'Guide',
         items: [
-          { text: 'Introduction',        link: '/introduction' },
+          // { text: 'Introduction',        link: '/introduction' },
           { text: 'Getting Started',     link: '/getting-started' },
           { text: 'Add & Edit Objects',  link: '/objects' },
           { text: 'Colors',              link: '/colors' },
           { text: 'New IDs',             link: '/new-ids' },
           { text: 'Object Types',        link: '/object-types' },
+          { text: 'Validation Settings', link: '/setting' },
         ]
       },
       {
@@ -60,10 +62,10 @@ export default defineConfig({
       copyright: 'gmdbuilder — built in collaboration with <a href="https://github.com/UHDanke">HDanke</a>'
     },
 
-    editLink: {
-      pattern: 'https://github.com/LXtreme/gmdbuilder/edit/main/docs/:path',
-      text: 'Edit this page on GitHub'
-    },
+    // editLink: {
+    //   pattern: 'https://github.com/LXtreme/gmdbuilder/edit/main/docs/:path',
+    //   text: 'Edit this page on GitHub'
+    // },
   },
 
   markdown: {

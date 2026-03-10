@@ -20,9 +20,11 @@ Python 3.12 or newer is required.
 
 gmdbuilder is designed to be used with a type checker. Without one, you lose out on much of the value of the type system.
 
-I heavily recommend [Zed](https://zed.dev/). It is a high-performance feature rich IDE made in rust. More importantly it comes with [basedpyright](https://docs.basedpyright.com/latest/) by default. I personally consider Zed to be a true 'VS Code killer'. However any IDE with good type checking and LSP support will suffice. In VS Code, make sure to have the [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) extension.
+I heavily recommend [Zed](https://zed.dev/). It is a new high-performance feature rich IDE written in rust. More importantly it comes with [basedpyright](https://docs.basedpyright.com/latest/) by default. I personally consider Zed to be a true 'VS Code killer'. 
 
-A good python LSP setup will give all the static type checking for properties
+However any IDE with good type checking and LSP support will suffice. In VS Code, make sure to have [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance).
+
+A good python LSP setup will give all the static type checking for objects/properties.
 
 ## Loading a level
 
@@ -38,9 +40,9 @@ from gmdbuilder import Level
 level = Level.from_file("my_level.gmd")
 ```
 
-### From the live editor
+### From live editor (WSLiveEditor)
 
-This connects to the [WSLiveEditor](https://github.com/maxnut/GDMegaOverlay) running inside GD. In this mode you can push new objects into a running level in real time.
+This connects to the [WSLiveEditor](https://github.com/iAndyHD3/WSLiveEditor/) mod while a level is open.
 
 ```python
 level = Level.from_live_editor()
@@ -54,7 +56,7 @@ Once a level is loaded, `level.objects` gives you the full list of objects as a 
 all_objects = level.objects
 ```
 
-Every GD object is represented as a `Typeddict` with string keys in the form `"a<property-int>"`. This unifiies all property keys (including special level keys `"kA<int>"`), and is also a workaround since Python doesnt support Typeddicts for integer keys.
+Every GD object is represented as a `Typeddict` with string keys in the form `"a<property-int>"`. This unifiies all property keys (including special level keys `"kA<int>"`), and is also a workaround since Python doesn't support Typeddicts for integer keys.
 
 ```python
 repr(all_objects[0])
@@ -74,10 +76,11 @@ print(obj[obj_prop.GROUPS])  # same as obj["a57"], returns a set[int]
 Property keys are organized by trigger type under `obj_prop.Trigger.*`:
 
 ```python
-obj_prop.Trigger.Move.TARGET_ID   # "a51"
-obj_prop.Trigger.Move.DURATION    # "a10"
-obj_prop.Trigger.Spawn.DELAY      # "a63"
-obj_prop.Trigger.Color.CHANNEL    # "a23"
+# All literal strings:
+obj_prop.Trigger.Move.TARGET_ID  # "a51"
+obj_prop.Trigger.Move.DURATION   # "a10"
+obj_prop.Trigger.Spawn.DELAY     # "a63"
+obj_prop.Trigger.Color.CHANNEL   # "a23"
 ```
 
 ## Validation
@@ -95,16 +98,17 @@ Validation checks that:
 - The value is the correct Python type
 - Numeric values are within GD's accepted range
 
+Individual checks can be disabled through the `setting` object. See [Validation Settings](./setting) for details.
+
 ## Exporting
+
+Every object added via `level.objects.append()` or `extend()` is automatically stamped with the level's `tag_group`. On the next load, any objects carrying that group are stripped — so re-running your script never duplicates objects.
 
 ### To a file
 
 ```python
 # Export to a new file
 level.export_to_file("my_level_updated.gmd")
-
-# Export back to the source file (prompts for confirmation)
-level.export_to_file()
 ```
 
 ### To the live editor
@@ -113,11 +117,12 @@ level.export_to_file()
 level.export_to_live_editor()
 ```
 
-This replaces the full level string in the running editor with the current state of `level.objects` and `level.color`.
+Exporting replaces the level string with the current state of `level.objects` and `level.color`.
 
 ## Next steps
 
-- [Add & Edit Objects](./objects) — creating objects, modifying properties, filtering and deleting
+- [Add & Edit Objects](./objects) — covering all object control flow
 - [Colors](./colors) — reading and writing color channels
-- [New IDs](./new-ids) — allocating group, item, color, and collision IDs safely
+- [New IDs](./new-ids) — get 'next free' group, item, color, and collision IDs 
 - [Object Types](./object-types) — using TypedDicts and type guards for static type checking
+- [Validation Settings](./setting) — toggling individual validation checks
