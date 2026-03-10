@@ -1,38 +1,22 @@
 # Colors
 
-Color channels in GD control the fill color of objects that reference them. gmdbuilder exposes them through `level.color` — a plain Python dict mapping channel IDs to `Color` dataclasses. Changes to these values are written back to the level on export.
+Color channels are exposed through `level.color` — a plain Python dict mapping channel ID integers to `Color` dataclasses. Changes to these values are written back to the level on export.
 
+### Special Color Channels:
 
 `color_id` provides named constants for GD's special built-in channels:
 ```python
 from gmdbuilder import color_id
 ```
+Sample:
+| Constant | ID |
+|---|---|
+| `color_id.BACKGROUND` | 1000 |
+| `color_id.GROUND` | 1001 |
+| `color_id.MIDDLEGROUND` | 1011 | 
+| `color_id.LINE` | 1002 |
+... | ... |
 
-| Constant | ID | Description |
-|---|---|---|
-| `color_id.BACKGROUND` | 1000 | Background color |
-| `color_id.GROUND` | 1001 | Ground color |
-| `color_id.GROUND_2` | 1009 | Secondary ground color |
-| `color_id.MIDDLEGROUND` | 1011 | Middleground color |
-| `color_id.LINE` | 1002 | Object outline color |
-
-
-## Reading color channels
-
-After loading a level, `level.color` is populated with every color channel defined in that level:
-
-```python
-from gmdbuilder import Level, color_id
-
-level = Level.from_file("my_level.gmd")
-
-bg = level.color[color_id.BACKGROUND]
-print(bg.red, bg.green, bg.blue)   # e.g. 0 102 255
-print(bg.opacity)                  # e.g. 1.0
-```
-
-
-Channels not in this list are accessed by their integer ID directly.
 
 ## The Color dataclass
 
@@ -41,17 +25,30 @@ Each entry in `level.color` is a `Color` instance with these fields:
 ```python
 @dataclass
 class Color:
-    red:                 int   = 0
-    green:               int   = 0
-    blue:                int   = 0
-    opacity:             float = 0.0
-    blending:            bool  = False
-    copy_id:             int   = 0                # channel to copy color from (0 = none)
-    hsv:                 HSV   = HSV()
-    copy_opacity:        bool  = False
-    disable_legacy_hsv:  bool  = False
-    player:              int   = -1               # -1 = none, 1 = P1, 2 = P2
+    red: int = 0
+    green: int = 0
+    blue: int = 0
+    opacity: float = 0.0
+    blending: bool = False
+    copy_id: int = 0 # channel to copy color from (0 = none)
+    hsv: HSV = HSV()
+    copy_opacity: bool = False
+    disable_legacy_hsv: bool = False
+    player: int = -1
 ```
+
+
+## Reading color channels
+
+After loading a level, `level.color` is populated with every color channel defined in that level:
+
+```python
+bg = level.color[color_id.BACKGROUND]
+print(bg.red, bg.green, bg.blue)   # e.g. 0 102 255
+print(bg.opacity)                  # e.g. 1.0
+```
+
+Channels not in this list are accessed by their integer ID directly.
 
 ## Modifying a color channel
 
@@ -70,6 +67,26 @@ bg.blue  = 72
 # Or use the set_rgba helper
 level.color[color_id.GROUND].set_rgba(20, 5, 50)
 ```
+
+
+## Adding a new color channel
+
+If you assign to a channel ID that doesn't exist in the level yet, it is created and added to the level on export:
+
+```python
+from gmdbuilder import Level, Color
+
+level = Level.from_file("my_level.gmd")
+
+# Allocate a free channel ID and create it
+c = level.new.color()
+level.color[c] = Color(red=255, green=80, blue=0, opacity=1.0)
+```
+
+::: tip Allocating vs picking an ID
+It is recommended to use `level.new.color()` rather than picking an ID by hand. See [New IDs](./new-ids)
+:::
+
 
 ## Convenience helpers
 
@@ -91,24 +108,6 @@ color.set_hex("FF8800")   # hash is optional
 
 print(color.get_hex())    # "#FF8800"
 ```
-
-## Adding a new color channel
-
-If you assign to a channel ID that doesn't exist in the level yet, it is created and added to the level on export:
-
-```python
-from gmdbuilder import Level, Color
-
-level = Level.from_file("my_level.gmd")
-
-# Allocate a free channel ID and create it
-c = level.new.color()
-level.color[c] = Color(red=255, green=80, blue=0, opacity=1.0)
-```
-
-::: tip Allocating vs picking an ID
-Use `level.new.color()` rather than picking an ID by hand. It scans the loaded level and guarantees the returned ID is not already in use. See [New IDs](./new-ids) for details.
-:::
 
 ## A complete example
 

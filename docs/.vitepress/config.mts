@@ -32,12 +32,11 @@ export default defineConfig({
       {
         text: 'Guide',
         items: [
-          // { text: 'Introduction',        link: '/introduction' },
           { text: 'Getting Started',     link: '/getting-started' },
           { text: 'Add & Edit Objects',  link: '/objects' },
-          { text: 'Colors',              link: '/colors' },
-          { text: 'New IDs',             link: '/new-ids' },
           { text: 'Object Types',        link: '/object-types' },
+          { text: 'New IDs',             link: '/new-ids' },
+          { text: 'Colors',              link: '/colors' },
           { text: 'Validation Settings', link: '/setting' },
         ]
       },
@@ -58,7 +57,7 @@ export default defineConfig({
     },
 
     footer: {
-      message: 'Released under the MIT License.',
+      // message: 'Released under the MIT License.',
       copyright: 'gmdbuilder — built in collaboration with <a href="https://github.com/UHDanke">HDanke</a>'
     },
 

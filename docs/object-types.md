@@ -39,12 +39,15 @@ import gmdbuilder.object_types as td
 from gmdbuilder import obj_prop, obj_id, new_obj, enum
 
 def configure_move(trigger: td.MoveType, target: int, duration: float) -> None:
-    trigger[obj_prop.Trigger.Move.TARGET_ID] = target
-    trigger[obj_prop.Trigger.Move.DURATION]  = duration
-    trigger[obj_prop.Trigger.Move.EASING]    = enum.Easing.EASE_IN_OUT
+    ppt = obj_prop.Trigger
+    trigger[ppt.Move.TARGET_ID] = target
+    trigger[ppt.Move.DURATION] = duration
+    trigger[ppt.Move.EASING] = enum.Easing.EASE_IN_OUT
+    trigger[ppt.SPAWN_TRIGGERED] = True
+    trigger[ppt.MULTI_TRIGGERED] = True
 
-move = new_obj(obj_id.Trigger.MOVE)  # already typed as MoveType
+move = new_obj(obj_id.Trigger.MOVE)  # auto-detected statically as MoveType
 configure_move(move, target=10, duration=1.5)
 ```
 
-Passing a `SpawnType` or any other type to `configure_move` is a static type error.
+Passing a `SpawnType` or any other type to `configure_move` would raise a static type error.

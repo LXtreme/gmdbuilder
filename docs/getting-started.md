@@ -56,13 +56,6 @@ Once a level is loaded, `level.objects` gives you the full list of objects as a 
 all_objects = level.objects
 ```
 
-Every GD object is represented as a `Typeddict` with string keys in the form `"a<property-int>"`. This unifiies all property keys (including special level keys `"kA<int>"`), and is also a workaround since Python doesn't support Typeddicts for integer keys.
-
-```python
-repr(all_objects[0])
-# Object({"a1": 1, "a2": 105.0, "a3": 195.0, "a57": {3, 7}, ...})
-```
-
 You work with these using the `obj_prop` namespace, which gives every key a readable name:
 
 ```python
