@@ -15,13 +15,13 @@ hero:
       link: 'https://github.com/LXtreme/gmdbuilder'
 
 features:
+  - icon: ⚡
+    title: Automation ready
+    details: Built to handle automation for object editing/creation at scale.
+
   - icon: ✔️
     title: Type-safe by default
     details: Every object property is validated at assignment time. Wrong types, out-of-range values, and invalid keys raise immediately.
-
-  - icon: ⚡
-    title: Full IDE support
-    details: Objects are fully typed such that an LSP give you autocomplete and inline type errors across your whole project.
 
   - icon: 
       src: /live_editor.png
