@@ -67,10 +67,12 @@ def test_roundtrip(level_file: Path, tmp_path: Path) -> None:
     assert col.blending is True, f"Expected blending=True, got {col.blending}"
 
     # 7. Group g should still be assigned to at least one object after reload.
-    obj_with_g = next(
-        (o for o in level.objects if int(g) in o.get(obj_prop.GROUPS, set())),
-        None,
-    )
+    obj_with_g = None
+    for o in level.objects:
+        if int(g) in o.get(obj_prop.GROUPS, {}):
+            obj_with_g = o
+            break
+    
     assert obj_with_g is not None, (
         f"Expected at least one object to carry group {int(g)} after reload"
     )

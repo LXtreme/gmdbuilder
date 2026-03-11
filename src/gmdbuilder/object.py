@@ -6,7 +6,7 @@ from gmdbuilder.object_types import ObjectType
 from gmdbuilder.validation import validate
 
 
-class Object(dict[str, Any]):
+class ValidatedObject(dict[str, Any]):
     """
     A dict subclass that represents a level object with validation on property edits.
     
@@ -44,11 +44,11 @@ class Object(dict[str, Any]):
         super().update(items)
     
     @staticmethod
-    def wrap_object(obj: "ObjectType | Object") -> ObjectType:
+    def wrap_object(obj: "ObjectType | ValidatedObject") -> ObjectType:
         """Wrap an object in ValidatedObject for runtime validation."""
-        if isinstance(obj, Object):
+        if isinstance(obj, ValidatedObject):
             return cast(ObjectType, obj)
-        wrapped = Object(obj[obj_prop.ID])
+        wrapped = ValidatedObject(obj[obj_prop.ID])
         wrapped.update(obj)
         return cast(ObjectType, wrapped)
 
@@ -107,17 +107,17 @@ class ObjectList(list[ObjectType]):
         if isinstance(index, slice):
             if not isinstance(value, list):
                 raise TypeError(f"can only assign a list (not {type(value).__name__}) to a slice")
-            validated = [Object.wrap_object(obj) for obj in value]
+            validated = [ValidatedObject.wrap_object(obj) for obj in value]
             super().__setitem__(index, validated)
         else:
             if not isinstance(value, dict):
                 raise TypeError(f"can only assign ObjectType dict (not {type(value).__name__})")
-            validated = Object.wrap_object(value)
+            validated = ValidatedObject.wrap_object(value)
             super().__setitem__(index, validated)
     
     def append(self, obj: ObjectType):
         """Validate and append an object."""
-        obj = Object.wrap_object(obj)
+        obj = ValidatedObject.wrap_object(obj)
         
         groups = set(obj.get(obj_prop.GROUPS, set()))
         groups.add(self.tag_group)
@@ -127,7 +127,7 @@ class ObjectList(list[ObjectType]):
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
-        obj = Object.wrap_object(obj)
+        obj = ValidatedObject.wrap_object(obj)
         super().insert(index, obj)
     
     def extend(self, iterable: Iterable[ObjectType]):

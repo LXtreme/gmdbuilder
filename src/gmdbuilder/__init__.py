@@ -43,7 +43,7 @@ from gmdbuilder.validation import setting
 import gmdbuilder.object_types as td
 from gmdbuilder.object_types import AllPropsType, ObjectType
 
-from gmdbuilder.object import Object, ObjectList
+from gmdbuilder.object import ObjectList
 
 from gmdbuilder.color import Color
 
@@ -61,7 +61,6 @@ from gmdbuilder.mappings import obj_enum as enum
 __all__ = [
     "Level",
     # Object
-    "Object",
     "ObjectList",
     # Core helpers
     "new_obj",

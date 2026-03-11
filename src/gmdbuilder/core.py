@@ -8,7 +8,7 @@ from gmdkit.models.object import Object as KitObject
 import gmdbuilder.object_types as td
 from gmdbuilder.fields import ID_TO_TYPEDDICT, SPECIAL_KEYS
 from gmdbuilder.mappings import obj_prop
-from gmdbuilder.object import Object
+from gmdbuilder.object import ValidatedObject
 
 ObjectType = td.ObjectType
 
@@ -57,7 +57,7 @@ def _from_raw_key_cached(key: int|str) -> str:
 
 
 def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
-    new = Object(obj[1])
+    new = ValidatedObject(obj[1])
     for k, v in obj.items():
         if k == 1: continue
         try:
@@ -73,7 +73,7 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
 
 
 def from_object_string(obj_string: str, obj_type: type = ObjectType) -> ObjectType:
-    return from_kit_object(KitObject.from_string(obj_string))
+    return from_kit_object(KitObject.from_string(obj_string)) 
 
 
 def new_obj(object_id: int) -> ObjectType:
