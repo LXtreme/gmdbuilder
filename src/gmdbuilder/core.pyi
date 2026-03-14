@@ -1,8 +1,7 @@
 """Type stubs for gmdbuilder.core"""
 
-from typing import Any, Literal, TypeVar, TypeGuard, overload
+from typing import Literal, TypeVar, TypeGuard, overload
 
-from gmdkit.models.object import Object as KitObject
 from . import object_types as td
 
 ObjectType = td.ObjectType
@@ -11,24 +10,6 @@ T = TypeVar("T", bound=ObjectType)
 
 def is_obj_type(obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
     """Type-narrows obj to a specific TypedDict type by matching its ID."""
-
-
-def to_kit_object(obj: ObjectType) -> KitObject:
-    """
-    Convert object typeddict to gmdkit object dict.
-    
-    Example:
-        {a1: 900, a2: 50, a57: {2}} → {1: 900, 2: 50, 57: IDList([2])}
-    """
-
-
-def from_kit_object(obj: dict[int | str, Any]) -> ObjectType:
-    """
-    Convert gmdkit object dict to object typeddict.
-    
-    Example:
-        {1: 900, 2: 50, 57: IDList([2])} → {a1: 900, a2: 50, a57: {2}}
-    """
 
 
 

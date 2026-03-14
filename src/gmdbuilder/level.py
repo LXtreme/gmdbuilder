@@ -1,19 +1,22 @@
 """Level loading and exporting for Geometry Dash."""
 
+from functools import lru_cache
 import time
-
+from contextlib import contextmanager
+from typing import Any, Generator, cast
 from pathlib import Path
 
-from .color import Color, KitColor
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList, Object as KitObject
 from gmdkit.models.prop.color import ColorList as KitColorList
 
-from .core import from_kit_object, to_kit_object
 from .id import IDAllocator
 from .mappings import obj_prop
-from .object import ObjectList
+from .object import ObjectList, ValidatedObject
+from .fields import SPECIAL_KEYS
+from .color import Color, KitColor
+from .object_types import ObjectType
 
 
 def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
@@ -21,6 +24,54 @@ def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:
     a = _state[0]
     _state[0] = now
     return now - a
+
+
+@lru_cache(maxsize=1024)
+def _to_raw_key_cached(key: str) -> int | str:
+    if key.startswith('k'):
+        return key
+    if key.startswith('a'):
+        tail = key[1:]
+        if tail.isdigit():
+            return int(tail)
+    raise ValueError()
+
+def to_kit_object(obj: ObjectType) -> KitObject:
+    raw: dict[int|str, Any] = {}
+    for k, v in obj.items():
+        if s := SPECIAL_KEYS.get(k):
+            raw[_to_raw_key_cached(k)] = s.to_kit(v)
+        else:
+            try:
+                raw[_to_raw_key_cached(k)] = v
+            except ValueError as e:
+                raise ValueError(f"Object has unsupported key {k!r}:\n{obj=}") from e
+    return KitObject(raw)
+
+
+@lru_cache(maxsize=1024)
+def _from_raw_key_cached(key: int|str) -> str:
+    if isinstance(key, int):
+        return f"a{key}"
+    if key.startswith("a") or key.startswith("k"):
+        return key
+    raise ValueError("Unrecognized key format")
+
+
+def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
+    new = ValidatedObject(obj[1])
+    for k, v in obj.items():
+        if k == 1: continue
+        try:
+            key = _from_raw_key_cached(k)
+        except ValueError:
+            raise ValueError(f"Object has unsupported key {k=}. Found {k=}:{v=} :: \n{obj=}")
+        
+        if s := SPECIAL_KEYS.get(key):
+            new[key] = s.from_kit(v)
+        else:
+            new[key] = v
+    return cast(ObjectType, new)
 
 
 class Level:
@@ -162,3 +213,25 @@ class Level:
         
         print(f"\nExported to live editor with {len(self.objects)} objects in {_time_since_last():.3f} seconds.\n")
 
+    @contextmanager
+    def autoappend(self) -> Generator[None, None, None]:
+        """
+        Context manager that auto appends newly initialized Object instances to the level's object list.
+
+        Only NEW objects are appended.
+        """
+        
+        global _autoappend_level
+        previous = _autoappend_level
+        _autoappend_level = self
+        try:
+            yield
+        finally:
+            _autoappend_level = previous
+
+
+global _autoappend_level
+_autoappend_level: "Level | None" = None
+
+def get_autoappend_level() -> "Level | None":
+    return _autoappend_level
