@@ -5,10 +5,10 @@ from typing import Any, TypeGuard, TypeVar, cast
 
 from gmdkit.models.object import Object as KitObject
 
-import gmdbuilder.object_types as td
-from gmdbuilder.fields import ID_TO_TYPEDDICT, SPECIAL_KEYS
-from gmdbuilder.mappings import obj_prop
-from gmdbuilder.object import ValidatedObject
+from . import object_types as td
+from .fields import ID_TO_TYPEDDICT, SPECIAL_KEYS
+from .mappings import obj_prop
+from .object import ValidatedObject
 
 ObjectType = td.ObjectType
 

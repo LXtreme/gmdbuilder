@@ -3,7 +3,7 @@
 from typing import Any, Literal, TypeVar, TypeGuard, overload
 
 from gmdkit.models.object import Object as KitObject
-import gmdbuilder.object_types as td
+from . import object_types as td
 
 ObjectType = td.ObjectType
 

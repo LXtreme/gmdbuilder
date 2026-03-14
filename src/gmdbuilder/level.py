@@ -4,16 +4,16 @@ import time
 
 from pathlib import Path
 
-from gmdbuilder.color import Color, KitColor
+from .color import Color, KitColor
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList, Object as KitObject
 from gmdkit.models.prop.color import ColorList as KitColorList
 
-from gmdbuilder.core import from_kit_object, to_kit_object
-from gmdbuilder.id import IDAllocator
-from gmdbuilder.mappings import obj_prop
-from gmdbuilder.object import ObjectList
+from .core import from_kit_object, to_kit_object
+from .id import IDAllocator
+from .mappings import obj_prop
+from .object import ObjectList
 
 
 def _time_since_last(_state:list[float]=[time.perf_counter()]) -> float:

@@ -2,8 +2,8 @@
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any, Callable, Iterable, Literal, Union, get_args, get_origin, Required
-from gmdbuilder.mappings import obj_id, obj_prop
-from gmdbuilder import object_types as td
+from . mappings import obj_id, obj_prop
+from . import object_types as td
 from gmdkit.models.prop.list import IDList, IntPair, IntPairList, RemapList
 
 ObjectType = td.ObjectType

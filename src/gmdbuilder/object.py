@@ -1,9 +1,9 @@
 
 from typing import Any, Callable, Iterable, SupportsIndex, cast
 
-from gmdbuilder.mappings import obj_prop
-from gmdbuilder.object_types import ObjectType
-from gmdbuilder.validation import validate
+from .mappings import obj_prop
+from .object_types import ObjectType
+from .validation import validate
 
 
 class ValidatedObject(dict[str, Any]):

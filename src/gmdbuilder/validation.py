@@ -3,9 +3,9 @@ from functools import lru_cache
 from typing import Any, cast
 from warnings import warn
 
-from gmdbuilder.fields import SPECIAL_KEYS, TARGET_GROUP_FIELDS, value_is_correct_type, key_is_allowed, int_is_in_range
-from gmdbuilder.mappings import obj_prop
-from gmdbuilder.object_types import AllPropsType, ObjectType
+from .fields import SPECIAL_KEYS, TARGET_GROUP_FIELDS, value_is_correct_type, key_is_allowed, int_is_in_range
+from .mappings import obj_prop
+from .object_types import AllPropsType, ObjectType
 
 
 class setting:

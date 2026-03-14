@@ -2,8 +2,8 @@
 
 from enum import IntEnum
 from typing import Iterable, Literal, overload
-from gmdbuilder.mappings import obj_id, obj_prop
-from gmdbuilder.object_types import ObjectType
+from .mappings import obj_id, obj_prop
+from .object_types import ObjectType
 
 
 IDTypes = Literal["group", "item", "color", "collision"]
