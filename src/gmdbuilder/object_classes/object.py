@@ -6,10 +6,6 @@ from gmdbuilder.object import ValidatedObject
 from gmdbuilder.object_types import ObjectType
 from gmdkit.models.prop.hsv import HSV
 
-def _get_autoappend_level():
-    from gmdbuilder.level import get_autoappend_level
-    return get_autoappend_level()
-
 T = TypeVar("T")
 
 class ObjField(Generic[T]):
