@@ -24,6 +24,8 @@ from .mappings import color_id
 from .mappings import lvl_prop
 from .mappings import obj_enum as enum
 
+from . import object_classes as obj_cls
+
 # ---------------------------------------------------------------------------
 # Explicit public surface
 # ---------------------------------------------------------------------------
@@ -52,4 +54,6 @@ __all__ = [
     "color_prop",
     "lvl_prop",
     "enum",
+    # Object classes
+    "obj_cls",
 ]
