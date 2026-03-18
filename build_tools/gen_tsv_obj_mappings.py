@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# pyright: standard
 """
 Step 2: Generate/refresh a TSV type map from a nested Enum python file.
 

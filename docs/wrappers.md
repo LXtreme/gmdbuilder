@@ -38,4 +38,4 @@ level.objects.append(b.obj) # same reference as 'a'
 level.objects.append(c.obj)
 ```
 
-## See [Object Class Reference](https://github.com/ArrowSlashArrow/gdlib)
+## See [Wrapper Classes](./classes) Reference page.
