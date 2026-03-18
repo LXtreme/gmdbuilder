@@ -1,6 +1,7 @@
 # Colors
 
-Color channels are exposed through `level.color` — a plain Python dict mapping channel ID integers to `Color` dataclasses. Changes to these values are written back to the level on export.
+Color channels are exposed through `level.color` — a plain Python dict mapping channel ID integers to `Color` dataclasses. 
+Changes to these values are written back to the level on export.
 
 ### Special Color Channels:
 
@@ -52,7 +53,8 @@ Channels not in this list are accessed by their integer ID directly.
 
 ## Modifying a color channel
 
-Modify the `Color` object in-place. Changes are applied to the level on the next `export_to_file()` or `export_to_live_editor()` call:
+Modify the `Color` object in-place. 
+Changes are applied to the level on the next `export_to_file()` or `export_to_live_editor()` call:
 
 ```python
 from gmdbuilder import Level, color_id

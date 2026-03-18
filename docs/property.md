@@ -1,6 +1,6 @@
 # Property Reference
 
-Search all 600+ object property keys by name or key string. Click any row to copy the key to your clipboard.
+Search all 500+ object property keys by name or key string. Click any row to copy the key to your clipboard.
 
 <script setup>
 import { ref, computed } from 'vue'

@@ -62,49 +62,50 @@ def is_enum_subclass(classdef: ast.ClassDef) -> bool:
     return False
 
 
+def walk_class(cls: ast.ClassDef, inside_enum: bool) -> Iterable[Tuple[str, int]]:
+    here_is_enum = inside_enum or is_enum_subclass(cls)
+
+    for node in cls.body:
+        if isinstance(node, ast.ClassDef):
+            # BUGFIX: must recurse with `yield from`
+            yield from walk_class(node, here_is_enum)
+            continue
+
+        if not here_is_enum:
+            continue
+
+        # NAME = <value>
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            name = node.targets[0].id
+            val = node.value
+            if isinstance(val, ast.Constant) and isinstance(val.value, int):
+                yield (name, val.value)
+            else:
+                try:
+                    vsrc = ast.unparse(val)  # py3.9+
+                except Exception:
+                    vsrc = "<non-int>"
+                print(f"[warn] skipping non-int enum value: {name} = {vsrc}", file=sys.stderr)
+
+        # NAME: T = <value>
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) and node.value is not None:
+            name = node.target.id
+            val = node.value
+            if isinstance(val, ast.Constant) and isinstance(val.value, int):
+                yield (name, val.value)
+            else:
+                try:
+                    vsrc = ast.unparse(val)
+                except Exception:
+                    vsrc = "<non-int>"
+                print(f"[warn] skipping non-int enum value: {name} = {vsrc}", file=sys.stderr)
+
+
 def iter_enum_members(tree: ast.AST) -> Iterable[Tuple[str, int]]:
     """
     Yields (member_name, member_int_value) for all Assign/AnnAssign inside Enum subclasses,
     including nested Enum subclasses.
     """
-
-    def walk_class(cls: ast.ClassDef, inside_enum: bool) -> Iterable[Tuple[str, int]]:
-        here_is_enum = inside_enum or is_enum_subclass(cls)
-
-        for node in cls.body:
-            if isinstance(node, ast.ClassDef):
-                # BUGFIX: must recurse with `yield from`
-                yield from walk_class(node, here_is_enum)
-                continue
-
-            if not here_is_enum:
-                continue
-
-            # NAME = <value>
-            if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
-                name = node.targets[0].id
-                val = node.value
-                if isinstance(val, ast.Constant) and isinstance(val.value, int):
-                    yield (name, val.value)
-                else:
-                    try:
-                        vsrc = ast.unparse(val)  # py3.9+
-                    except Exception:
-                        vsrc = "<non-int>"
-                    print(f"[warn] skipping non-int enum value: {name} = {vsrc}", file=sys.stderr)
-
-            # NAME: T = <value>
-            if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) and node.value is not None:
-                name = node.target.id
-                val = node.value
-                if isinstance(val, ast.Constant) and isinstance(val.value, int):
-                    yield (name, val.value)
-                else:
-                    try:
-                        vsrc = ast.unparse(val)
-                    except Exception:
-                        vsrc = "<non-int>"
-                    print(f"[warn] skipping non-int enum value: {name} = {vsrc}", file=sys.stderr)
 
     for node in getattr(tree, "body", []):
         if isinstance(node, ast.ClassDef):

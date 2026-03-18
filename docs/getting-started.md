@@ -18,11 +18,16 @@ Python 3.12 or newer is required.
 
 ## IDE setup
 
-gmdbuilder is designed to be used with a type checker. Without one, you lose out on much of the value of the type system.
+gmdbuilder is designed to be used with a type checker. 
+Without one, you lose out on much of the value of the type system.
 
-I heavily recommend [Zed](https://zed.dev/). It is a new high-performance feature rich IDE written in rust. More importantly it comes with [basedpyright](https://docs.basedpyright.com/latest/) by default. I personally consider Zed to be a true 'VS Code killer'. 
+I heavily recommend [Zed](https://zed.dev/). 
+It is a new high-performance feature rich IDE written in rust. 
+More importantly it comes with [basedpyright](https://docs.basedpyright.com/latest/) by default. 
+I personally consider Zed to be a true 'VS Code killer'. 
 
-However any IDE with good type checking and LSP support will suffice. In VS Code, make sure to have [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance).
+However any IDE with good type checking and LSP support will suffice. 
+In VS Code, make sure to have [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance).
 
 A good python LSP setup will give all the static type checking for objects/properties.
 
@@ -62,7 +67,8 @@ You work with these using the `obj_prop` namespace, which gives every key a read
 from gmdbuilder import obj_prop
 
 obj = all_objects[0]
-print(obj[obj_prop.X])       # same as obj["a2"]
+obj[obj_prop.X] = 0 # same as obj["a2"]
+print(obj[obj_prop.X]) # prints 0
 print(obj[obj_prop.GROUPS])  # same as obj["a57"], returns a set[int]
 ```
 
@@ -75,6 +81,10 @@ obj_prop.Trigger.Move.DURATION   # "a10"
 obj_prop.Trigger.Spawn.DELAY     # "a63"
 obj_prop.Trigger.Color.CHANNEL   # "a23"
 ```
+
+Object generation and editing is the main purpose of the tool, so there are many other helpful features to make this easier to scale.
+
+See [Add & Edit Objects](./objects), [Trigger Wrappers](./wrappers) and [Context Managers](./context).
 
 ## Validation
 

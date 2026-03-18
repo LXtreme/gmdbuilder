@@ -44,7 +44,7 @@ export default defineConfig({
       {
         text: 'Reference',
         items: [
-          { text: 'Property Search',     link: '/reference' },
+          { text: 'Property Search',     link: '/property' },
           { text: 'Wrapper Classes',     link: '/classes' },
         ]
       }

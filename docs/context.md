@@ -1,7 +1,8 @@
 # Context managers
 
 The context managers provided are for automatically applying changes made to newly made objects.
-They help a lot with eliminating a lot of duplicate code when you make many objects that you need configured with similar properties. Since the implementation is based on ContextVars, it is thread-safe by default.
+They help a lot with eliminating a lot of duplicate code when you make many objects that you need configured with similar properties. 
+Since the implementation is based on ContextVars, it is thread-safe by default.
 
 You may find all the context manager implementations under `gmdbuilder/context.py`.
 
@@ -18,12 +19,14 @@ from gmdbuilder import level_context, autoappend, targets
 with level_context(level):
     with autoappend(), targets(target=4,target_2=5):
         # All auto appended, targets 4 and targets 5 as a secondary target
+        # autoappend() is called before targets()
         m = new_obj(901)
         m2 = Move()
         a = from_object_string("1,1611,2,50,3,45;", obj_type=CountType)
 ```
 
-Note from the snippet that you can combine context managers in one line to avoid extra scoping. A lesser known Python feature.
+Note from the snippet that you can combine context managers in one line to avoid extra scoping. 
+A lesser known Python feature.
 
 ::: tip
 If you don't need to edit multiple levels, scope using `with level_context(level):` just once at your `if __name__ == "__main__":` entry point. 

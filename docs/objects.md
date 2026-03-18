@@ -6,7 +6,8 @@ In GD, objects (after parsing from an object string) are expressed as dict pairs
 
 In gmdbuilder, every object is represented as a `dict[str, Any]` with GD's integer keys converted to `"a<property-int>"`. 
 
-This unifiies all property keys (including special level keys `"kA<int>"`). This allows us to define TypedDicts for our object types. Most importantly, typeddicts grants static type information for each property field, as well as defining which properties are allowed on the given object type.
+This unifiies all property keys (including special level keys `"kA<int>"`), and allows us to define TypedDicts for our object types, since Python TypedDicts dont support integer keys.
+Most importantly, typeddicts grants static type information for each property field, as well as defining which properties are allowed on the given object type.
 
 ```python
 repr(all_objects[0])
@@ -34,7 +35,7 @@ Here are some examples:
 | 57 | GROUPS | `1.2.3.4` | `{ 1, 2, 3, 4 }` |
 | 442 | REMAPS | `1.2.3.4` | `{ 1: 2, 3: 4 }` |
 
-See [Property Search](./reference.md)
+See [Property Search](./reference)
 
 ## Creating objects
 
