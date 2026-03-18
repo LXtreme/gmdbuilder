@@ -17,7 +17,7 @@ hero:
 features:
   - icon: ⚡
     title: Automation ready
-    details: Built to handle automation for object editing/creation at scale.
+    details: Built to handle automation for object editing/creation at scale, including parallel/multithreaded level editing.
 
   - icon: ✔️
     title: Type-safe by default
@@ -35,6 +35,6 @@ features:
       width: 64
       height: 64
     title: GDShare support
-    details: Import and export `.gmd` files for full level editing
+    details: Import and export gmd files for full level editing
 
 ---

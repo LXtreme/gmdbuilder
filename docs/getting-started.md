@@ -116,6 +116,6 @@ Exporting replaces the level string with the current state of `level.objects` an
 
 - [Add & Edit Objects](./objects) — covering all object control flow
 - [Colors](./colors) — reading and writing color channels
-- [New IDs](./new-ids) — get 'next free' group, item, color, and collision IDs 
-- [Object Types](./object-types) — using TypedDicts and type guards for static type checking
+- [New IDs](./new-ids) — get 'next free' group, item, color, and collision IDs
+- [Context Managers](./context) — greatly simplify repetitive editing logic
 - [Validation Settings](./setting) — toggling individual validation checks

@@ -34,9 +34,10 @@ export default defineConfig({
         items: [
           { text: 'Getting Started',     link: '/getting-started' },
           { text: 'Add & Edit Objects',  link: '/objects' },
-          // { text: 'Object Types',        link: '/object-types' },
           { text: 'New IDs',             link: '/new-ids' },
-          { text: 'Colors',              link: '/colors' },
+          { text: 'Colors', link: '/colors' },
+          { text: 'Trigger Wrappers', 'link': '/wrappers'},
+          { text: 'Context Managers', 'link': '/context'},
           { text: 'Validation Settings', link: '/setting' },
         ]
       },
