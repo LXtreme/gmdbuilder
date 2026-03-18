@@ -2,8 +2,7 @@
 
 from functools import lru_cache
 import time
-from contextlib import contextmanager
-from typing import Any, Generator, cast
+from typing import Any, cast
 from pathlib import Path
 
 from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
@@ -212,26 +211,3 @@ class Level:
         self._live_editor = None
         
         print(f"\nExported to live editor with {len(self.objects)} objects in {_time_since_last():.3f} seconds.\n")
-
-    @contextmanager
-    def autoappend(self) -> Generator[None, None, None]:
-        """
-        Context manager that auto appends newly initialized Object instances to the level's object list.
-
-        Only NEW objects are appended.
-        """
-        
-        global _autoappend_level
-        previous = _autoappend_level
-        _autoappend_level = self
-        try:
-            yield
-        finally:
-            _autoappend_level = previous
-
-
-global _autoappend_level
-_autoappend_level: "Level | None" = None
-
-def get_autoappend_level() -> "Level | None":
-    return _autoappend_level

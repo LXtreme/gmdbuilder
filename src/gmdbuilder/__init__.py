@@ -1,5 +1,14 @@
 
 from .level import Level
+from . import context
+from .context import (
+    level_context,
+    autoappend,
+    transform,
+    target,
+    groups,
+    set_prop
+)
 
 from .core import (
     new_obj,
@@ -24,7 +33,6 @@ from .mappings import color_id
 from .mappings import lvl_prop
 from .mappings import obj_enum as enum
 
-from . import object_classes as obj_cls
 
 # ---------------------------------------------------------------------------
 # Explicit public surface
@@ -32,6 +40,14 @@ from . import object_classes as obj_cls
 
 __all__ = [
     "Level",
+    # Context
+    "context",
+    "level_context",
+    "autoappend",
+    "transform",
+    "target",
+    "groups",
+    "set_prop",
     # Object
     "ObjectList",
     # Core helpers
@@ -54,6 +70,4 @@ __all__ = [
     "color_prop",
     "lvl_prop",
     "enum",
-    # Object classes
-    "obj_cls",
 ]

@@ -92,7 +92,7 @@ class ColorTrigger(Trigger):
     """Copy player 2 color (a16)"""
     blending           = ObjField[bool](obj_prop.Trigger.Color.BLENDING)
     """Enable additive blending (a17)"""
-    channel            = ObjField[int](obj_prop.Trigger.Color.CHANNEL)
+    target            = ObjField[int](obj_prop.Trigger.Color.CHANNEL)
     """Color channel ID to set (a23)"""
     opacity            = ObjField[float](obj_prop.Trigger.Color.OPACITY)
     """Opacity 0.0-1.0 (a35)"""
