@@ -3,7 +3,8 @@ from .trigger import Trigger
 
 from .transform import Move, Rotate, Scale
 from .color import Color, Pulse, Alpha, Toggle, Animate
-from .control import Spawn, Count, Touch
+from .control import Spawn, Touch
+from .item import Pickup, Count, InstantCount, ItemCompare, ItemEdit, ItemPersist
 from .follow import Follow, Shake
 
 __all__ = [
@@ -22,8 +23,14 @@ __all__ = [
     "Animate",
     # control.py
     "Spawn",
-    "Count",
     "Touch",
+    # item.py
+    "Pickup",
+    "Count",
+    "InstantCount",
+    "ItemCompare",
+    "ItemEdit",
+    "ItemPersist",
     # follow.py
     "Follow",
     "Shake",

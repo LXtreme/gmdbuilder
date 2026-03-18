@@ -60,30 +60,6 @@ class Spawn(Trigger):
     """Block incoming remaps from affecting this trigger's spawns (a581)"""
 
 
-class Count(Trigger):
-    """Count trigger. Inherits: Object -> Trigger -> Count"""
-
-    def __init__(self):
-        super().__init__(obj_id.Trigger.COUNT)
-
-    # ------------------------------------------------------------------
-    # Properties
-    # ------------------------------------------------------------------
-
-    target_id = ObjField[int](obj_prop.Trigger.Count.TARGET_ID)
-    """Group ID to activate when count is reached (a51)"""
-
-    activate_group = ObjField[bool](obj_prop.Trigger.Count.ACTIVATE_GROUP)
-    """True = activate group, False = deactivate (a56)"""
-
-    count = ObjField[int](obj_prop.Trigger.Count.COUNT)
-    """Item count value to trigger at (a77)"""
-
-    item_id = ObjField[int](obj_prop.Trigger.Count.ITEM_ID)
-    """Item ID to watch (a80)"""
-
-    multi_activate = ObjField[bool](obj_prop.Trigger.Count.MULTI_ACTIVATE)
-    """Trigger every time count is reached, not just the first (a104)"""
 
 
 class Touch(Trigger):
