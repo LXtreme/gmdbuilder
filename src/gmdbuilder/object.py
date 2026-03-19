@@ -128,6 +128,11 @@ class ObjectList(list[ObjectType]):
     def insert(self, index: SupportsIndex, obj: ObjectType):
         """Validate and insert an object at index."""
         obj = ValidatedObject.wrap_object(obj)
+        
+        groups = set(obj.get(obj_prop.GROUPS, set()))
+        groups.add(self.tag_group)
+        obj[obj_prop.GROUPS] = groups
+        
         super().insert(index, obj)
     
     def extend(self, iterable: Iterable[ObjectType]):
@@ -137,8 +142,8 @@ class ObjectList(list[ObjectType]):
     
     def __add__(self, other: object) -> "ObjectList":
         """Disabled: use extend() instead."""
-        raise NotImplementedError("Use .extend() instead of + operator")
+        raise TypeError("Use .extend() instead of + operator")
     
     def __iadd__(self, other: object) -> "ObjectList": 
         """Disabled: use extend() instead."""
-        raise NotImplementedError("Use .extend() instead of += operator")
+        raise TypeError("Use .extend() instead of += operator")

@@ -10,8 +10,8 @@ from gmdkit.models.prop.hsv import HSV
 class Color:
     red: int = 0
     green: int = 0
-    blue: int = 0  
-    opacity: float = 0.0
+    blue: int = 0
+    opacity: float = 1.0
     blending: bool = False
     copy_id: int = 0
     hsv: HSV = field(default_factory=HSV)

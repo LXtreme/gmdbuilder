@@ -82,7 +82,7 @@ for obj in obj_list:
 
 
 filter = {
-    obj_prop.ID: obj_id.Trigger.COUNT
+    obj_prop.ID: obj_id.Trigger.COUNT,
     obj_prop.GROUPS: { 15 }
 }
 obj_list.delete_where(filter)
@@ -101,6 +101,22 @@ instant_count = new_obj(1611)         # casts to InstantCountType typed_dict
 
 obj_list.append(object)
 obj_list.extend([move, instant_count])
+
+# Wrapper classes and context managers:
+
+from gmdbuilder import level_context, autoappend, targets
+from gmdbuilder.classes import Move, Count
+
+with targets(45):
+    a = Move() # creates new Move object that targets 45
+    a.spawn_trigger = True
+    a.easing = 1
+    level.objects.append(a.obj)
+    
+    with level_context(level), autoappend():
+        # auto-appended to level, targets 45
+        b = Count()
+        b.count = 4
 
 # Export object edits, deletions and additions
 # Added objects recieve the tag_group

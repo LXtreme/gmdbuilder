@@ -76,7 +76,7 @@ def from_kit_object(obj: dict[int|str, Any]) -> ObjectType:
 class Level:
     """Manages level state, loading, and exporting. Use from_file() or from_live_editor() to create an instance."""
 
-    def __init__(self, *, live_editor: bool = False, tag_group: int = 9999):
+    def __init__(self, tag_group: int = 9999):
         self.objects = ObjectList(tag_group=tag_group)
         """List of level's objects. Newly appended objects are stamped with tag_group."""
 
@@ -134,7 +134,7 @@ class Level:
     @classmethod
     def from_file(cls, file_path: str | Path, tag_group: int = 9999) -> "Level":
         """Load a new Level from a .gmd file."""
-        level = cls(live_editor=False, tag_group=tag_group)
+        level = cls(tag_group)
         
         _time_since_last()
 
@@ -154,7 +154,7 @@ class Level:
     @classmethod
     def from_live_editor(cls, url: str = WEBSOCKET_URL, tag_group: int = 9999) -> "Level":
         """Load a new Level from the live editor."""
-        level = cls(live_editor=True, tag_group=tag_group)
+        level = cls(tag_group)
         
         _time_since_last()
         

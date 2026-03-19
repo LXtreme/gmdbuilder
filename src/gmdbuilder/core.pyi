@@ -14,6 +14,12 @@ def is_obj_type(obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
 
 
 @overload
+def from_object_string(obj_string: str) -> ObjectType: ...
+@overload
+def from_object_string(obj_string: str, *, obj_type: type[T]) -> T:
+    """Converts an object string to an ObjectType dict, optionally type-narrowing it to a specific TypedDict type."""
+
+@overload
 def is_obj_id(obj: ObjectType, object_id: Literal[10]) -> TypeGuard[td.GamemodePortalType]: ...
 @overload
 def is_obj_id(obj: ObjectType, object_id: Literal[11]) -> TypeGuard[td.GamemodePortalType]: ...
@@ -1093,11 +1099,6 @@ def is_obj_id(obj: ObjectType, object_id: int) -> TypeGuard[ObjectType]:
     """Checks if the object has the given object ID. (adds type information)"""
 
 
-
-@overload
-def from_object_string(obj_string: str) -> ObjectType: ...
-@overload
-def from_object_string(obj_string: str, *, obj_type: type[T]) -> T: ...
 @overload
 def new_obj(object_id: Literal[10]) -> td.GamemodePortalType: ...
 @overload

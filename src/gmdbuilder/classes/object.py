@@ -1,7 +1,8 @@
 
 from typing import Any, Self, TypeVar, Generic, overload
 
-from gmdbuilder import new_obj, obj_prop
+from gmdbuilder.core import new_obj
+from gmdbuilder.mappings import obj_prop
 from gmdbuilder.object import ValidatedObject
 from gmdbuilder.object_types import ObjectType
 from gmdkit.models.prop.hsv import HSV
@@ -43,10 +44,9 @@ class Object:
 
     def add_to_group(self, *group_ids: int) -> Self:
         """Add one or more group IDs to this object's groups set."""
-        existing = self.obj.get(obj_prop.GROUPS)
-        current: set[int] = set(existing) if existing is not None else set()
-        current.update(group_ids)
-        self.obj[obj_prop.GROUPS] = current
+        groups = set(self.obj.get(obj_prop.GROUPS, set()))
+        groups.update(group_ids)
+        self.obj[obj_prop.GROUPS] = groups
         return self
 
     def reset_transform(self) -> Self:

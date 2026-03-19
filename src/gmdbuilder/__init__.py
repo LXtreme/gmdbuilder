@@ -6,7 +6,7 @@ from .context import (
     level_context,
     autoappend,
     transform,
-    target,
+    targets,
     groups,
     set_prop
 )
@@ -46,7 +46,7 @@ __all__ = [
     "level_context",
     "autoappend",
     "transform",
-    "target",
+    "targets",
     "groups",
     "set_prop",
     # Object

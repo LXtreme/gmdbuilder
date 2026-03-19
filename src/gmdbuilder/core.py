@@ -25,6 +25,7 @@ def is_obj_id(obj: ObjectType, object_id: int) -> bool:
 
 
 def from_object_string(obj_string: str, obj_type: type = ObjectType) -> ObjectType:
+    # obj_type is not used bc its only for type narrowing (see stub file `core.pyi`)
     obj = from_kit_object(KitObject.from_string(obj_string))
     post_object_creation(obj)
     return obj 

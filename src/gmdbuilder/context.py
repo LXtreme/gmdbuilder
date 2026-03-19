@@ -60,13 +60,16 @@ def post_object_creation(obj: ObjectType) -> None:
         fn(obj)
 
 
-
 # ---------------------------------------------------------------------------
 # Context managers
 # ---------------------------------------------------------------------------
 
 def _operation_context(fn: Transform) -> NoGen:
-    """Shared push/yield/pop body. Use via transform() or as a building block."""
+    """
+    Raw generator helper: push fn, yield control to the caller's @contextmanager
+    frame via 'yield from', then pop on exit.  Never call this directly as a
+    context manager — always delegate from a @contextmanager-decorated function.
+    """
     _push_operation(fn)
     try:
         yield
@@ -76,7 +79,7 @@ def _operation_context(fn: Transform) -> NoGen:
 
 @contextmanager
 def level_context(level: Level) -> NoGen:
-    """Required by utilities that need level refence (e.g. autoappend)."""
+    """Required by utilities that need level reference (e.g. autoappend)."""
     _push_level(level)
     try:
         yield
@@ -118,16 +121,15 @@ def set_prop(key: str, value: Any) -> NoGen:
 def groups(*group_ids: int) -> NoGen:
     """Adds one or more group IDs to every newly created object."""
     def _add_groups(obj: ObjectType) -> None:
-        existing = obj.get(obj_prop.GROUPS)
-        current: set[int] = existing if existing is not None else set()
-        current.update(group_ids)
-        obj[obj_prop.GROUPS] = current
+        groups = set(obj.get(obj_prop.GROUPS, set()))
+        groups.update(group_ids)
+        obj[obj_prop.GROUPS] = groups
     
     yield from _operation_context(_add_groups)
 
 
 @contextmanager
-def target(target: int, target_2: int | None = None) -> NoGen:
+def targets(target: int, target_2: int | None = None) -> NoGen:
     """Automatically set target property 'a51' and secondary target 'a71' on trigger creation."""
     def _set_target(obj: ObjectType) -> None:
         if key_is_allowed(obj[obj_prop.ID], "a51") and target:
