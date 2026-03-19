@@ -1,9 +1,27 @@
 
-
-from enum import IntEnum
 from typing import Iterable, Literal, overload
 from .mappings import obj_id, obj_prop
 from .object_types import ObjectType
+
+
+class NamedInt(int):
+    """
+    A lightweight int subclass that carries a human-readable name for repr purposes.
+    Returned by IDAllocator methods so that allocated IDs print meaningfully
+    (e.g. ``new_group_1(42)``) while behaving exactly like plain ints everywhere else.
+    """
+    _name: str
+
+    def __new__(cls, value: int, name: str) -> "NamedInt":
+        instance = super().__new__(cls, value)
+        instance._name = name
+        return instance
+
+    def __repr__(self) -> str:
+        return f"{self._name}({int(self)})"
+
+    def __str__(self) -> str:
+        return str(int(self))
 
 
 IDTypes = Literal["group", "item", "color", "collision"]
@@ -78,7 +96,7 @@ class IDAllocator:
                 if (key := obj_prop.Trigger.Collision.BLOCK_B) in obj:
                     self.used_collision_ids.add(obj[key])
     
-    def _get_next(self, pool_name: IDTypes) -> IntEnum:
+    def _get_next(self, pool_name: IDTypes) -> NamedInt:
         """Get next free ID by scanning forward from frontier. O(k) where k = skipped reserved IDs."""
         
         used_set: set[int] = getattr(self, f"used_{pool_name}_ids")
@@ -99,66 +117,65 @@ class IDAllocator:
         
         counter: int = getattr(self, f"_{pool_name}_counter") + 1
         setattr(self, f"_{pool_name}_counter", counter)
-        
-        enum_cls = IntEnum(f"new_{pool_name}_{counter}", {f"ID_{candidate}": candidate})
-        return enum_cls[f"ID_{candidate}"]  # type: ignore[return-value]
+
+        return NamedInt(candidate, f"new_{pool_name}_{counter}")
     
     
     @overload
-    def group(self) -> IntEnum: ...
+    def group(self) -> NamedInt: ...
     @overload
-    def group(self, count: Literal[1]) -> IntEnum: ... # type: ignore[override]
+    def group(self, count: Literal[1]) -> NamedInt: ... # type: ignore[override]
     @overload
-    def group(self, count: Literal[2]) -> tuple[IntEnum, IntEnum]: ...
+    def group(self, count: Literal[2]) -> tuple[NamedInt, NamedInt]: ...
     @overload
-    def group(self, count: Literal[3]) -> tuple[IntEnum, IntEnum, IntEnum]: ...
+    def group(self, count: Literal[3]) -> tuple[NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def group(self, count: Literal[4]) -> tuple[IntEnum, IntEnum, IntEnum, IntEnum]: ...
+    def group(self, count: Literal[4]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def group(self, count: Literal[5]) -> tuple[IntEnum, IntEnum, IntEnum, IntEnum, IntEnum]: ...
+    def group(self, count: Literal[5]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def group(self, count: int) -> tuple[IntEnum, ...]: ...
-    def group(self, count: int = 1) -> tuple[IntEnum,...] | IntEnum:
+    def group(self, count: int) -> tuple[NamedInt, ...]: ...
+    def group(self, count: int = 1) -> tuple[NamedInt, ...] | NamedInt:
         """Get next free group ID (1-9999)."""
         if count == 1:
             return self._get_next("group")
         return tuple(self._get_next("group") for _ in range(count))
     
     @overload
-    def item(self) -> IntEnum: ...
+    def item(self) -> NamedInt: ...
     @overload
-    def item(self, count: Literal[1]) -> IntEnum: ... # type: ignore[override]
+    def item(self, count: Literal[1]) -> NamedInt: ... # type: ignore[override]
     @overload
-    def item(self, count: Literal[2]) -> tuple[IntEnum, IntEnum]: ...
+    def item(self, count: Literal[2]) -> tuple[NamedInt, NamedInt]: ...
     @overload
-    def item(self, count: Literal[3]) -> tuple[IntEnum, IntEnum, IntEnum]: ...
+    def item(self, count: Literal[3]) -> tuple[NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def item(self, count: Literal[4]) -> tuple[IntEnum, IntEnum, IntEnum, IntEnum]: ...
+    def item(self, count: Literal[4]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def item(self, count: Literal[5]) -> tuple[IntEnum, IntEnum, IntEnum, IntEnum, IntEnum]: ...
+    def item(self, count: Literal[5]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def item(self, count: int) -> tuple[IntEnum, ...]: ...
-    def item(self, count: int = 1) -> tuple[IntEnum,...] | IntEnum:
+    def item(self, count: int) -> tuple[NamedInt, ...]: ...
+    def item(self, count: int = 1) -> tuple[NamedInt, ...] | NamedInt:
         """Get next free item ID (1-9999)."""
         if count == 1:
             return self._get_next("item")
         return tuple(self._get_next("item") for _ in range(count))
     
     @overload
-    def color(self) -> IntEnum: ...
+    def color(self) -> NamedInt: ...
     @overload
-    def color(self, count: Literal[1]) -> IntEnum: ... # type: ignore[override]
+    def color(self, count: Literal[1]) -> NamedInt: ... # type: ignore[override]
     @overload
-    def color(self, count: Literal[2]) -> tuple[IntEnum, IntEnum]: ...
+    def color(self, count: Literal[2]) -> tuple[NamedInt, NamedInt]: ...
     @overload
-    def color(self, count: Literal[3]) -> tuple[IntEnum, IntEnum, IntEnum]: ...
+    def color(self, count: Literal[3]) -> tuple[NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def color(self, count: Literal[4]) -> tuple[IntEnum, IntEnum, IntEnum, IntEnum]: ...
+    def color(self, count: Literal[4]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def color(self, count: Literal[5]) -> tuple[IntEnum, IntEnum, IntEnum, IntEnum, IntEnum]: ...
+    def color(self, count: Literal[5]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def color(self, count: int) -> tuple[IntEnum, ...]: ...
-    def color(self, count: int = 1) -> tuple[IntEnum,...] | IntEnum:
+    def color(self, count: int) -> tuple[NamedInt, ...]: ...
+    def color(self, count: int = 1) -> tuple[NamedInt, ...] | NamedInt:
         """Get next free color channel ID (1-9999)."""
         if count == 1:
             return self._get_next("color")
@@ -166,20 +183,20 @@ class IDAllocator:
     
     
     @overload
-    def collision(self) -> IntEnum: ...
+    def collision(self) -> NamedInt: ...
     @overload
-    def collision(self, count: Literal[1]) -> IntEnum: ... # type: ignore[override]
+    def collision(self, count: Literal[1]) -> NamedInt: ... # type: ignore[override]
     @overload
-    def collision(self, count: Literal[2]) -> tuple[IntEnum, IntEnum]: ...
+    def collision(self, count: Literal[2]) -> tuple[NamedInt, NamedInt]: ...
     @overload
-    def collision(self, count: Literal[3]) -> tuple[IntEnum, IntEnum, IntEnum]: ...
+    def collision(self, count: Literal[3]) -> tuple[NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def collision(self, count: Literal[4]) -> tuple[IntEnum, IntEnum, IntEnum, IntEnum]: ...
+    def collision(self, count: Literal[4]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def collision(self, count: Literal[5]) -> tuple[IntEnum, IntEnum, IntEnum, IntEnum, IntEnum]: ...
+    def collision(self, count: Literal[5]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt, NamedInt]: ...
     @overload
-    def collision(self, count: int) -> tuple[IntEnum, ...]: ...
-    def collision(self, count: int = 1) -> tuple[IntEnum,...] | IntEnum:
+    def collision(self, count: int) -> tuple[NamedInt, ...]: ...
+    def collision(self, count: int = 1) -> tuple[NamedInt, ...] | NamedInt:
         """Get next free collision block ID (1-9999)."""
         if count == 1:
             return self._get_next("collision")

@@ -1,5 +1,6 @@
 
 from .level import Level
+from .id import NamedInt
 from . import context
 from .context import (
     level_context,
@@ -50,6 +51,8 @@ __all__ = [
     "set_prop",
     # Object
     "ObjectList",
+    # ID allocation
+    "NamedInt",
     # Core helpers
     "new_obj",
     "from_object_string",
