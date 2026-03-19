@@ -1,14 +1,17 @@
 # Trigger Wrappers
 
 To help with trigger editing, `gmdbuilder` provides object wrapper classes.
-The classes provide clean interfaces for property access, as well as helper methods. They can be found in `gmdbuilder/classes`.
+The classes provide clean interfaces for property access, as well as helper methods. 
+The implementations can be found in `gmdbuilder/classes`.
 
 All wrapper classes contain a `.obj` property in which stores the actual underlying object. 
-Although you can wrap existing objects, it's constructor may help. The field properties support static type checking for read/write. 
+Although you can wrap existing objects, it's constructor may help. 
+The field properties support static type checking for read/write. 
 
 
 ::: info
-Many of the wrappers lack any real functionality other than property field editing. Many triggers are also missing. 
+Many of the wrappers lack any real functionality other than property field editing. 
+Many triggers are also missing. 
 If you find any wrapper methods to be good official additions, please contact me, open an issue or send a PR.
 :::
 

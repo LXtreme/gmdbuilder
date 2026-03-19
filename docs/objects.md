@@ -35,7 +35,7 @@ Here are some examples:
 | 57 | GROUPS | `1.2.3.4` | `{ 1, 2, 3, 4 }` |
 | 442 | REMAPS | `1.2.3.4` | `{ 1: 2, 3: 4 }` |
 
-See [Property Search](./reference)
+See [Property Search](./property)
 
 ## Creating objects
 
