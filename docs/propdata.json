@@ -346,12 +346,12 @@
     "type": "int",
     "names": [
       "TARGET_ID",
-      "GROUP_ID",
       "SPAWN_ID",
       "TRUE_ID",
       "GROUP_ID_1",
       "BULGE_CENTER_ID",
       "GRAY_SCALE_TINT_CHANNEL",
+      "GROUP_ID",
       "LENS_CIRCLE_CENTER_ID",
       "MOTION_BLUR_CENTER_ID",
       "PARTICLE_GROUP",

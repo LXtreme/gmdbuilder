@@ -227,9 +227,9 @@
         "key": "a35"
       },
       {
-        "name": "group_id",
+        "name": "target_id",
         "type": "int",
-        "doc": "Group ID to change opacity of (a51)",
+        "doc": "Target ID to change opacity of (a51)",
         "key": "a51"
       }
     ],
@@ -244,9 +244,9 @@
     ],
     "props": [
       {
-        "name": "group_id",
+        "name": "target_id",
         "type": "int",
-        "doc": "Group ID to toggle (a51)",
+        "doc": "Target ID to toggle (a51)",
         "key": "a51"
       },
       {
@@ -354,9 +354,9 @@
     ],
     "props": [
       {
-        "name": "group_id",
+        "name": "target_id",
         "type": "int",
-        "doc": "Group ID to activate on touch (a51)",
+        "doc": "Target ID to activate on touch (a51)",
         "key": "a51"
       },
       {
