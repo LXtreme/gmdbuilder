@@ -23,6 +23,7 @@ import csv
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 TSV_FILE = Path("build_tools/typemap.tsv")
 OUT_FILE  = Path("docs/propdata.json")
@@ -35,7 +36,7 @@ def parse_names(raw: str) -> list[str]:
 
     Handles both formats:
       - "NAME(count), NAME(count), ..."   (numeric rows)
-      - "NAME"                            (plain kA/kS rows)
+      - "NAME, NAME, ..."                 (kA/kS rows — comma-separated aliases, no counts)
     """
     pairs: list[tuple[str, int]] = []
     for part in (p.strip() for p in raw.split(',') if p.strip()):
@@ -45,7 +46,7 @@ def parse_names(raw: str) -> list[str]:
     return [name for name, _ in pairs]
 
 
-def sort_key(raw_key: str) -> tuple[int, int | str]:
+def sort_key(raw_key: str) -> tuple[int, Any]:
     """Numeric keys sort before alpha keys; numeric keys sort by int value."""
     return (0, int(raw_key)) if raw_key.isdigit() else (1, raw_key)
 

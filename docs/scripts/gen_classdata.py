@@ -146,25 +146,27 @@ def extract_methods(node: ast.ClassDef) -> list[dict[str, str]]:
 # Main
 # ---------------------------------------------------------------------------
 
-def parse_classes() -> list[dict[str,Any]]:
-    results: list[dict[str,Any]] = []
+def parse_classes() -> list[dict[str, Any]]:
+    results: list[dict[str, Any]] = []
 
     for pyfile in sorted(CLASSES_DIR.glob("*.py")):
         if pyfile.name.startswith("_"):
             continue
         tree = ast.parse(pyfile.read_text(encoding="utf-8"))
-        for node in ast.walk(tree):
+        # Iterate tree.body directly so we only visit top-level classes and
+        # preserve their source order (ast.walk is unordered breadth-first).
+        for node in tree.body:
             if isinstance(node, ast.ClassDef):
                 results.append({
-                    "name":    node.name,
-                    "file":    pyfile.name,
-                    "doc":     get_docstring(node),
-                    "bases":   [
+                    "name": node.name,
+                    "file": pyfile.name,
+                    "doc": get_docstring(node),
+                    "bases": [
                         b.attr if isinstance(b, ast.Attribute) else b.id
                         for b in node.bases
                         if isinstance(b, (ast.Attribute, ast.Name))
                     ],
-                    "props":   extract_props(node),
+                    "props": extract_props(node),
                     "methods": extract_methods(node),
                 })
 

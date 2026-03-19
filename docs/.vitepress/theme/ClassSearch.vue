@@ -2,6 +2,9 @@
 import { ref, computed } from 'vue'
 import classData from '../../classdata.json'
 
+// Pre-built lookup used by inheritanceChains — avoids rebuilding on every call.
+const byName = Object.fromEntries(classData.map(c => [c.name, c]))
+
 const query = ref('')
 const expanded = ref(new Set())
 
@@ -24,6 +27,9 @@ function collapseAll() {
   expanded.value = new Set()
 }
 
+// ObjField is the base descriptor class — it appears in classdata.json because
+// the AST parser picks up all classes, but it isn't a user-facing wrapper and
+// should not appear in the search UI.
 const BASE_CLASSES = new Set(['ObjField'])
 
 const displayClasses = computed(() =>
@@ -58,27 +64,6 @@ const results = computed(() => {
     .map(({ cls }) => cls)
 })
 
-function filteredProps(cls) {
-  const q = query.value.trim().toLowerCase()
-  if (!q) return cls.props
-  return cls.props.filter(
-    p =>
-      p.name.toLowerCase().includes(q) ||
-      (p.key && p.key.toLowerCase().includes(q)) ||
-      p.doc.toLowerCase().includes(q)
-  )
-}
-
-function filteredMethods(cls) {
-  const q = query.value.trim().toLowerCase()
-  if (!q) return cls.methods
-  return cls.methods.filter(
-    m =>
-      m.name.toLowerCase().includes(q) ||
-      m.doc.toLowerCase().includes(q)
-  )
-}
-
 function highlight(text, q) {
   if (!q || !text) return text
   const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -89,18 +74,23 @@ function hl(text) {
   return highlight(text, query.value.trim().toLowerCase())
 }
 
-function inheritanceChain(cls) {
-  const byName = Object.fromEntries(classData.map(c => [c.name, c]))
-  const chain = [cls.name]
-  let current = cls
-  while (current.bases && current.bases.length > 0) {
-    const parentName = current.bases[0]
-    chain.unshift(parentName)
-    current = byName[parentName]
-    if (!current) break
+// Pre-computed inheritance chain for every class, keyed by class name.
+// Avoids calling the chain builder on every render cycle in the template.
+const inheritanceChains = computed(() => {
+  const result = {}
+  for (const cls of classData) {
+    const chain = [cls.name]
+    let current = cls
+    while (current.bases && current.bases.length > 0) {
+      const parentName = current.bases[0]
+      chain.unshift(parentName)
+      current = byName[parentName]
+      if (!current) break
+    }
+    result[cls.name] = chain
   }
-  return chain
-}
+  return result
+})
 </script>
 
 <template>
@@ -135,10 +125,10 @@ function inheritanceChain(cls) {
           <span class="cls-chevron">{{ isExpanded(cls.name) ? '▾' : '▸' }}</span>
           <span class="cls-name" v-html="hl(cls.name)" />
           <span class="cls-inheritance">
-            <span v-for="(part, i) in inheritanceChain(cls)" :key="i">
+            <template v-for="(part, i) in inheritanceChains[cls.name]" :key="i">
               <span :class="part === cls.name ? 'cls-inherit-self' : 'cls-inherit-part'">{{ part }}</span>
-              <span v-if="i < inheritanceChain(cls).length - 1" class="cls-inherit-arrow"> → </span>
-            </span>
+              <span v-if="i < inheritanceChains[cls.name].length - 1" class="cls-inherit-arrow"> → </span>
+            </template>
           </span>
         </div>
         <div class="cls-header-right">
@@ -161,15 +151,12 @@ function inheritanceChain(cls) {
         <template v-if="cls.methods.length > 0">
           <div class="cls-section-title">Methods</div>
           <div
-            v-for="m in filteredMethods(cls)"
+            v-for="m in cls.methods"
             :key="m.name"
             class="cls-method"
           >
             <code class="cls-method-sig" v-html="hl(m.sig)" />
             <p v-if="m.doc" class="cls-method-doc" v-html="hl(m.doc)" />
-          </div>
-          <div v-if="filteredMethods(cls).length === 0" class="cls-empty">
-            No methods match the current filter.
           </div>
         </template>
 
@@ -186,7 +173,7 @@ function inheritanceChain(cls) {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="p in filteredProps(cls)" :key="p.name">
+              <tr v-for="p in cls.props" :key="p.name">
                 <td><span class="cls-prop-name" v-html="hl(p.name)" /></td>
                 <td><span class="cls-prop-type" v-html="hl(p.type)" /></td>
                 <td>
@@ -194,9 +181,6 @@ function inheritanceChain(cls) {
                   <span v-else class="cls-no-key">—</span>
                 </td>
                 <td><span class="cls-prop-desc" v-html="hl(p.doc)" /></td>
-              </tr>
-              <tr v-if="filteredProps(cls).length === 0">
-                <td colspan="4" class="cls-empty">No properties match the current filter.</td>
               </tr>
             </tbody>
           </table>
