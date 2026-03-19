@@ -305,7 +305,7 @@ class Trigger:
     class Alpha:
         DURATION = "a10"
         OPACITY = "a35"
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
 
     class Animate:
         TARGET_ID = "a51"
@@ -378,7 +378,7 @@ class Trigger:
         RESPAWN_ID = "a448"
 
     class Collectible:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
         SUB_COUNT = "a78"
         ITEM_ID = "a80"
         PICKUP_ITEM = "a381"
@@ -578,7 +578,7 @@ class Trigger:
         INSTANT = "a487"
 
     class EndWall:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
         LOCK_Y = "a59"
         REVERSE = "a118"
 
@@ -711,7 +711,7 @@ class Trigger:
     class Keyframe:
         DURATION = "a10"
         EASING = "a30"
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
         SPAWN_ID = "a71"
         EASE_RATE = "a85"
         KEY_ID = "a373"
@@ -729,7 +729,7 @@ class Trigger:
         SPAWN_DELAY = "a557"
 
     class LinkVisible:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
 
     class MgEdit:
         DURATION = "a10"
@@ -784,7 +784,7 @@ class Trigger:
         AXIS = "a101"
 
     class OnDeath:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
         ACTIVATE_GROUP = "a56"
 
     class Options:
@@ -848,7 +848,7 @@ class Trigger:
         FALSE_ID = "a71"
 
     class Reset:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
 
     class Rotate:
         DURATION = "a10"
@@ -1247,24 +1247,24 @@ class Trigger:
         MULTI_ACTIVATE = "a475"
 
     class Toggle:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
         ACTIVATE_GROUP = "a56"
 
     class ToggleBlock:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
         ACTIVATE_GROUP = "a56"
         CLAIM_TOUCH = "a445"
         SPAWN_ONLY = "a504"
 
     class Touch:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
         HOLD_MODE = "a81"
         TOGGLE_MODE = "a82"
         DUAL_MODE = "a89"
         ONLY_PLAYER = "a198"
 
     class Ui:
-        GROUP_ID = "a51"
+        TARGET_ID = "a51"
         UI_TARGET = "a71"
         REF_X = "a385"
         REF_Y = "a386"

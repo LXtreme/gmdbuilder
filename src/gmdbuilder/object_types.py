@@ -873,7 +873,7 @@ class AdvRandomType(TriggerType, total=False):
 class AlphaType(TriggerType, total=False):
     a10: float  # DURATION
     a35: float  # OPACITY
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
 
 class AnimateType(TriggerType, total=False):
     a51: int  # TARGET_ID
@@ -947,7 +947,7 @@ class CheckpointType(TriggerType, total=False):
     a448: int  # RESPAWN_ID
 
 class CollectibleType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
     a78: bool  # SUB_COUNT
     a80: int  # ITEM_ID
     a381: bool  # PICKUP_ITEM
@@ -1147,7 +1147,7 @@ class EndType(TriggerType, total=False):
     a487: bool  # INSTANT
 
 class EndWallType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
     a59: bool  # LOCK_Y
     a118: bool  # REVERSE
 
@@ -1276,7 +1276,7 @@ class ItemPersistType(TriggerType, total=False):
 class KeyframeType(TriggerType, total=False):
     a10: float  # DURATION
     a30: EASING  # EASING
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
     a71: int  # SPAWN_ID
     a85: float  # EASE_RATE
     a373: int  # KEY_ID
@@ -1294,7 +1294,7 @@ class KeyframeType(TriggerType, total=False):
     a557: float  # SPAWN_DELAY
 
 class LinkVisibleType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
 
 class MgEditType(TriggerType, total=False):
     a10: float  # DURATION
@@ -1350,7 +1350,7 @@ class OffsetGameplayType(TriggerType, total=False):
     a101: XY_ONLY  # AXIS
 
 class OnDeathType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
     a56: bool  # ACTIVATE_GROUP
 
 class OptionsType(TriggerType, total=False):
@@ -1414,7 +1414,7 @@ class RandomType(TriggerType, total=False):
     a71: int  # FALSE_ID
 
 class ResetType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
 
 class RotateType(TriggerType, total=False):
     a10: float  # DURATION
@@ -1690,24 +1690,24 @@ class TimeEventType(TriggerType, total=False):
     a475: bool  # MULTI_ACTIVATE
 
 class ToggleType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
     a56: bool  # ACTIVATE_GROUP
 
 class ToggleBlockType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
     a56: bool  # ACTIVATE_GROUP
     a445: bool  # CLAIM_TOUCH
     a504: bool  # SPAWN_ONLY
 
 class TouchType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
     a81: bool  # HOLD_MODE
     a82: TOUCH_TOGGLE  # TOGGLE_MODE
     a89: bool  # DUAL_MODE
     a198: TOUCH_PLAYER_ONLY  # ONLY_PLAYER
 
 class UiType(TriggerType, total=False):
-    a51: int  # GROUP_ID
+    a51: int  # TARGET_ID
     a71: int  # UI_TARGET
     a385: UI_REF  # REF_X
     a386: UI_REF  # REF_Y

@@ -72,8 +72,8 @@ class Touch(Trigger):
     # Properties
     # ------------------------------------------------------------------
 
-    group_id = ObjField[int](obj_prop.Trigger.Touch.GROUP_ID)
-    """Group ID to activate on touch (a51)"""
+    target_id = ObjField[int](obj_prop.Trigger.Touch.TARGET_ID)
+    """Target ID to activate on touch (a51)"""
 
     hold_mode = ObjField[bool](obj_prop.Trigger.Touch.HOLD_MODE)
     """Activate while held, deactivate on release (a81)"""

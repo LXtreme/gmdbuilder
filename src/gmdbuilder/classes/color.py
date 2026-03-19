@@ -154,8 +154,8 @@ class Alpha(Trigger):
     opacity = ObjField[float](obj_prop.Trigger.Alpha.OPACITY)
     """Target opacity 0.0-1.0 (a35)"""
 
-    group_id = ObjField[int](obj_prop.Trigger.Alpha.GROUP_ID)
-    """Group ID to change opacity of (a51)"""
+    target_id = ObjField[int](obj_prop.Trigger.Alpha.TARGET_ID)
+    """Target ID to change opacity of (a51)"""
 
 
 class Toggle(Trigger):
@@ -168,8 +168,8 @@ class Toggle(Trigger):
     # Properties
     # ------------------------------------------------------------------
 
-    group_id = ObjField[int](obj_prop.Trigger.Toggle.GROUP_ID)
-    """Group ID to toggle (a51)"""
+    target_id = ObjField[int](obj_prop.Trigger.Toggle.TARGET_ID)
+    """Target ID to toggle (a51)"""
 
     activate_group = ObjField[bool](obj_prop.Trigger.Toggle.ACTIVATE_GROUP)
     """True = activate, False = deactivate (a56)"""
