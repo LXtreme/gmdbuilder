@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import TYPE_CHECKING, Any, Callable, Generator
 
+from gmdbuilder.classes import Spawn
 from gmdbuilder.fields import key_is_allowed
 from gmdbuilder.mappings import obj_prop
 
@@ -138,3 +139,54 @@ def targets(target: int, target_2: int | None = None) -> NoGen:
             obj["a71"] = target_2  # type: ignore[literal-required]
     
     yield from _operation_context(_set_target)
+
+
+@trigger_fn(spawn_ordered=True, params=[1,2], group=4)
+def func():
+    a = Move()
+    a.move_x = 10
+    a.duration = 0.5
+    wait(0.5)
+    # adds 0.5 * 311.58 (player speed for spawn-ordered mode)
+    # to x position for all created triggers after this
+    b = Move()
+    b.move_x = -10
+    b.duration = 0.5
+
+
+@trigger_fn(params=[1,2], group=4)
+def func2():
+    a = Move()
+    a.move_x = 10
+    a.duration = 0.5
+    b = Move() # adds 2 to the X position (guarentees order of execution)
+    wait(0.5)
+    # creates spawn trigger for previous group, the following created triggers are under new group
+    c = Move()
+    c.move_x = -10
+    c.duration = 0.5
+    func.call()
+    
+
+@contextmanager
+def delay(seconds: float = 0.0) -> NoGen:
+    """Creates a spawn trigger that spawns newly created triggers after a delay"""
+    lvl = _levels.get()
+    if not lvl:
+        raise RuntimeError("delay() requires an active level_context()")
+    
+    g = lvl[-1].new.group()
+    def _set_delay_group(obj: ObjectType) -> None:
+        groups = set(obj.get(obj_prop.GROUPS, set()))
+        groups.add(g)
+        obj[obj_prop.GROUPS] = groups
+    
+    _push_operation(_set_delay_group)
+    try:
+        yield
+    finally:
+        _pop_operation()
+        spawn = Spawn()
+        spawn.target_id = g
+        spawn.delay = seconds
+        lvl[-1].objects.append(spawn.obj)

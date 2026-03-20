@@ -1,3 +1,5 @@
+UNFINISHED PAGE
+
 # Object Types
 
 Every object in `level.objects` has a base type of `ObjectType` — essentially a `dict[str, Any]`. When iterating a mixed list you often want to work only with a specific trigger type. gmdbuilder provides two TypeGuard helpers for this.
