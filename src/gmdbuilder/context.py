@@ -26,10 +26,6 @@ class _ContextState:
     
     autoappend: ContextVar[bool] = ContextVar('gmdbuilder.autoappend', default=False)
     operations: ContextVar[tuple[Transform, ...]] = ContextVar('gmdbuilder.operations', default=())
-    """
-    Ordered tuple of transform functions applied to every new object.
-    Each entry is a closure added by a context manager (groups, targets, set_prop, etc.).
-    """
 
     fn_group: ContextVar[int | None] = ContextVar('gmdbuilder.fn_group', default=None)
     """The active trigger function group ID."""
@@ -46,7 +42,7 @@ class _ContextState:
     spawn_ordered: ContextVar[bool] = ContextVar('gmdbuilder.spawn_ordered', default=False)
     """
     Whether wait() advances the X cursor (True) or creates a spawn-trigger chain (False).
-    Set by order() or by @trigger_fn(spawn_ordered=True).
+    Set by order(pawn_ordered=True) or by @trigger_fn(spawn_ordered=True).
     """
 
 
@@ -76,25 +72,8 @@ def _operation_context(fn: Transform) -> NoGen:
         pop_op()
 
 
-# ---------------------------------------------------------------------------
-# Object creation hook
-# ---------------------------------------------------------------------------
-
 def post_object_creation(obj: ObjectType) -> None:
-    """
-    Called on every new object (new_obj, from_object_string, wrapper constructors).
-    Applies all active context state to the object in a defined order:
-
-      1. operations  — all active transform closures: groups, targets, set_prop,
-                       and any operations pushed by trigger_fn at build time
-                       (fn_group assignment, x-cursor advance, etc.)
-      2. autoappend  — append to the active level after all mutations are done
-
-    trigger_fn drives fn_group assignment and x-cursor positioning by pushing
-    the appropriate operations before running the body, via the captured
-    definition-time context. This function has no special knowledge of those
-    concerns — it only sees the operations tuple.
-    """
+    """Called on every new object (new_obj, from_object_string, wrapper constructors)."""
     for fn in ctx.operations.get():
         fn(obj)
 
@@ -113,13 +92,12 @@ def post_object_creation(obj: ObjectType) -> None:
 # ---------------------------------------------------------------------------
 
 @contextmanager
-def level_context(level: Level, autoappend: bool = True) -> NoGen:
+def level_context(level: Level, autoappend: bool = False) -> NoGen:
     """
     Sets the active level for the current scope.
 
-    autoappend (default True): newly created objects are automatically appended
-    to the level. Pass False when loading or reading a level without intending
-    to add objects in the current scope.
+    autoappend (default False): 
+        newly created objects are automatically appended to the level.
 
     Nested level_context calls are supported — the inner context takes full
     control for its duration, and the outer level is restored on exit.
@@ -137,11 +115,7 @@ def level_context(level: Level, autoappend: bool = True) -> NoGen:
 
 @contextmanager
 def autoappend() -> NoGen:
-    """
-    Enables auto-append for a narrower scope within an already-active level_context.
-    Useful when level_context was opened with autoappend=False and you need
-    auto-append behaviour for a specific block.
-    """
+    """Enables auto-append for a narrower scope within an already-active level_context."""
     if ctx.level.get() is None:
         raise RuntimeError("autoappend() requires an active level_context()")
     old = ctx.autoappend.get()
@@ -171,8 +145,6 @@ def set_prop(key: str, value: Any) -> NoGen:
 def groups(*group_ids: int) -> NoGen:
     """
     Additively adds group IDs to every newly created object within this scope.
-    Crosses trigger function scope boundaries — intended for cross-cutting group
-    membership such as editor selection groups or debug groups.
     For trigger function grouping, trigger_fn handles group assignment via fn_group.
     """
     def _apply(obj: ObjectType) -> None:
