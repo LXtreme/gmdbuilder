@@ -3,12 +3,14 @@ from .level import Level
 from .id import NamedInt
 from . import context
 from .context import (
+    ctx,
     level_context,
     autoappend,
+    order,
     transform,
     targets,
     groups,
-    set_prop
+    set_prop,
 )
 
 from .core import (
@@ -43,8 +45,10 @@ __all__ = [
     "Level",
     # Context
     "context",
+    "ctx",
     "level_context",
     "autoappend",
+    "order",
     "transform",
     "targets",
     "groups",

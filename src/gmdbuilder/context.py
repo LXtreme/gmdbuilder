@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import TYPE_CHECKING, Any, Callable, Generator
+from typing import TYPE_CHECKING, Any, Callable, Generator, TypeVar
 
-from gmdbuilder.classes import Spawn
 from gmdbuilder.fields import key_is_allowed
 from gmdbuilder.mappings import obj_prop
 
@@ -18,175 +17,211 @@ Transform = Callable[[ObjectType], None]
 NoGen = Generator[None, None, None]
 
 # ---------------------------------------------------------------------------
-# ContextVar Management
+# Context state
 # ---------------------------------------------------------------------------
 
-_operations: ContextVar[list[Transform]] = ContextVar('_operations', default=[])
-
-_levels: ContextVar[list[Level]] = ContextVar('_levels', default=[])
+T = TypeVar("T")
 
 
-def _push_operation(fn: Transform) -> None:
-    current = _operations.get()
-    _operations.set(current + [fn])
+class _ContextState:
+    """Central namespace for all of gmdbuilder's active build state."""
+
+    level: ContextVar[Level | None] = ContextVar('gmdbuilder.level', default=None)
+    
+    autoappend: ContextVar[bool] = ContextVar('gmdbuilder.autoappend', default=False)
+    operations: ContextVar[tuple[Transform, ...]] = ContextVar('gmdbuilder.operations', default=())
+    """
+    Ordered tuple of transform functions applied to every new object.
+    Each entry is a closure added by a context manager (groups, targets, set_prop, etc.).
+    """
+
+    fn_group: ContextVar[int | None] = ContextVar('gmdbuilder.fn_group', default=None)
+    """The active trigger function group ID."""
+
+    x_cursor: ContextVar[float] = ContextVar('gmdbuilder.x_cursor', default=0.0)
+    """
+    Current X position for trigger placement within a trigger function scope.
+    Managed by trigger_fn's build mechanism and by wait():
+      - Regular mode: advanced by 1.3 units per object created (via a pushed operation).
+      - Spawn-ordered mode: advanced by t * 311.58 units per wait(t) call.
+    Reset to 0 when entering an order() scope or when trigger_fn starts a build.
+    """
+
+    spawn_ordered: ContextVar[bool] = ContextVar('gmdbuilder.spawn_ordered', default=False)
+    """
+    Whether wait() advances the X cursor (True) or creates a spawn-trigger chain (False).
+    Set by order() or by @trigger_fn(spawn_ordered=True).
+    """
 
 
-def _pop_operation() -> None:
-    current = _operations.get()
-    assert current
-    _operations.set(current[:-1])
-
-
-def _push_level(level: Level) -> None:
-    current = _levels.get()
-    _levels.set(current + [level])
-
-
-def _pop_level() -> None:
-    current = _levels.get()
-    assert current
-    _levels.set(current[:-1])
+ctx = _ContextState()
+"""Singleton access point for all active gmdbuilder build state."""
 
 
 # ---------------------------------------------------------------------------
-# Public helpers
+# Internal helpers
+# ---------------------------------------------------------------------------
+
+def _push_op(fn: Transform) -> None:
+    ctx.operations.set(ctx.operations.get() + (fn,))
+
+def _pop_op() -> None:
+    ctx.operations.set(ctx.operations.get()[:-1])
+
+
+def _operation_context(fn: Transform) -> NoGen:
+    """Raw generator helper: push fn onto the operations tuple, yield, then pop."""
+    _push_op(fn)
+    try:
+        yield
+    finally:
+        _pop_op()
+
+
+# ---------------------------------------------------------------------------
+# Object creation hook
 # ---------------------------------------------------------------------------
 
 def post_object_creation(obj: ObjectType) -> None:
     """
-    Called internally on every new object creation (new_obj, from_object_string).
-    Runs all active context operations against the object in registration order.
+    Called on every new object (new_obj, from_object_string, wrapper constructors).
+    Applies all active context state to the object in a defined order:
+
+      1. operations  — all active transform closures: groups, targets, set_prop,
+                       and any operations pushed by trigger_fn at build time
+                       (fn_group assignment, x-cursor advance, etc.)
+      2. autoappend  — append to the active level after all mutations are done
+
+    trigger_fn drives fn_group assignment and x-cursor positioning by pushing
+    the appropriate operations before running the body, via the captured
+    definition-time context. This function has no special knowledge of those
+    concerns — it only sees the operations tuple.
     """
-    for fn in _operations.get():
+    for fn in ctx.operations.get():
         fn(obj)
+
+    if ctx.autoappend.get():
+        lvl = ctx.level.get()
+        if lvl is None:
+            raise RuntimeError(
+                "autoappend is active but there is no active level_context(). "
+                "This should not happen — please file a bug report."
+            )
+        lvl.objects.append(obj)
 
 
 # ---------------------------------------------------------------------------
 # Context managers
 # ---------------------------------------------------------------------------
 
-def _operation_context(fn: Transform) -> NoGen:
-    """
-    Raw generator helper: push fn, yield control to the caller's @contextmanager
-    frame via 'yield from', then pop on exit.  Never call this directly as a
-    context manager — always delegate from a @contextmanager-decorated function.
-    """
-    _push_operation(fn)
-    try:
-        yield
-    finally:
-        _pop_operation()
-
-
 @contextmanager
-def level_context(level: Level) -> NoGen:
-    """Required by utilities that need level reference (e.g. autoappend)."""
-    _push_level(level)
+def level_context(level: Level, autoappend: bool = True) -> NoGen:
+    """
+    Sets the active level for the current scope.
+
+    autoappend (default True): newly created objects are automatically appended
+    to the level. Pass False when loading or reading a level without intending
+    to add objects in the current scope.
+
+    Nested level_context calls are supported — the inner context takes full
+    control for its duration, and the outer level is restored on exit.
+    """
+    old_level = ctx.level.get()
+    old_autoappend = ctx.autoappend.get()
+    ctx.level.set(level)
+    ctx.autoappend.set(autoappend)
     try:
         yield
     finally:
-        _pop_level()
+        ctx.level.set(old_level)
+        ctx.autoappend.set(old_autoappend)
 
 
 @contextmanager
 def autoappend() -> NoGen:
-    """Requires active level_context. Automatically appends newly created objects."""
-    lvl = _levels.get()
-    if not lvl:
+    """
+    Enables auto-append for a narrower scope within an already-active level_context.
+    Useful when level_context was opened with autoappend=False and you need
+    auto-append behaviour for a specific block.
+    """
+    if ctx.level.get() is None:
         raise RuntimeError("autoappend() requires an active level_context()")
-    
-    yield from _operation_context(lambda obj: lvl[-1].objects.append(obj))
+    old = ctx.autoappend.get()
+    ctx.autoappend.set(True)
+    try:
+        yield
+    finally:
+        ctx.autoappend.set(old)
 
 
 @contextmanager
 def transform(fn: Transform) -> NoGen:
-    """
-    Applies `fn(obj)` to every newly created object.
-    `fn` receives the object and mutates it in place.
-    """
+    """Applies fn(obj) to every newly created object within this scope."""
     yield from _operation_context(fn)
-
 
 
 @contextmanager
 def set_prop(key: str, value: Any) -> NoGen:
-    """Automatically set a specific property on every newly created object."""
-    def _set_property(obj: ObjectType) -> None:
+    """Automatically sets a specific property on every newly created object."""
+    def _apply(obj: ObjectType) -> None:
         if key_is_allowed(obj[obj_prop.ID], key):
             obj[key] = value  # type: ignore[literal-required]
-    
-    yield from _operation_context(_set_property)
+    yield from _operation_context(_apply)
 
 
 @contextmanager
 def groups(*group_ids: int) -> NoGen:
-    """Adds one or more group IDs to every newly created object."""
-    def _add_groups(obj: ObjectType) -> None:
-        groups = set(obj.get(obj_prop.GROUPS, set()))
-        groups.update(group_ids)
-        obj[obj_prop.GROUPS] = groups
-    
-    yield from _operation_context(_add_groups)
+    """
+    Additively adds group IDs to every newly created object within this scope.
+    Crosses trigger function scope boundaries — intended for cross-cutting group
+    membership such as editor selection groups or debug groups.
+    For trigger function grouping, trigger_fn handles group assignment via fn_group.
+    """
+    def _apply(obj: ObjectType) -> None:
+        g = set(obj.get(obj_prop.GROUPS, set()))
+        g.update(group_ids)
+        obj[obj_prop.GROUPS] = g
+    yield from _operation_context(_apply)
 
 
 @contextmanager
 def targets(target: int, target_2: int | None = None) -> NoGen:
-    """Automatically set target property 'a51' and secondary target 'a71' on trigger creation."""
-    def _set_target(obj: ObjectType) -> None:
-        if key_is_allowed(obj[obj_prop.ID], "a51") and target:
+    """
+    Sets the target group (a51) and optional secondary target (a71)
+    on every newly created trigger within this scope.
+    """
+    def _apply(obj: ObjectType) -> None:
+        if key_is_allowed(obj[obj_prop.ID], "a51"):
             obj["a51"] = target  # type: ignore[literal-required]
-        if key_is_allowed(obj[obj_prop.ID], "a71") and target_2:
+        if target_2 is not None and key_is_allowed(obj[obj_prop.ID], "a71"):
             obj["a71"] = target_2  # type: ignore[literal-required]
-    
-    yield from _operation_context(_set_target)
+    yield from _operation_context(_apply)
 
-
-@trigger_fn(spawn_ordered=True, params=[1,2], group=4)
-def func():
-    a = Move()
-    a.move_x = 10
-    a.duration = 0.5
-    wait(0.5)
-    # adds 0.5 * 311.58 (player speed for spawn-ordered mode)
-    # to x position for all created triggers after this
-    b = Move()
-    b.move_x = -10
-    b.duration = 0.5
-
-
-@trigger_fn(params=[1,2], group=4)
-def func2():
-    a = Move()
-    a.move_x = 10
-    a.duration = 0.5
-    b = Move() # adds 2 to the X position (guarentees order of execution)
-    wait(0.5)
-    # creates spawn trigger for previous group, the following created triggers are under new group
-    c = Move()
-    c.move_x = -10
-    c.duration = 0.5
-    func.call()
-    
 
 @contextmanager
-def delay(seconds: float = 0.0) -> NoGen:
-    """Creates a spawn trigger that spawns newly created triggers after a delay"""
-    lvl = _levels.get()
-    if not lvl:
-        raise RuntimeError("delay() requires an active level_context()")
-    
-    g = lvl[-1].new.group()
-    def _set_delay_group(obj: ObjectType) -> None:
-        groups = set(obj.get(obj_prop.GROUPS, set()))
-        groups.add(g)
-        obj[obj_prop.GROUPS] = groups
-    
-    _push_operation(_set_delay_group)
+def order(spawn_ordered: bool = True) -> NoGen:
+    """
+    Sets the trigger ordering mode for this scope and resets the X cursor to 0.
+
+    spawn_ordered=True:
+        wait(t) advances the X cursor by t * 311.58 units. All triggers in the
+        same group are sequenced by X position. No extra groups or spawn triggers
+        are needed for timing, but timing is baked in at build time.
+
+    spawn_ordered=False (default when not in any order() scope):
+        wait(t) allocates a new group chained via a spawn trigger with the given
+        delay. Triggers within each group are auto-spaced by X += 1.3 to
+        guarantee sub-tick execution order without relying on object-list position.
+
+    Entering order() always resets the X cursor to 0 so the sequence starts clean.
+    The previous cursor position is restored on exit.
+    """
+    old_ordered = ctx.spawn_ordered.get()
+    old_cursor = ctx.x_cursor.get()
+    ctx.spawn_ordered.set(spawn_ordered)
+    ctx.x_cursor.set(0.0)
     try:
         yield
     finally:
-        _pop_operation()
-        spawn = Spawn()
-        spawn.target_id = g
-        spawn.delay = seconds
-        lvl[-1].objects.append(spawn.obj)
+        ctx.spawn_ordered.set(old_ordered)
+        ctx.x_cursor.set(old_cursor)

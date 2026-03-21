@@ -1,7 +1,7 @@
 # trigger_fn design
 
 ```python
-from gmdbuilder import Level, trigger_fn, wait, level_context, autoappend
+from gmdbuilder import Level, trigger_fn, wait, order, level_context, autoappend
 from gmdbuilder import new_obj, obj_prop, obj_id
 from gmdbuilder.classes import Move, Count, Spawn
 
@@ -12,6 +12,11 @@ level = Level.from_file("example.gmd")
 # All triggers inside are automatically spawn_triggered and multi_triggered.
 # Group is auto-allocated on first access of .group or on first .call(),
 # whichever comes first. Requires active level_context at that point.
+#
+# In regular mode, each trigger created inside the function is automatically
+# placed at X += 1.3 units ahead of the previous one within the same group.
+# This guarantees sub-tick execution order matches creation order without
+# relying on object-string position.
 
 @trigger_fn
 def move_right():
@@ -21,16 +26,22 @@ def move_right():
     m.duration = 0.5
 
 
-# --- spawn_ordered mode ---
-# All triggers share a single group, sequenced by X position rather than spawn delay chains.
-# wait(t) advances the X offset by t * 311.58 units (GD's 1x speed constant).
-# More efficient than regular mode: no extra groups or spawn triggers needed for timing.
-# Tradeoff: timing is baked into X positions at build time and cannot be remapped at runtime.
+# --- order() context manager ---
+# Sets the ordering mode for wait() calls within its scope.
+# Can be used as a standalone context manager or via spawn_ordered= on @trigger_fn.
+# @trigger_fn(spawn_ordered=True) is shorthand for wrapping the entire body in
+# order(spawn_ordered=True).
 #
-# Triggers with the same logical time share the same X position.
-# No micro-gaps are added automatically — sub-tick ordering for same-X triggers
-# is determined by their order in the level's object string (i.e. order of creation).
-# Explicit wait() is the only way to advance time.
+# order(spawn_ordered=True):
+#   wait(t) advances the X offset of subsequent triggers by t * 311.58 units
+#   (GD's 1x speed constant). No implicit X stepping between triggers —
+#   same-X triggers are ordered by object-string position (i.e. creation order).
+#   Advantage: no extra groups or spawn triggers needed for timing.
+#   Tradeoff: timing is baked into X positions at build time.
+#
+# Regular mode (default / order(spawn_ordered=False)):
+#   wait(t) allocates a new group, chained via a spawn trigger with the given delay.
+#   Triggers within each group are auto-spaced by X += 1.3 for subtick ordering.
 
 @trigger_fn(spawn_ordered=True)
 def move_bounce():
@@ -38,8 +49,8 @@ def move_bounce():
     m.target_id = 45
     m.move_x = 100
     m.duration = 0.5
-    wait() # x offset += 1.3
-    wait(0.5)       # X offset += 0.5 * 311.58 units for all subsequent triggers
+    wait()        # X offset += 1.3 (one tick gap, subtick ordering only)
+    wait(0.5)     # X offset += 0.5 * 311.58 units; all subsequent triggers shift forward
     m2 = Move()
     m2.target_id = 45
     m2.move_x = -100
@@ -50,7 +61,11 @@ def move_bounce():
 # wait(t) allocates a new group and chains it to the current one via a spawn trigger
 # with the given delay. Triggers placed after wait() belong to the new group.
 # Sub-groups are managed transparently — callers never need to track them.
-# Sub-tick ordering without wait() is determined by X position, then object string order.
+# Within each group, triggers are auto-spaced by X += 1.3 for subtick ordering.
+#
+# wait() with no argument:
+#   Spawn-ordered mode: X offset += 1.3 (one tick gap, subtick ordering only).
+#   Regular mode: TBD — either a delay-0 spawn chain or an X-only step.
 
 @trigger_fn
 def move_then_count():
@@ -58,8 +73,8 @@ def move_then_count():
     m.target_id = 45
     m.move_x = 100
     m.duration = 0.5
-    wait(0.5)       # new group allocated, spawn trigger added with delay=0.5
-    c = Count()     # belongs to the new group
+    wait(0.5)    # new group allocated, spawn trigger added with delay=0.5
+    c = Count()  # belongs to the new group
     c.item_id = 10
     c.count = 1
 
@@ -76,10 +91,11 @@ def pinned_fn():
     m.move_x = 50
 
 
-# --- params: remap allowlist ---
-# params declares which group IDs inside the function are valid remap targets.
-# Passing a key not in params raises ValueError at the .call() site.
-# Omitting params entirely means any remap is allowed — no validation.
+# --- params: required remap list ---
+# params declares which group IDs must appear in the remap dict on every .call().
+# ALL listed IDs must be included — omitting any one raises ValueError at the call site.
+# Extra remap keys beyond those listed in params are silently accepted.
+# Omitting params entirely disables validation — any remap dict (or none) is accepted.
 
 @trigger_fn(spawn_ordered=True, params=[45, 67])
 def two_targets():
@@ -95,40 +111,66 @@ def two_targets():
 
 
 # --- .call() ---
-# The build phase (first .call()) requires level_context and autoappend to be active.
-# RuntimeError if either is missing at that point.
+# The build phase runs on the first .call() (or first .group access) per level.
+# Both level_context and autoappend must be active at build time.
+# RuntimeError if either is missing.
+#
+# Requiring autoappend at build time keeps the build path unambiguous:
+# all trigger function internals go through the same validated append route,
+# with no risk of objects being missed, duplicated, or appended to the wrong level.
 #
 # .call() always returns the spawn trigger it creates.
 # If autoappend is active at the call site, the spawn trigger is appended automatically.
-# If not, the returned spawn trigger can be appended or modified manually.
-# This means subsequent .call() invocations after the first do not strictly require autoappend.
+# If not, the returned spawn trigger can be modified and appended manually.
+# Subsequent .call() invocations after the build do not require autoappend.
 
 with level_context(level):
     with autoappend():
+        move_right.call()            # build + spawn trigger appended, delay=0
+        move_right.call(delay=2.0)   # spawn trigger appended, delay=2.0
 
-        move_right.call()               # build + spawn trigger appended, delay=0
-        move_right.call(delay=2.0)      # spawn trigger appended, delay=2.0
+        two_targets.call(remap={45: 100, 67: 200})           # all params remapped ✓
+        two_targets.call(remap={45: 100, 67: 200, 99: 300})  # extra key ok ✓
+        # two_targets.call()                 # ValueError: params [45, 67] must be remapped
+        # two_targets.call(remap={45: 100})  # ValueError: 67 missing from remap
 
-        two_targets.call()                          # no remap, 45 and 67 used as-is
-        two_targets.call(remap={45: 100})           # remapping one is fine
-        two_targets.call(remap={45: 100, 67: 200})  # remap both
-        # two_targets.call(remap={99: 1})           # ValueError: 99 not in params=[45, 67]
-
-# calling outside of autoappend — spawn trigger returned for manual handling
+# Calling outside autoappend — spawn trigger returned for manual handling.
+# Build already happened above so no level_context needed here.
 sp = move_right.call()  # spawn trigger not auto-appended
 sp[obj_prop.X] = 300    # modify before appending manually
 level.objects.append(sp)
 
 # .group is an IntEnum, usable anywhere a plain int group ID is expected
 s = Spawn()
-s.target_id = move_right.group  # .group already allocated from the .call() above
+s.target_id = move_right.group  # already allocated from the .call() above
 s.delay = 1.0
+
+
+# --- Context capture ---
+# @trigger_fn captures the active ContextVar state at definition time.
+# At build time, the body runs inside that captured context, with the function's
+# own fn_group overlaid on top. Context managers active at definition time —
+# such as groups(), order(), or custom transforms — are inherited by the body.
+#
+# The spawn trigger emitted by .call() inherits the context active at the call site,
+# independently of the definition-time context.
+
+with groups(debug_g):
+    @trigger_fn
+    def move_debug():
+        m = Move()      # in {fn_group, debug_g} at build time — debug_g captured
+        m.target_id = 45
+        m.move_x = 50
+
+with level_context(level), autoappend():
+    move_debug.call()   # spawn trigger inherits call-site context, not definition-time context
 
 
 # --- Nesting ---
 # Trigger functions can call other trigger functions inside their body.
 # inner only needs to be defined by the time outer.call() is first invoked, not before.
-# If inner hasn't been built yet when outer's body runs, it is built at that point.
+# If inner has not been built yet when outer's body runs, it is built at that point
+# using inner's own captured definition-time context — not outer's build context.
 
 @trigger_fn
 def inner():
@@ -142,33 +184,32 @@ def outer():
     m.target_id = 10
     m.move_x = 50
     wait(0.3)
-    inner.call()        # emits a spawn trigger to inner's group inside outer's chain
-    inner.call(delay=1) # call it again later
+    inner.call()         # emits a spawn trigger to inner.group inside outer's chain
+    inner.call(delay=1)  # call it again later
 
 
 # --- Parameterized variants: generator pattern ---
-# @trigger_fn does not accept runtime parameters on the function itself.
-# Wrap in a normal function to bake different values into separate, independent
-# trigger functions. Each factory call produces its own group.
+# @trigger_fn does not support runtime parameters on the function itself.
+# Wrap in a normal Python function to bake script-time values into separate,
+# independent trigger functions. Each factory call produces its own group.
 # Type checking on the factory's parameters works as normal.
 
 def make_mover(target: int, amount: int):
     @trigger_fn
     def _fn():
         m = Move()
-        m.target_id = target    # baked in at factory-call time, no placeholder IDs
+        m.target_id = target   # baked in at factory-call time, no placeholder IDs
         m.move_x = amount
         m.duration = 0.5
     return _fn
 
-mover_a = make_mover(target=45, amount=100)     # owns its own group
-mover_b = make_mover(target=67, amount=-100)    # completely independent group
+mover_a = make_mover(target=45, amount=100)   # owns its own group
+mover_b = make_mover(target=67, amount=-100)  # completely independent group
 
-with level_context(level):
-    with autoappend():
-        mover_a.call()
-        mover_b.call(delay=1.0)
-        mover_a.call(delay=2.0)  # calls the already-built mover_a again
+with level_context(level), autoappend():
+    mover_a.call()
+    mover_b.call(delay=1.0)
+    mover_a.call(delay=2.0)  # calls the already-built mover_a again
 
 
 # --- Properties ---
@@ -176,10 +217,11 @@ with level_context(level):
 move_right.group    # IntEnum — the allocated group ID.
                     # For @trigger_fn(group=5): available immediately.
                     # For auto-allocated: lazily calls level.new.group() on first access.
-                    # Raises if accessed without active level_context before allocation.
+                    # Raises RuntimeError if accessed without active level_context
+                    # before first allocation.
 
-move_right.params   # list[int] | None — the remap allowlist.
-                    # None means unrestricted (params not specified).
+move_right.params   # list[int] | None — required remap keys.
+                    # None if params was not specified (no validation enforced).
 
 move_right.objects  # list[ObjectType] — every object built into this function,
                     # including objects in sub-groups created by wait().
