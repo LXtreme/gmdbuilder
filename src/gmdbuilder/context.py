@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import TYPE_CHECKING, Any, Callable, Generator, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Generator
 
-from gmdbuilder.fields import key_is_allowed
-from gmdbuilder.mappings import obj_prop
-
+from .fields import key_is_allowed
+from .mappings import obj_prop
 from .object_types import ObjectType
 
 if TYPE_CHECKING:
@@ -19,9 +18,6 @@ NoGen = Generator[None, None, None]
 # ---------------------------------------------------------------------------
 # Context state
 # ---------------------------------------------------------------------------
-
-T = TypeVar("T")
-
 
 class _ContextState:
     """Central namespace for all of gmdbuilder's active build state."""
@@ -62,20 +58,22 @@ ctx = _ContextState()
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _push_op(fn: Transform) -> None:
+def push_op(fn: Transform) -> None:
+    """Push a transform operation onto the active operations tuple. Intra-package use only."""
     ctx.operations.set(ctx.operations.get() + (fn,))
 
-def _pop_op() -> None:
+def pop_op() -> None:
+    """Pop the last transform operation from the active operations tuple. Intra-package use only."""
     ctx.operations.set(ctx.operations.get()[:-1])
 
 
 def _operation_context(fn: Transform) -> NoGen:
     """Raw generator helper: push fn onto the operations tuple, yield, then pop."""
-    _push_op(fn)
+    push_op(fn)
     try:
         yield
     finally:
-        _pop_op()
+        pop_op()
 
 
 # ---------------------------------------------------------------------------

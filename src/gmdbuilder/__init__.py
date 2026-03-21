@@ -12,6 +12,7 @@ from .context import (
     groups,
     set_prop,
 )
+from .trigger_fn import TriggerFunction, trigger_fn, wait
 
 from .core import (
     new_obj,
@@ -53,6 +54,10 @@ __all__ = [
     "targets",
     "groups",
     "set_prop",
+    # Trigger functions
+    "TriggerFunction",
+    "trigger_fn",
+    "wait",
     # Object
     "ObjectList",
     # ID allocation
