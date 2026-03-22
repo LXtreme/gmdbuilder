@@ -6,13 +6,16 @@ from .context import (
     ctx,
     level_context,
     autoappend,
-    order,
     transform,
     targets,
     groups,
     set_prop,
+    order,
+    delay,
+    wait,
 )
-from .trigger_fn import TriggerFunction, trigger_fn, wait
+
+from .trigger_fn import TriggerFunction, trigger_fn
 
 from .core import (
     new_obj,
@@ -54,6 +57,9 @@ __all__ = [
     "targets",
     "groups",
     "set_prop",
+    "delay",
+    "order",
+    "wait",
     # Trigger functions
     "TriggerFunction",
     "trigger_fn",

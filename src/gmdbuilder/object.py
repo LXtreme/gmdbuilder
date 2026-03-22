@@ -70,7 +70,9 @@ class ObjectList(list[ObjectType]):
     def __init__(self, *, tag_group: int = 9999):
         super().__init__()
         self.tag_group: int = tag_group
-        self._id_allocator: "IDAllocator | None" = None
+        """Group ID automatically added to objects on append/insert/extend."""
+        self._id_allocator: IDAllocator | None = None
+        """Private reference to the level's IDAllocator."""
     
     def delete_where(self, condition: ObjectPatternMatch, *, limit: int = -1) -> int:
         """

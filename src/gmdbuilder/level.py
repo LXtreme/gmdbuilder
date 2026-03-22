@@ -125,7 +125,6 @@ class Level:
                 list.append(self.objects, obj) # type: ignore
         
         self.new.register_free_ids_for_level(self.objects)
-        self.objects._id_allocator = self.new # type: ignore[assignment]
         
         print(f"\nLoaded {obj_count} objects from {filename or 'WSLiveEditor'} " 
               f"in {_time_since_last():.3f} seconds."
