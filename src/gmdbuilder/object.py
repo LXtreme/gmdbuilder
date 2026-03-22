@@ -1,5 +1,8 @@
 
-from typing import Any, Callable, Iterable, SupportsIndex, cast
+from typing import TYPE_CHECKING, Any, Callable, Iterable, SupportsIndex, cast
+
+if TYPE_CHECKING:
+    from .id import IDAllocator
 
 from .mappings import obj_prop
 from .object_types import ObjectType
@@ -67,6 +70,7 @@ class ObjectList(list[ObjectType]):
     def __init__(self, *, tag_group: int = 9999):
         super().__init__()
         self.tag_group: int = tag_group
+        self._id_allocator: "IDAllocator | None" = None
     
     def delete_where(self, condition: ObjectPatternMatch, *, limit: int = -1) -> int:
         """
@@ -123,6 +127,9 @@ class ObjectList(list[ObjectType]):
         groups.add(self.tag_group)
         obj[obj_prop.GROUPS] = groups
         
+        if self._id_allocator is not None:
+            self._id_allocator.register_object(obj)
+        
         super().append(obj)
     
     def insert(self, index: SupportsIndex, obj: ObjectType):
@@ -132,6 +139,9 @@ class ObjectList(list[ObjectType]):
         groups = set(obj.get(obj_prop.GROUPS, set()))
         groups.add(self.tag_group)
         obj[obj_prop.GROUPS] = groups
+        
+        if self._id_allocator is not None:
+            self._id_allocator.register_object(obj)
         
         super().insert(index, obj)
     

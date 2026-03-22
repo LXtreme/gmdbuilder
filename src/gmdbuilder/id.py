@@ -63,6 +63,30 @@ class IDAllocator:
         else:
             raise ValueError(f"Unknown ID type: {id_type}")
     
+    def register_object(self, obj: ObjectType) -> None:
+        id = obj[obj_prop.ID]
+        tid = obj_id.Trigger
+        
+        if (key := obj_prop.COLOR_1) in obj:
+            self.used_color_ids.add(obj[key])
+        if (key := obj_prop.COLOR_2) in obj:
+            self.used_color_ids.add(obj[key])
+        if (key := obj_prop.Trigger.Color.COPY_ID) in obj:
+            self.used_color_ids.add(obj[key])
+        
+        if (key := obj_prop.GROUPS) in obj:
+            self.used_group_ids.update(obj[key])
+        
+        if id in (tid.PICKUP, tid.COUNT, tid.INSTANT_COUNT):
+            if (key := obj_prop.Trigger.Count.ITEM_ID) in obj:
+                self.used_item_ids.add(obj[key])
+        
+        if id in (tid.COLLISION, tid.COLLISION_BLOCK):
+            if (key := obj_prop.Trigger.Collision.BLOCK_A) in obj:
+                self.used_collision_ids.add(obj[key])
+            if (key := obj_prop.Trigger.Collision.BLOCK_B) in obj:
+                self.used_collision_ids.add(obj[key])
+    
     def register_free_ids_for_level(self, object_list: list[ObjectType]) -> None:
         """Runs automatically at level load."""
         if self._initialized:
@@ -73,28 +97,7 @@ class IDAllocator:
             raise RuntimeError("Objects not found. Load a level first with from_file() or from_live_editor()")
         
         for obj in object_list:
-            id = obj[obj_prop.ID]
-            tid = obj_id.Trigger
-            
-            if (key := obj_prop.COLOR_1) in obj:
-                self.used_color_ids.add(obj[key])
-            if (key := obj_prop.COLOR_2) in obj:
-                self.used_color_ids.add(obj[key])
-            if (key := obj_prop.Trigger.Color.COPY_ID) in obj:
-                self.used_color_ids.add(obj[key])
-            
-            if (key := obj_prop.GROUPS) in obj:
-                self.used_group_ids.update(obj[key])
-            
-            if id in (tid.PICKUP, tid.COUNT, tid.INSTANT_COUNT):
-                if (key := obj_prop.Trigger.Count.ITEM_ID) in obj:
-                    self.used_item_ids.add(obj[key])
-            
-            if id in (tid.COLLISION, tid.COLLISION_BLOCK):
-                if (key := obj_prop.Trigger.Collision.BLOCK_A) in obj:
-                    self.used_collision_ids.add(obj[key])
-                if (key := obj_prop.Trigger.Collision.BLOCK_B) in obj:
-                    self.used_collision_ids.add(obj[key])
+            self.register_object(obj)
     
     def _get_next(self, pool_name: IDTypes) -> NamedInt:
         """Get next free ID by scanning forward from frontier. O(k) where k = skipped reserved IDs."""
