@@ -52,6 +52,7 @@ class ValidatedObject(dict[str, Any]):
         if isinstance(obj, ValidatedObject):
             return cast(ObjectType, obj)
         wrapped = ValidatedObject(obj[obj_prop.ID])
+        del obj[obj_prop.ID] # type: ignore[index]
         wrapped.update(obj)
         return cast(ObjectType, wrapped)
 

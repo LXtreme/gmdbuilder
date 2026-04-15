@@ -42,4 +42,4 @@ jobs:
         # run: ruff check .
 
       - name: Run tests
-        run: pytest tests -v --tb=short
+        run: pytest tests -sv --tb=short

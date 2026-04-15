@@ -4,9 +4,10 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import TYPE_CHECKING, Any, Callable, Generator
 
+from .mappings import obj_id
 from .fields import key_is_allowed
 from .mappings import obj_prop
-from .object_types import ObjectType
+from .object_types import ObjectType, SpawnType
 
 if TYPE_CHECKING:
     from .level import Level
@@ -39,10 +40,11 @@ class _ContextState:
     Reset to 0 when entering an order() scope or when trigger_fn starts a build.
     """
 
-    spawn_ordered: ContextVar[bool] = ContextVar('gmdbuilder.spawn_ordered', default=False)
+    spawn_ordered: ContextVar[bool | None] = ContextVar('gmdbuilder.spawn_ordered', default=None)
     """
-    Whether wait() advances the X cursor (True) or creates a spawn-trigger chain (False).
-    Set by order(pawn_ordered=True) or by @trigger_fn(spawn_ordered=True).
+    Whether objects get their X position set from x_cursor (not None), and whether
+    x_cursor auto-increments per object (False) or only via wait() calls (True).
+    Set to False/True by order() or by TriggerFunction._build. None opts out entirely.
     """
 
 
@@ -77,6 +79,19 @@ def post_object_creation(obj: ObjectType) -> None:
     for fn in ctx.operations.get():
         fn(obj)
 
+    fn_group = ctx.fn_group.get()
+    if fn_group is not None:
+        g = set(obj.get(obj_prop.GROUPS) or set())
+        g.add(fn_group)
+        obj[obj_prop.GROUPS] = g
+    
+    ordered = ctx.spawn_ordered.get()
+    if ordered is not None:
+        x = ctx.x_cursor.get()
+        obj[obj_prop.X] = x
+        if ordered is False:
+            ctx.x_cursor.set(x + 1)
+    
     if ctx.autoappend.get():
         lvl = ctx.level.get()
         if lvl is None:
@@ -169,22 +184,16 @@ def targets(target: int, target_2: int | None = None) -> NoGen:
 
 
 @contextmanager
-def order(spawn_ordered: bool = True) -> NoGen:
+def order(spawn_ordered: bool | None = False) -> NoGen:
     """
-    Sets the trigger ordering mode for this scope and resets the X cursor to 0.
-
-    spawn_ordered=True:
-        wait(t) advances the X cursor by t * 311.58 units. All triggers in the
-        same group are sequenced by X position. No extra groups or spawn triggers
-        are needed for timing, but timing is baked in at build time.
-
-    spawn_ordered=False (default when not in any order() scope):
-        wait(t) allocates a new group chained via a spawn trigger with the given
-        delay. Triggers within each group are auto-spaced by X += 1.3 to
-        guarantee sub-tick execution order without relying on object-list position.
-
-    Entering order() always resets the X cursor to 0 so the sequence starts clean.
-    The previous cursor position is restored on exit.
+    Sets the trigger ordering mode for this scope.
+    
+        In spawn_ordered=False, created objects auto-increment x_cursor += 1.
+        This guarentees trigger ordering but does not affect timing.
+        
+        In spawn_ordered=True, no auto-increment. wait() advances the X cursor by t * 311.58 units, and triggers are effectively spawned at their X positions in timed sequence.
+        
+        In spawn_ordered=None, opts out of both for the current scope (as an escape hatch).
     """
     old_ordered = ctx.spawn_ordered.get()
     old_cursor = ctx.x_cursor.get()
@@ -195,3 +204,53 @@ def order(spawn_ordered: bool = True) -> NoGen:
     finally:
         ctx.spawn_ordered.set(old_ordered)
         ctx.x_cursor.set(old_cursor)
+
+
+@contextmanager
+def delay(t: float) -> NoGen:
+    """
+    Creates a new group and a spawn trigger (delay=t) targeting it, then sets all
+    objects created within this scope to belong to that new group.
+
+    Requires an active level_context() with autoappend enabled.
+    Forces spawn_ordered=False for its scope so that objects inside are
+    auto-spaced along the X cursor for guaranteed sub-tick ordering.
+    """
+    old_cursor = ctx.x_cursor.get()
+    old_fn_group = ctx.fn_group.get()
+    old_ordered = ctx.spawn_ordered.get()
+    
+    lvl = ctx.level.get()
+    if lvl is None or ctx.autoappend.get() is False:
+        raise RuntimeError("delay() requires an active level_context() with autoappend enabled.")
+
+    new_group = lvl.new.group()
+    spawn: SpawnType = {
+        obj_prop.ID: obj_id.Trigger.SPAWN,
+        obj_prop.X: 0.0,
+        obj_prop.Y: 0.0,
+        obj_prop.Trigger.INTERACTIBLE: True,
+        obj_prop.Trigger.Spawn.TARGET_ID: new_group,
+        obj_prop.Trigger.Spawn.DELAY: t,
+    }
+    post_object_creation(spawn)
+    
+    ctx.fn_group.set(new_group)
+    ctx.spawn_ordered.set(False)
+    ctx.x_cursor.set(0.0)
+    try:
+        yield
+    finally:
+        ctx.x_cursor.set(old_cursor)
+        ctx.fn_group.set(old_fn_group)
+        ctx.spawn_ordered.set(old_ordered)
+
+
+def wait(t: float = 1/240) -> None:
+    """
+    Advances the X cursor by t * 311.58 units (player speed in studs/s). 
+    This means new triggers created after are placed at the new X position.
+    Primarily used in spawn-ordered mode to create a sequence of triggers with specific timing.
+    """
+    ctx.x_cursor.set(ctx.x_cursor.get() + t * 311.58)
+
