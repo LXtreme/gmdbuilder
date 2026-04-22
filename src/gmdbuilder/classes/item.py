@@ -160,6 +160,9 @@ class ItemEdit(Trigger):
     target_item_id = ObjField[int](obj_prop.Trigger.ItemEdit.TARGET_ITEM_ID)
     """Item ID to write the result into (a51)"""
 
+    target_item_type = ObjField[Item.ItemType](obj_prop.Trigger.ItemEdit.TARGET_ITEM_TYPE)
+    """Type of target item: DEFAULT/ITEM/TIMER/POINTS/MAINTIME/ATTEMPTS (a478)"""
+
     item_id_1 = ObjField[int](obj_prop.Trigger.ItemEdit.ITEM_ID_1)
     """First source item ID (a80)"""
 
@@ -171,9 +174,6 @@ class ItemEdit(Trigger):
 
     item_type_2 = ObjField[Item.ItemType](obj_prop.Trigger.ItemEdit.ITEM_TYPE_2)
     """Type of item 2: DEFAULT/ITEM/TIMER/POINTS/MAINTIME/ATTEMPTS (a477)"""
-
-    item_type_3 = ObjField[Item.ItemType](obj_prop.Trigger.ItemEdit.ITEM_TYPE_3)
-    """Type of target item: DEFAULT/ITEM/TIMER/POINTS/MAINTIME/ATTEMPTS (a478)"""
 
     mod = ObjField[float](obj_prop.Trigger.ItemEdit.MOD)
     """Float modifier applied in the operation (a479)"""
