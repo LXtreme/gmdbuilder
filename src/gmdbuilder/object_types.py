@@ -774,11 +774,6 @@ class TextType(ObjectType, total=False):
     a31: str  # DATA
     a488: int  # KERNING
 
-class TimewarpType(ObjectType, total=False):
-    a13: bool  # EDITOR_PREVIEW
-    a36: bool  # INTERACTIBLE
-    a120: float  # MOD
-
 class TriggerType(ObjectType, total=False):
     a11: bool  # TOUCH_TRIGGER
     a13: bool  # EDITOR_PREVIEW
@@ -1688,6 +1683,9 @@ class TimeEventType(TriggerType, total=False):
     a80: int  # ITEM_ID
     a473: float  # TARGET_TIME
     a475: bool  # MULTI_ACTIVATE
+
+class TimewarpType(TriggerType, total=False):
+    a120: float  # MOD
 
 class ToggleType(TriggerType, total=False):
     a51: int  # TARGET_ID

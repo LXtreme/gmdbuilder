@@ -691,7 +691,7 @@ class Trigger:
         ITEM_ID_2 = "a95"
         ITEM_TYPE_1 = "a476"
         ITEM_TYPE_2 = "a477"
-        ITEM_TYPE_3 = "a478"
+        TARGET_ITEM_TYPE = "a478"
         MOD = "a479"
         ITEM_OP_1 = "a480"
         ITEM_OP_2 = "a481"

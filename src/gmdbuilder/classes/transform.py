@@ -241,3 +241,55 @@ class Scale(Trigger):
 
     relative_scale = ObjField[bool](obj_prop.Trigger.Scale.RELATIVE_SCALE)
     """Scale relative to current scale rather than base (a577)"""
+
+
+class Keyframe(Trigger):
+    """Keyframe trigger. Inherits: Object -> Trigger -> Keyframe"""
+
+    def __init__(self):
+        super().__init__(obj_id.Trigger.KEYFRAME)
+
+    # ------------------------------------------------------------------
+    # Properties
+    # ------------------------------------------------------------------
+
+    target_id = ObjField[int](obj_prop.Trigger.Keyframe.TARGET_ID)
+    """Group ID to set keyframe for (a51)"""
+
+
+class AnimateKeyframe(Trigger):
+    """AnimateKeyframe trigger. Inherits: Object -> Trigger -> AnimateKeyframe"""
+
+    def __init__(self):
+        super().__init__(obj_id.Trigger.ANIMATE_KEYFRAME)
+
+    # ------------------------------------------------------------------
+    # Properties
+    # ------------------------------------------------------------------
+
+    target_id = ObjField[int](obj_prop.Trigger.AnimateKeyframe.TARGET_ID)
+    """Group ID to animate (a51)"""
+    
+    parent_id = ObjField[int](obj_prop.Trigger.AnimateKeyframe.PARENT_ID)
+    """Parent group ID (a71)"""
+    
+    animation_id = ObjField[int](obj_prop.Trigger.AnimateKeyframe.ANIMATION_ID)
+    """Animation ID to apply (a76)"""
+    
+    time_mod = ObjField[float](obj_prop.Trigger.AnimateKeyframe.TIME_MOD)
+    """Time modifier factor for the animation (a520)"""
+    
+    pos_x_mod = ObjField[float](obj_prop.Trigger.AnimateKeyframe.POS_X_MOD)
+    """Position X modifier for the animation (a521)"""
+    
+    pos_y_mod = ObjField[float](obj_prop.Trigger.AnimateKeyframe.POS_Y_MOD)
+    """Position Y modifier for the animation (a545)"""
+    
+    rotate_mod = ObjField[float](obj_prop.Trigger.AnimateKeyframe.ROTATION_MOD)
+    """Rotation modifier for the animation (a522)"""
+    
+    scale_x_mod = ObjField[float](obj_prop.Trigger.AnimateKeyframe.SCALE_X_MOD)
+    """Scale X modifier for the animation (a523)"""
+    
+    scale_y_mod = ObjField[float](obj_prop.Trigger.AnimateKeyframe.SCALE_Y_MOD)
+    """Scale Y modifier for the animation (a546)"""
