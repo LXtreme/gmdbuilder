@@ -562,8 +562,8 @@ class AllPropsType(TypedDict, total=False):
     a560: int  # SPEED_REF(1), START_SPEED_REF(1)
     a561: float  # M_561(1), NEAR_FRICTION(1)
     a562: float  # M_562(1), NEAR_FRICTION_RAND(1)
-    a563: int  # DIR(1), START_DIR(1)
-    a564: int  # DIR_RAND(1), START_DIR_RAND(1)
+    a563: float  # DIR(1), START_DIR(1)
+    a564: float  # DIR_RAND(1), START_DIR_RAND(1)
     a565: int  # DIR_REF(1), START_DIR_REF(1)
     a566: float  # MOD_X(1)
     a567: float  # MOD_X_RAND(1)
@@ -856,7 +856,7 @@ class AdvFollowType(TriggerType, total=False):
     a561: float  # NEAR_FRICTION
     a562: float  # NEAR_FRICTION_RAND
     a563: float  # START_DIR
-    a564: int  # START_DIR_RAND
+    a564: float  # START_DIR_RAND
     a565: int  # START_DIR_REF
     a571: bool  # EXCLUSIVE
     a572: ADVANCED_FOLLOW_MODE  # INIT
@@ -1065,7 +1065,7 @@ class EditAdvFollowType(TriggerType, total=False):
     a561: float  # M_561
     a562: float  # M_562
     a563: float  # DIR
-    a564: int  # DIR_RAND
+    a564: float  # DIR_RAND
     a565: int  # DIR_REF
     a566: float  # MOD_X
     a567: float  # MOD_X_RAND

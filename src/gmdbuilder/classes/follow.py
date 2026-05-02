@@ -261,10 +261,10 @@ class AdvFollow(Trigger):
     near_friction_rand = ObjField[float](obj_prop.Trigger.AdvFollow.NEAR_FRICTION_RAND)
     """Random additional near friction range (a562)"""
 
-    start_dir = ObjField[int](obj_prop.Trigger.AdvFollow.START_DIR)
+    start_dir = ObjField[float](obj_prop.Trigger.AdvFollow.START_DIR)
     """Initial movement direction in degrees (a563)"""
 
-    start_dir_rand = ObjField[int](obj_prop.Trigger.AdvFollow.START_DIR_RAND)
+    start_dir_rand = ObjField[float](obj_prop.Trigger.AdvFollow.START_DIR_RAND)
     """Random additional start direction range (a564)"""
 
     start_dir_ref = ObjField[int](obj_prop.Trigger.AdvFollow.START_DIR_REF)
@@ -326,10 +326,10 @@ class EditAdvFollow(Trigger):
     speed_ref = ObjField[int](obj_prop.Trigger.EditAdvFollow.SPEED_REF)
     """Group ID used as reference for speed direction (a560)"""
 
-    dir = ObjField[int](obj_prop.Trigger.EditAdvFollow.DIR)
+    dir = ObjField[float](obj_prop.Trigger.EditAdvFollow.DIR)
     """New movement direction in degrees (a563)"""
 
-    dir_rand = ObjField[int](obj_prop.Trigger.EditAdvFollow.DIR_RAND)
+    dir_rand = ObjField[float](obj_prop.Trigger.EditAdvFollow.DIR_RAND)
     """Random additional direction range (a564)"""
 
     dir_ref = ObjField[int](obj_prop.Trigger.EditAdvFollow.DIR_REF)
