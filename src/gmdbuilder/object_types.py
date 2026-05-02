@@ -855,7 +855,7 @@ class AdvFollowType(TriggerType, total=False):
     a560: int  # START_SPEED_REF
     a561: float  # NEAR_FRICTION
     a562: float  # NEAR_FRICTION_RAND
-    a563: int  # START_DIR
+    a563: float  # START_DIR
     a564: int  # START_DIR_RAND
     a565: int  # START_DIR_REF
     a571: bool  # EXCLUSIVE
@@ -1064,7 +1064,7 @@ class EditAdvFollowType(TriggerType, total=False):
     a560: int  # SPEED_REF
     a561: float  # M_561
     a562: float  # M_562
-    a563: int  # DIR
+    a563: float  # DIR
     a564: int  # DIR_RAND
     a565: int  # DIR_REF
     a566: float  # MOD_X
