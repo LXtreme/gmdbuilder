@@ -24,7 +24,7 @@ class NamedInt(int):
         return str(int(self))
 
 
-IDTypes = Literal["group", "item", "color", "collision"]
+IDTypes = Literal["group", "item", "color", "collision", "link"]
 
 class IDAllocator:
     """Class to manage unique ID allocation. Instance is 'new'."""
@@ -36,16 +36,19 @@ class IDAllocator:
         self.used_item_ids: set[int] = set()
         self.used_color_ids: set[int] = set()
         self.used_collision_ids: set[int] = set()
+        self.used_link_ids: set[int] = set()
         
         self._group_counter: int = 0
         self._item_counter: int = 0
         self._color_counter: int = 0
         self._collision_counter: int = 0
+        self._link_counter: int = 0
         
         self._group_frontier: int = 1
         self._item_frontier: int = 1
         self._color_frontier: int = 1
         self._collision_frontier: int = 1
+        self._link_frontier: int = 1
     
     def reserve_id(self, id_type: IDTypes, id_values: int|Iterable[int]):
         """Manually reserve IDs to exclude them from allocation."""
@@ -60,6 +63,8 @@ class IDAllocator:
             self.used_color_ids.update(ids)
         elif id_type == "collision":
             self.used_collision_ids.update(ids)
+        elif id_type == "link":
+            self.used_link_ids.update(ids)
         else:
             raise ValueError(f"Unknown ID type: {id_type}")
     
@@ -73,13 +78,15 @@ class IDAllocator:
             self.used_color_ids.add(obj[key])
         if (key := obj_prop.Trigger.Color.COPY_ID) in obj:
             self.used_color_ids.add(obj[key])
+        if (key := obj_prop.LINKED_GROUP) in obj:
+            self.used_link_ids.add(obj[key])
         
         if (key := obj_prop.GROUPS) in obj:
             self.used_group_ids.update(obj[key])
-        
-        if id in (tid.PICKUP, tid.COUNT, tid.INSTANT_COUNT):
-            if (key := obj_prop.Trigger.Count.ITEM_ID) in obj:
-                self.used_item_ids.add(obj[key])
+
+        is_item_trigger = id in (tid.PICKUP, tid.COUNT, tid.INSTANT_COUNT)
+        if is_item_trigger and (key := obj_prop.Trigger.Count.ITEM_ID) in obj:
+            self.used_item_ids.add(obj[key])
         
         if id in (tid.COLLISION, tid.COLLISION_BLOCK):
             if (key := obj_prop.Trigger.Collision.BLOCK_A) in obj:
@@ -205,3 +212,22 @@ class IDAllocator:
             return self._get_next("collision")
         return tuple(self._get_next("collision") for _ in range(count))
 
+    @overload
+    def link(self) -> NamedInt: ...
+    @overload
+    def link(self, count: Literal[1]) -> NamedInt: ... # type: ignore[override]
+    @overload
+    def link(self, count: Literal[2]) -> tuple[NamedInt, NamedInt]: ...
+    @overload
+    def link(self, count: Literal[3]) -> tuple[NamedInt, NamedInt, NamedInt]: ...
+    @overload
+    def link(self, count: Literal[4]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt]: ...
+    @overload
+    def link(self, count: Literal[5]) -> tuple[NamedInt, NamedInt, NamedInt, NamedInt, NamedInt]: ...
+    @overload
+    def link(self, count: int) -> tuple[NamedInt, ...]: ...
+    def link(self, count: int = 1) -> tuple[NamedInt, ...] | NamedInt:
+        """Get next free link ID (1-9999)."""
+        if count == 1:
+            return self._get_next("link")
+        return tuple(self._get_next("link") for _ in range(count))
