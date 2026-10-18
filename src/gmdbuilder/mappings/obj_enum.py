@@ -191,6 +191,18 @@ class Item:
         ABSOLUTE = 1
         NEGATIVE = 2
 
+    class CompareOp(IntEnum):
+        EQ = 0
+        """Equal"""
+        GT = 1
+        """Greater than"""
+        GTE = 2
+        """Greater than or equal"""
+        LT = 3
+        """Less than"""
+        LTE = 4
+        """Less than or equal"""
+
 class Keyframe:
     class SpinDirection(IntEnum):
         NONE = 0
