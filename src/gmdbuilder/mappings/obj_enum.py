@@ -167,6 +167,8 @@ class InstantCountMode(IntEnum):
 
 class Item:
     class MathOp(IntEnum):
+        ASSIGN = 0
+        """Plain '=' (assign); only valid as the assignment/mod operator (a480)"""
         ADD = 1
         SUBTRACT = 2
         MULTIPLY = 3
@@ -202,6 +204,8 @@ class Item:
         """Less than"""
         LTE = 4
         """Less than or equal"""
+        NE = 5
+        """Not equal"""
 
 class Keyframe:
     class SpinDirection(IntEnum):

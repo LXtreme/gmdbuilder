@@ -83,4 +83,4 @@ class Color:
     
     def get_hex(self):
         r, g, b, _ = self.get_rgba()
-        return "#{:02X}{:02X}{:02X}".format(r, g, b)
+        return f"#{r:02X}{g:02X}{b:02X}"

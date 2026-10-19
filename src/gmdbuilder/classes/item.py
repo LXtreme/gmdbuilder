@@ -1,7 +1,9 @@
+from typing import Self
 
+from gmdbuilder.classes import _item_expr
 from gmdbuilder.classes.object import ObjField
 from gmdbuilder.classes.trigger import Trigger
-from gmdbuilder.mappings import obj_prop, obj_id
+from gmdbuilder.mappings import obj_id, obj_prop
 from gmdbuilder.mappings.obj_enum import InstantCountMode, Item, PickupMode
 
 
@@ -90,6 +92,39 @@ class ItemCompare(Trigger):
         super().__init__(obj_id.Trigger.ITEM_COMPARE)
 
     # ------------------------------------------------------------------
+    # Methods
+    # ------------------------------------------------------------------
+
+    def set_from_string(self, expr: str) -> Self:
+        """
+        Fill in the comparison properties from a string such as ``"i1 * 2 >= t3 + 1"``.
+
+        Operands: ``i<ID>`` item, ``t<ID>`` timer, ``p`` points, ``m`` main time,
+        ``a`` attempts, or a bare number (constant).
+
+        Each side is ONE operand with an optional constant: ``i1``, ``i1 + 2``,
+        ``t3 * 0.5``, or just ``5``. Two operands on one side (``i1 + i2``) are
+        not possible in Item Compare. Comparison is one of ``== != < <= > >=``.
+
+        Each side can be wrapped in a rounding function (``round``/``floor``/``ceil``)
+        and a sign function (``abs``/``neg``), sign outermost since GD applies it
+        after rounding: ``abs(floor(i1 / 2)) < 4``.
+
+        Does not touch ``true_id``, ``false_id`` or ``tolerance``.
+        Raises ``ValueError`` for anything GD cannot represent.
+        """
+        spec = _item_expr.parse_compare(expr)
+        l, r = spec.left, spec.right
+        self.item_id_1, self.item_type_1 = l.item.id, l.item.type
+        self.item_id_2, self.item_type_2 = r.item.id, r.item.type
+        self.item_op_1, self.mod_1 = l.op, l.mod
+        self.item_op_2, self.mod_2 = r.op, r.mod
+        self.item_op_3 = spec.cmp
+        self.round_op_1, self.sign_op_1 = l.funcs.round, l.funcs.sign
+        self.round_op_2, self.sign_op_2 = r.funcs.round, r.funcs.sign
+        return self
+
+    # ------------------------------------------------------------------
     # Properties
     # ------------------------------------------------------------------
 
@@ -152,6 +187,39 @@ class ItemEdit(Trigger):
     # Methods
     # ------------------------------------------------------------------
 
+    def set_from_string(self, expr: str) -> Self:
+        """
+        Fill in the item edit properties from a string such as ``"i12 = (t2 + i3) * 4"``.
+
+        Form: ``<target> <assign> <rhs>`` where target is ``i<ID>``, ``t<ID>`` or ``p``
+        (main time and attempts are read-only) and assign is ``= += -= *= /=``.
+
+        The right-hand side is GD's fixed shape ``(I1 [+ - * /] I2) [* /] mod``:
+        ``i1``, ``i1 - i2``, ``i1 * 3``, ``(i1 + i2) / 2``, ``i1 * i2 * 0.5``.
+        Operands: ``i<ID>``, ``t<ID>``, ``p`` points, ``m`` main time, ``a`` attempts.
+
+        NOT possible: adding/subtracting a constant (Mod only multiplies or divides,
+        so ``i12 = t2 + 4.0`` is rejected; use a Pickup trigger), more than two operands,
+        and dividing by 0.
+
+        The rhs may be wrapped in rounding (``round``/``floor``/``ceil``) and sign
+        (``abs``/``neg``) functions, sign outermost: ``i1 = abs(floor(i2 / 2))``.
+        Wrapping the whole statement instead (``floor(i1 += i2)``) applies them to the
+        assignment result.
+
+        Raises ``ValueError`` for anything GD cannot represent.
+        """
+        s = _item_expr.parse_edit(expr)
+        self.target_item_id, self.target_item_type = s.target.id, s.target.type
+        self.item_id_1, self.item_type_1 = s.item_1.id, s.item_1.type
+        self.item_id_2, self.item_type_2 = s.item_2.id, s.item_2.type
+        self.item_op_1 = s.assign_op
+        self.item_op_2 = s.param_op
+        self.item_op_3 = s.mod_op
+        self.mod = s.mod
+        self.round_op_1, self.sign_op_1 = s.mod_funcs.round, s.mod_funcs.sign
+        self.round_op_2, self.sign_op_2 = s.out_funcs.round, s.out_funcs.sign
+        return self
 
     # ------------------------------------------------------------------
     # Properties

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Step 3: Generate TypedDict classes (with inheritance) from:
 - nested enum mapping file (output of step 1)
