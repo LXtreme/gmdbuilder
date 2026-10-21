@@ -35,15 +35,17 @@ A good python LSP setup will give all the static type checking for objects/prope
 
 There are two ways to load a level instance.
 
-### From a .gmd file (GDShare)
+### From a .gdlvl or .gmd file
 
-Provide the file path:
+Provide the file path. The format is chosen by the file extension: `.gdlvl` is the compressed level format introduced in GD 2.209, and `.gmd` is the older GDShare format.
 
 ```python
 from gmdbuilder import Level
 
-level = Level.from_file("my_level.gmd")
+level = Level.from_file("my_level.gdlvl")  # or "my_level.gmd"
 ```
+
+`export_to_file()` works the same way, so exporting to a `.gdlvl` path writes a `.gdlvl` file.
 
 ### From live editor (WSLiveEditor)
 

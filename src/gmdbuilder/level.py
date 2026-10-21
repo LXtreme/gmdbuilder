@@ -5,7 +5,7 @@ import time
 from typing import Any, cast
 from pathlib import Path
 
-from gmdkit.extra.live_editor import WEBSOCKET_URL, LiveEditor
+from gmdkit.extensions.live_editor import WEBSOCKET_URL, LiveEditor
 from gmdkit.models.level import Level as KitLevel
 from gmdkit.models.object import ObjectList as KitObjectList, Object as KitObject
 from gmdkit.models.prop.color import ColorList as KitColorList
@@ -133,7 +133,7 @@ class Level:
 
     @classmethod
     def from_file(cls, file_path: str | Path, tag_group: int = 9999) -> "Level":
-        """Load a new Level from a .gmd file."""
+        """Load a new Level from a .gdlvl (GD 2.209+) or .gmd file."""
         level = cls(tag_group)
         
         _time_since_last()
@@ -142,7 +142,10 @@ class Level:
         if not path.exists():
             raise FileNotFoundError(f"Level file not found: {file_path=}")
         
-        level._kit_level = KitLevel.from_file(path)
+        if path.suffix.lower() == ".gmd":
+            level._kit_level = KitLevel.from_gmd(path)
+        else:
+            level._kit_level = KitLevel.from_file(path)
         level._source_file = path
         
         level._load_colors(level._kit_level.start)
@@ -170,7 +173,7 @@ class Level:
         return level
 
     def export_to_file(self, file_path: str | Path | None = None):
-        """Export level to .gmd file."""
+        """Export level to a .gdlvl (GD 2.209+) or .gmd file, chosen by file extension."""
 
         print(f"\ngmdbuilder took {_time_since_last():.4f} seconds to prepare for export.")
 
@@ -192,7 +195,10 @@ class Level:
         self._kit_level.objects.extend(to_kit_object(obj) for obj in self.objects)
         self._export_colors()
         
-        self._kit_level.to_file(str(export_path))
+        if export_path.suffix.lower() == ".gmd":
+            self._kit_level.to_gmd(str(export_path))
+        else:
+            self._kit_level.to_file(str(export_path))
         
         print(f"\nExported level to {export_path} with {len(self.objects)} objects in {_time_since_last():.3f} seconds.\n")
 

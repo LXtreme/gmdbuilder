@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from gmdkit.models.prop.color import Color as KitColor
-from gmdkit.models.prop.hsv import HSV
+from gmdkit.models.prop.color import HSV
 
 
 @dataclass

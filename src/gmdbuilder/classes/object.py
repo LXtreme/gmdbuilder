@@ -5,7 +5,7 @@ from gmdbuilder.core import new_obj
 from gmdbuilder.mappings import obj_prop
 from gmdbuilder.object import ValidatedObject
 from gmdbuilder.object_types import ObjectType
-from gmdkit.models.prop.hsv import HSV
+from gmdkit.models.prop.color import HSV
 
 T = TypeVar("T")
 

@@ -1,7 +1,7 @@
 
 from typing import Literal, TypedDict, Required, Any
 
-from gmdkit.models.prop.hsv import HSV
+from gmdkit.models.prop.color import HSV
 from gmdkit.models.prop.particle import Particle
 
 BoolLike = bool | Literal[0,1]

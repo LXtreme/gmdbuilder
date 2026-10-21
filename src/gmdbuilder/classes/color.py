@@ -3,7 +3,7 @@ from typing import Self
 from gmdbuilder.classes.object import ObjField
 from gmdbuilder.classes.trigger import Trigger
 from gmdbuilder.mappings import obj_prop, obj_id
-from gmdkit.models.prop.hsv import HSV
+from gmdkit.models.prop.color import HSV
 
 
 class Color(Trigger):

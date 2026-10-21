@@ -4,7 +4,9 @@ from functools import lru_cache
 from typing import Any, Callable, Iterable, Literal, Union, get_args, get_origin, Required
 from . mappings import obj_id, obj_prop
 from . import object_types as td
-from gmdkit.models.prop.list import IDList, IntPair, IntPairList, RemapList
+from gmdkit.models.prop.groups import IDList
+from gmdkit.models.prop.list import IntPair, IntPairList
+from gmdkit.models.prop.remaps import RemapList
 
 ObjectType = td.ObjectType
 tid = obj_id.Trigger

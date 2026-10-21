@@ -21,8 +21,9 @@ LEVEL_FILES = sorted(LEVELS_DIR.glob("*.gmd"))
 # ── Tests ─────────────────────────────────────────────────────────────────────
 
 
+@pytest.mark.parametrize("out_ext", [".gmd", ".gdlvl"])
 @pytest.mark.parametrize("level_file", LEVEL_FILES, ids=lambda p: p.name)
-def test_roundtrip(level_file: Path, tmp_path: Path) -> None:
+def test_roundtrip(level_file: Path, tmp_path: Path, out_ext: str) -> None:
 
     level = Level.from_file(level_file)
     initial_count = len(level.objects)
@@ -45,7 +46,7 @@ def test_roundtrip(level_file: Path, tmp_path: Path) -> None:
     g = level.new.group()
     level.objects[0][obj_prop.GROUPS] = {int(g)}
 
-    out_file = tmp_path / level_file.name
+    out_file = (tmp_path / level_file.name).with_suffix(out_ext)
     level.export_to_file(out_file)
 
     assert out_file.exists(), "Export should have created the output file"
