@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Any, Callable, Iterable, Literal, Union, get_args, get_origin, Required
 from . mappings import obj_id, obj_prop
 from . import object_types as td
-from gmdkit.models.prop.groups import IDList
+from gmdkit.models.prop.groups import IDList, ParentIDList, CenterID
 from gmdkit.models.prop.list import IntPair, IntPairList
 from gmdkit.models.prop.remaps import RemapList
 
@@ -322,6 +322,17 @@ _group_list_methods = SpecialKey(
     is_valid_val=lambda v: all(int_is_in_range(group_id) for group_id in v)
 )
 
+class _ParentIDList(ParentIDList):
+    # gmdkit's ParentIDList.ENCODER does str(CenterID), which yields 'CenterID(26)' instead of '26'.
+    ENCODER = staticmethod(lambda i: ('+' if type(i) is CenterID else '') + str(int(i))) # type: ignore
+
+# a274 members may be CenterID (serialized as '+N' since GD 2.209); from_kit keeps the CenterID type.
+_parent_group_list_methods = SpecialKey(
+    from_kit=lambda v: set(v) if v else {},
+    to_kit=lambda v: _ParentIDList(v) if v else _ParentIDList(),
+    is_valid_val=lambda v: all(int_is_in_range(group_id) for group_id in v)
+)
+
 _bool_like_methods = SpecialKey(
     from_kit=lambda v: bool(v),
     to_kit=lambda v: int(v),
@@ -344,7 +355,7 @@ def _sequence_to_kit(v: list[tuple[int, int]]) -> IntPairList:
 
 SPECIAL_KEYS: dict[str, SpecialKey] = {
     obj_prop.GROUPS: _group_list_methods,
-    obj_prop.PARENT_GROUPS: _group_list_methods,
+    obj_prop.PARENT_GROUPS: _parent_group_list_methods,
     obj_prop.Trigger.Spawn.REMAPS: SpecialKey(
         from_kit=lambda v: v.to_dict(),
         to_kit=lambda v: RemapList.from_dict(v),
