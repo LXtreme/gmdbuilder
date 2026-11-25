@@ -8,7 +8,7 @@ ObjectType = td.ObjectType
 
 T = TypeVar("T", bound=ObjectType)
 
-def is_obj_type(obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
+def is_obj_type[T: ObjectType](obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
     """Type-narrows obj to a specific TypedDict type by matching its ID."""
 
 
@@ -16,7 +16,7 @@ def is_obj_type(obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
 @overload
 def from_object_string(obj_string: str) -> ObjectType: ...
 @overload
-def from_object_string(obj_string: str, *, obj_type: type[T]) -> T:
+def from_object_string[T: ObjectType](obj_string: str, *, obj_type: type[T]) -> T:
     """Converts an object string to an ObjectType dict, optionally type-narrowing it to a specific TypedDict type."""
 
 @overload

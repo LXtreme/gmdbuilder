@@ -1,6 +1,7 @@
 from contextvars import copy_context
 from functools import update_wrapper
-from typing import Any, Callable, Iterable, Literal, overload, Generic, ParamSpec, TypeVar
+from typing import Any, Literal, overload, ParamSpec, TypeVar
+from collections.abc import Callable, Iterable
 
 
 from .mappings import obj_id, obj_prop
@@ -14,7 +15,7 @@ P = ParamSpec('P')
 R = TypeVar('R')
 
 
-class TriggerFunction(Generic[P, R]):
+class TriggerFunction[**P, R]:
     def __init__(
         self, fn: Callable[P, R], *,
         spawn_ordered: bool = False,
@@ -111,18 +112,17 @@ class TriggerFunction(Generic[P, R]):
                 Keys must be in params if params was declared.
         wrap:   if True, returns the spawn trigger as a Spawn wrapper instead of a raw ObjectType.
         """
-        if remaps:
-            if self.params is not None:
-                if len(self.params) == 0:
-                    raise ValueError(
-                        f"'{self._fn.__name__}' declares params=[] — no remaps are permitted."
-                    )
-                invalid = {k for k in remaps if k not in self.params}
-                if invalid:
-                    raise ValueError(
-                        f"Remap keys {invalid} are not declared in "
-                        f"'{self._fn.__name__}'.params={self.params}"
-                    )
+        if remaps and self.params is not None:
+            if len(self.params) == 0:
+                raise ValueError(
+                    f"'{self._fn.__name__}' declares params=[] — no remaps are permitted."
+                )
+            invalid = {k for k in remaps if k not in self.params}
+            if invalid:
+                raise ValueError(
+                    f"Remap keys {invalid} are not declared in "
+                    f"'{self._fn.__name__}'.params={self.params}"
+                )
 
         if not self.objects:
             self() # type: ignore[call-arg]
@@ -142,7 +142,7 @@ class TriggerFunction(Generic[P, R]):
 
 
 @overload
-def trigger_fn(fn: Callable[P, R], /) -> TriggerFunction[P, R]: ...
+def trigger_fn[**P, R](fn: Callable[P, R], /) -> TriggerFunction[P, R]: ...
 @overload
 def trigger_fn(
     *,
@@ -150,7 +150,7 @@ def trigger_fn(
     params: Iterable[int] | None = None,
     group: int | None = None,
 ) -> Callable[[Callable[P, R]], TriggerFunction[P, R]]: ...
-def trigger_fn(
+def trigger_fn[**P, R](
     fn: Callable[P, R] | None = None,
     /,*, spawn_ordered: bool = False,
     params: Iterable[int] | None = None,

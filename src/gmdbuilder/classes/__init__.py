@@ -8,33 +8,33 @@ from .item import Pickup, Count, InstantCount, ItemCompare, ItemEdit, ItemPersis
 from .follow import Follow, Shake, FollowPlayerY, AdvFollow, EditAdvFollow
 
 __all__ = [
-    # Base
-    "Object",
-    "Trigger",
-    # transform.py
-    "Move",
-    "Rotate",
-    "Scale",
+    "AdvFollow",
+    "Alpha",
+    "Animate",
     # color.py
     "Color",
-    "Pulse",
-    "Alpha",
-    "Toggle",
-    "Animate",
-    # control.py
-    "Spawn",
-    "Touch",
-    # item.py
-    "Pickup",
     "Count",
+    "EditAdvFollow",
+    # follow.py
+    "Follow",
+    "FollowPlayerY",
     "InstantCount",
     "ItemCompare",
     "ItemEdit",
     "ItemPersist",
-    # follow.py
-    "Follow",
+    # transform.py
+    "Move",
+    # Base
+    "Object",
+    # item.py
+    "Pickup",
+    "Pulse",
+    "Rotate",
+    "Scale",
     "Shake",
-    "FollowPlayerY",
-    "AdvFollow",
-    "EditAdvFollow",
+    # control.py
+    "Spawn",
+    "Toggle",
+    "Touch",
+    "Trigger",
 ]

@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import TYPE_CHECKING, Any, Callable, Generator
+from typing import TYPE_CHECKING, Any
+from collections.abc import Callable, Generator
 
 from .mappings import obj_id
 from .fields import key_is_allowed

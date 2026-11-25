@@ -46,46 +46,44 @@ from .mappings import obj_enum as enum
 # ---------------------------------------------------------------------------
 
 __all__ = [
+    "AllPropsType",
+    # Color
+    "Color",
     "Level",
+    # ID allocation
+    "NamedInt",
+    # Object
+    "ObjectList",
+    "ObjectType",
+    # Trigger functions
+    "TriggerFunction",
+    "autoappend",
+    "color_id",
+    "color_prop",
     # Context
     "context",
     "ctx",
-    "level_context",
-    "autoappend",
-    "order",
-    "transform",
-    "targets",
-    "groups",
-    "set_prop",
     "delay",
-    "order",
-    "wait",
-    # Trigger functions
-    "TriggerFunction",
-    "trigger_fn",
-    "wait",
-    # Object
-    "ObjectList",
-    # ID allocation
-    "NamedInt",
+    "enum",
+    "from_object_string",
+    "groups",
+    "is_obj_id",
+    "is_obj_type",
+    "level_context",
+    "lvl_prop",
     # Core helpers
     "new_obj",
-    "from_object_string",
-    "is_obj_type",
-    "is_obj_id",
-    # Validation
-    "setting",
-    # Color
-    "Color",
-    # TypedDicts
-    "td",
-    "AllPropsType",
-    "ObjectType",
+    "obj_id",
     # Mapping namespaces
     "obj_prop",
-    "obj_id",
-    "color_id",
-    "color_prop",
-    "lvl_prop",
-    "enum",
+    "order",
+    "set_prop",
+    # Validation
+    "setting",
+    "targets",
+    # TypedDicts
+    "td",
+    "transform",
+    "trigger_fn",
+    "wait",
 ]

@@ -52,7 +52,7 @@ def to_kit_object(obj: ObjectType) -> KitObject:
 def _from_raw_key_cached(key: int|str) -> str:
     if isinstance(key, int):
         return f"a{key}"
-    if key.startswith("a") or key.startswith("k"):
+    if key.startswith(("a", "k")):
         return key
     raise ValueError("Unrecognized key format")
 
@@ -168,7 +168,6 @@ class Level:
         
         level._live_editor.remove_objects(level.objects.tag_group)
         level._load_colors(start)
-
         level._load_objects(objects, obj_count)
         return level
 

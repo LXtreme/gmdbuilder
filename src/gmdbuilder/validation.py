@@ -44,7 +44,7 @@ def get_trigger_targets(objects: list[ObjectType]):
             for source, target in r.items():
                 used.setdefault(target, []).append(obj)
                 used.setdefault(source, []).append(obj)
-        for key in obj.keys():
+        for key in obj:
             if key in TARGET_GROUP_FIELDS:
                 group = cast(int, obj[key])
                 targeted.setdefault(group, []).append(obj)
@@ -110,9 +110,8 @@ def validate(key: str, v: Any, obj: dict[str, Any]):
     """immediate validation. to be called by 'level.objects' mutations"""
     obj_id = obj[obj_prop.ID]
     
-    if setting.property_allowed_check:
-        if not key_is_allowed(obj_id, key):
-            raise ValueError(f"Key {key!r} not allowed for object ID {obj_id}:\n{obj=}")
+    if setting.property_allowed_check and not key_is_allowed(obj_id, key):
+        raise ValueError(f"Key {key!r} not allowed for object ID {obj_id}:\n{obj=}")
     
     if not setting.property_type_check:
         return

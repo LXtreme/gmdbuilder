@@ -155,7 +155,7 @@ class ItemCompare(Trigger):
     item_op_2 = ObjField[Item.MathOp](obj_prop.Trigger.ItemCompare.ITEM_OP_2)
     """Operation applied to item 2: ADD/SUBTRACT/MULTIPLY/DIVIDE (a481)"""
 
-    item_op_3 = ObjField[Item.MathOp](obj_prop.Trigger.ItemCompare.ITEM_OP_3)
+    item_op_3 = ObjField[Item.CompareOp](obj_prop.Trigger.ItemCompare.ITEM_OP_3)
     """Comparison operator between the two results (a482)"""
 
     mod_2 = ObjField[float](obj_prop.Trigger.ItemCompare.MOD_2)

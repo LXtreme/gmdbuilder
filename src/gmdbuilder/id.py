@@ -1,5 +1,7 @@
 
-from typing import Iterable, Literal, overload
+from collections.abc import Iterable
+from typing import Literal, Self, overload
+
 from .mappings import obj_id, obj_prop
 from .object_types import ObjectType
 
@@ -12,7 +14,7 @@ class NamedInt(int):
     """
     _name: str
 
-    def __new__(cls, value: int, name: str) -> "NamedInt":
+    def __new__(cls, value: int, name: str) -> Self:
         instance = super().__new__(cls, value)
         instance._name = name
         return instance

@@ -9,7 +9,7 @@ from gmdkit.models.prop.color import HSV
 
 T = TypeVar("T")
 
-class ObjField(Generic[T]):
+class ObjField(Generic[T]):  # noqa: UP046
     def __init__(self, key: Any) -> None:
         self.key = key
 
@@ -17,7 +17,7 @@ class ObjField(Generic[T]):
     def __get__(self, instance: None, owner: type[Any]) -> "ObjField[T]": ...
     @overload
     def __get__(self, instance: object, owner: type[Any] | None = None) -> T: ...
-    def __get__(self, instance: object | None, owner: type[Any] | None = None) -> T | "ObjField[T]":
+    def __get__(self, instance: object | None, owner: type[Any] | None = None) -> "T | ObjField[T]":
         if instance is None:
             return self
         return instance.obj[self.key] # type: ignore[attr-defined]

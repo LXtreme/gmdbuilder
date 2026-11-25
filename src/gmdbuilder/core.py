@@ -14,7 +14,7 @@ ObjectType = td.ObjectType
 
 T = TypeVar('T', bound=ObjectType)
 
-def is_obj_type(obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
+def is_obj_type[T: ObjectType](obj: ObjectType, obj_type: type[T]) -> TypeGuard[T]:
     """Type-narrows obj to a specific TypedDict type by matching its ID."""
     return ID_TO_TYPEDDICT.get(obj.get(obj_prop.ID)) is obj_type
 

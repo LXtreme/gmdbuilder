@@ -1,7 +1,8 @@
 
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Any, Callable, Iterable, Literal, Union, get_args, get_origin, Required
+from typing import Any, Literal, Union, get_args, get_origin, Required
+from collections.abc import Callable, Iterable
 from . mappings import obj_id, obj_prop
 from . import object_types as td
 from gmdkit.models.prop.groups import IDList

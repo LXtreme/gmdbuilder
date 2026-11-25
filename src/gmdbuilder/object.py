@@ -1,5 +1,6 @@
 
-from typing import TYPE_CHECKING, Any, Callable, Iterable, SupportsIndex, cast
+from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING, Any, Self, SupportsIndex, cast
 
 if TYPE_CHECKING:
     from .id import IDAllocator
@@ -157,6 +158,6 @@ class ObjectList(list[ObjectType]):
         """Disabled: use extend() instead."""
         raise TypeError("Use .extend() instead of + operator")
     
-    def __iadd__(self, other: object) -> "ObjectList": 
+    def __iadd__(self, other: object) -> Self: 
         """Disabled: use extend() instead."""
         raise TypeError("Use .extend() instead of += operator")
