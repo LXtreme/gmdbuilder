@@ -163,7 +163,8 @@ class Level:
         
         level._live_editor = LiveEditor(url)
         level._live_editor.connect()
-        start, objects = level._live_editor.get_level()
+        data = level._live_editor.get_level()
+        start, objects = data.start, data.objects
         obj_count = len(objects)
         
         level._live_editor.remove_objects(level.objects.tag_group)
